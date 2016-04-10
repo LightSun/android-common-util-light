@@ -16,12 +16,12 @@
  */
 package com.heaven7.core.util;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.text.TextWatcher;
 import android.text.util.Linkify;
 import android.util.SparseArray;
@@ -214,6 +214,18 @@ public class ViewHelper {
 	public ViewHelper setImageUrl(int viewId, String imageUrl,IImageLoader loader) {
 		return view(viewId).setImageUrl(imageUrl, loader).reverse(this);
 	}
+	/**set the image uri
+	 * @since 1.0.2
+	 * */
+	public ViewHelper setImageURI(int viewId, Uri uri) {
+		return view(viewId).setImageURI(uri).reverse(this);
+	}
+	/**set the image scale type
+	 * @since 1.0.2
+	 * */
+	public ViewHelper setScaleType(int viewId, ImageView.ScaleType type) {
+		return view(viewId).setScaleType(type).reverse(this);
+	}
 	/**
 	 * Add an action to set the image of an image view. Can be called multiple
 	 * times.
@@ -226,7 +238,6 @@ public class ViewHelper {
 	 * Add an action to set the alpha of a view. Can be called multiple times.
 	 * Alpha between 0-1.
 	 */
-	@SuppressLint("NewApi")
 	public ViewHelper setAlpha(int viewId, float value) {
 		return view(viewId).setAlpha(value).reverse(this);
 	}
@@ -466,5 +477,12 @@ public class ViewHelper {
 	 */
 	public ViewHelperImpl view(int viewId){
 		return mImpl.view(getView(viewId));
+	}
+
+	/** view the root view
+	 * @since 1.0.2
+	 * */
+	public ViewHelperImpl viewRoot(){
+		return mImpl.view(getRootView());
 	}
 }
