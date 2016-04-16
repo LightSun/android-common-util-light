@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.heaven7.core.save_state">
+    package="com.heaven7.core.util">
 
     <application
         android:allowBackup="true"
