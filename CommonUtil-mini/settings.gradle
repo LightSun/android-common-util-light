@@ -1,1 +1,1 @@
-include ':app', ':util-v1', ':adapter', ':savestste'
+include ':app', ':util-v1', ':adapter', ':savestate'

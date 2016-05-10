@@ -5,7 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/CommonUtil-mini.iml" filepath="$PROJECT_DIR$/CommonUtil-mini.iml" />
       <module fileurl="file://$PROJECT_DIR$/adapter/adapter.iml" filepath="$PROJECT_DIR$/adapter/adapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/savestste/savestste.iml" filepath="$PROJECT_DIR$/savestste/savestste.iml" />
+      <module fileurl="file://$PROJECT_DIR$/savestate/savestste.iml" filepath="$PROJECT_DIR$/savestate/savestste.iml" />
       <module fileurl="file://$PROJECT_DIR$/util-v1/util-v1.iml" filepath="$PROJECT_DIR$/util-v1/util-v1.iml" />
     </modules>
   </component>
