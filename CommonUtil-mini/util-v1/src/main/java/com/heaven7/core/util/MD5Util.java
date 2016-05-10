@@ -1,9 +1,8 @@
 package com.heaven7.core.util;
 
-import android.annotation.SuppressLint;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 public class MD5Util {
 	
@@ -22,7 +21,6 @@ public class MD5Util {
 	 * MD5加密
 	 * @param message 要加密的字符串
 	 */
-	@SuppressLint("DefaultLocale")
 	public static String encode(String message){
 		MessageDigest md5 = null;
 		try {
@@ -32,6 +30,6 @@ public class MD5Util {
 			return "";
 		}
 		byte[] result = md5.digest(message.getBytes());
-		return toHexString(result).toLowerCase();
+		return toHexString(result).toLowerCase(Locale.getDefault());
 	}
 }

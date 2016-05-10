@@ -44,6 +44,19 @@ public class BundleHelper {
         b.putParcelable(key, data);
         return this;
     }
+    public <T extends Parcelable> BundleHelper putParcelableArrayList(String key, ArrayList<T> data){
+        b.putParcelableArrayList(key, data);
+        return this;
+    }
+    public <T extends Parcelable> BundleHelper putParcelableList(String key, List<T> data){
+        b.putParcelableArrayList(key, new ArrayList<Parcelable>(data));
+        return this;
+    }
+
+    public BundleHelper putParcelableArray(String key, Parcelable[] array){
+        b.putParcelableArray(key, array);
+        return this;
+    }
 
     public Bundle getBundle(){
         return b;

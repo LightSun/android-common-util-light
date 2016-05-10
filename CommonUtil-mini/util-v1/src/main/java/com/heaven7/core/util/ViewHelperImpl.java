@@ -22,6 +22,7 @@ import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextWatcher;
 import android.text.util.Linkify;
@@ -108,7 +109,10 @@ public class ViewHelperImpl{
         }
         return this;
     }
-
+    public ViewHelperImpl setImageURI(Uri uri) {
+        ((ImageView)v).setImageURI(uri);
+        return this;
+    }
     public ViewHelperImpl setImageResource(int imageResId) {
         ((ImageView)v).setImageResource(imageResId);
         return this;
@@ -254,5 +258,8 @@ public class ViewHelperImpl{
         ((TextView)v).setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
         return this;
     }
-
+    public ViewHelperImpl setScaleType(ImageView.ScaleType type) {
+        ((ImageView)v).setScaleType(type);
+        return this;
+    }
 }
