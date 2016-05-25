@@ -13,9 +13,17 @@ import java.util.List;
  */
 public class BundleHelper {
 
-    private final Bundle b = new Bundle();
+    private final Bundle b;
 
-    public BundleHelper putInt(String key,int val){
+    public BundleHelper() {
+        this(new Bundle());
+    }
+
+    public BundleHelper( Bundle src) {
+        this.b = src;
+    }
+
+    public BundleHelper putInt(String key, int val){
         b.putInt(key,val);
         return this;
     }

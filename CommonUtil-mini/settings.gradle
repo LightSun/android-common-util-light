@@ -1,1 +1,1 @@
-include ':app', ':util-v1', ':adapter', ':savestate'
+include ':app', ':util-v1', ':adapter', ':savestate', ':util-extra', ':android-component'

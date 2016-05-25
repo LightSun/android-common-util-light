@@ -9,8 +9,10 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/adapter" />
+            <option value="$PROJECT_DIR$/android-component" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/savestate" />
+            <option value="$PROJECT_DIR$/util-extra" />
             <option value="$PROJECT_DIR$/util-v1" />
           </set>
         </option>
@@ -18,8 +20,10 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/adapter" />
+            <option value="$PROJECT_DIR$/android-component" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/savestate" />
+            <option value="$PROJECT_DIR$/util-extra" />
             <option value="$PROJECT_DIR$/util-v1" />
           </set>
         </option>

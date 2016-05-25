@@ -69,6 +69,13 @@ public class ImageParser {
         this.mDecodeConfig = config;
     }
 
+    public int getMaxWidth() {
+        return mMaxWidth;
+    }
+    public int getMaxHeight() {
+        return mMaxHeight;
+    }
+
     public Bitmap parseToBitmap(String pathName){
         File file = new File(pathName);
         if (!file.exists()) {
