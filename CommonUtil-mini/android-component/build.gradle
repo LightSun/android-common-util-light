@@ -24,5 +24,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
 
     compile 'com.heaven7.core.util:util-v1:1.0.2'
-    compile 'com.heaven7.core.util:savestate:1.0.1'
+    //compile 'com.heaven7.core.util:savestate:1.0.1'
 }
