@@ -11,17 +11,31 @@ import android.view.View;
  */
 public abstract class MenuCallback extends BaseFragmentCallback0 {
 
-    protected abstract void onCreateOptionsMenu(Menu menu, MenuInflater inflater);
+    protected  void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
 
-    protected abstract boolean onOptionsItemSelected(MenuItem item);
+    }
 
-    protected abstract void onPrepareOptionsMenu(Menu menu);
+    protected  boolean onOptionsItemSelected(MenuItem item){
+         return false;
+    }
 
-    protected abstract void onOptionsMenuClosed(Menu menu);
+    protected  void onPrepareOptionsMenu(Menu menu){
 
-    protected abstract void onDestroyOptionsMenu();
+    }
 
-    protected abstract boolean onContextItemSelected(MenuItem item);
+    protected  void onOptionsMenuClosed(Menu menu){
 
-    protected abstract boolean onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo);
+    }
+
+    protected  void onDestroyOptionsMenu(){
+
+    }
+
+    protected  boolean onContextItemSelected(MenuItem item){
+        return false;
+    }
+
+    protected  boolean onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo){
+        return false;
+    }
 }
