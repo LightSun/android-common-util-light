@@ -10,7 +10,7 @@ class BaseFragmentCallback0 {
     /*public*/ void setFragmentCallbackContext(FragmentCallbackContext callbackContext){
         this.mCallbackContext = callbackContext;
     }
-    public FragmentCallbackContext getFragmentCallbackContext(){
+    public final FragmentCallbackContext getFragmentCallbackContext(){
         return mCallbackContext;
     }
 }

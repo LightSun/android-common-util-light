@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-import com.heaven7.core.util.ViewHelper;
-
 /**
  * Created by heaven7 on 2016/5/20.
  */
@@ -19,11 +17,6 @@ public abstract class BaseFragmentCallback extends BaseFragmentCallback0 impleme
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-    }
-
-    @Override
-    public void onViewCreated(ViewHelper view, Bundle arguments, Bundle saveBundle) {
 
     }
 

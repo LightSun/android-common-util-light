@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-import com.heaven7.core.util.ViewHelper;
-
 /**
  * the all callback method is from fragment.
  * Created by heaven7 on 2016/5/20.
@@ -19,12 +17,12 @@ public interface IFragmentCallback {
 
    // View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
 
-    /**
+    /*
      * @param view the viewHelper to control the all children view
      * @param arguments the args which is used to create fragment.
      * @param saveBundle the bundle to help you save state.
      */
-    void onViewCreated(ViewHelper view, Bundle arguments, Bundle saveBundle);
+   // void onViewCreated(ViewHelper view, Bundle arguments, Bundle saveBundle);
 
     /**
      * @param arguments the args which is used to create fragment.

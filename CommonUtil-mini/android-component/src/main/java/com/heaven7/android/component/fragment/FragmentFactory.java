@@ -18,6 +18,7 @@ public final class FragmentFactory {
         }
         final FragmentMediator mediator = fragment.getFragmentMediator();
         mediator.init(helper.getLayoutId(), helper.getArguments());
+        mediator.setOnBindDataListener(helper.getOnBindDataListener());
         mediator.getFragmentCallbacks().addFragmentCallbacks(helper.getFragmentCallbacks());
         if (helper.getMenuCallback() != null) {
             mediator.setMenuCallback(helper.getMenuCallback());

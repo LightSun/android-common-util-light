@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-import com.heaven7.core.util.ViewHelper;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,8 +25,10 @@ public final class FragmentGroupCallbacks extends BaseFragmentCallback {
     }
 
     public void addFragmentCallbacks(List<IFragmentCallback> callbacks){
-        for (IFragmentCallback callback : callbacks){
-            mCallbacks.add(callback);
+        if(callbacks!=null) {
+            for (IFragmentCallback callback : callbacks) {
+                mCallbacks.add(callback);
+            }
         }
     }
     public void addFragmentCallbacks(IFragmentCallback...callbacks){
@@ -63,12 +63,12 @@ public final class FragmentGroupCallbacks extends BaseFragmentCallback {
         }
     }
 
-    @Override
+  /*  @Override
     public void onViewCreated(ViewHelper view, Bundle arguments, Bundle saveBundle) {
         for( IFragmentCallback callback : mCallbacks){
             callback.onViewCreated(view, arguments, saveBundle);
         }
-    }
+    }*/
 
     @Override
     public void onDestroyView() {
