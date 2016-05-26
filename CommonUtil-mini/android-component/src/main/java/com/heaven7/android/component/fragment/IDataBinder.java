@@ -7,7 +7,7 @@ import com.heaven7.core.util.ViewHelper;
 /**
  * Created by heaven7 on 2016/5/25.
  */
-public interface OnBindDataListener {
+public interface IDataBinder {
 
     /**
      * called after the view of fragment is created.

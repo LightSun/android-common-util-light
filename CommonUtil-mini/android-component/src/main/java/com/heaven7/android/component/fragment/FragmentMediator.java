@@ -35,7 +35,7 @@ public final class FragmentMediator{
 
     private ViewHelper mHelper;
     private MenuCallback mMenuCallback;
-    private OnBindDataListener mBindDataListener;
+    private IDataBinder mBindDataListener;
 
     private int mLayoutId;
     private Bundle mArgs;
@@ -61,10 +61,10 @@ public final class FragmentMediator{
     public ViewHelper getViewHelper(){
         return mHelper;
     }
-    public OnBindDataListener getOnBindDataListener() {
+    public IDataBinder getOnBindDataListener() {
         return mBindDataListener;
     }
-    /*public*/ void setOnBindDataListener(OnBindDataListener l) {
+    /*public*/ void setOnBindDataListener(IDataBinder l) {
         this.mBindDataListener = l;
     }
 
@@ -104,7 +104,9 @@ public final class FragmentMediator{
     /*public*/ void onViewCreated(View view, Bundle savedInstanceState) {
         doRestoreState(savedInstanceState);
         mHelper = new ViewHelper(view);
-        mBindDataListener.onBindData(mHelper , mArgs ,mSaveBundle);
+        if(mBindDataListener!=null) {
+            mBindDataListener.onBindData(mHelper, mArgs, mSaveBundle);
+        }
     }
 
     /*public*/ void onActivityCreated(Bundle savedInstanceState) {

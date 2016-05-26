@@ -5,7 +5,7 @@ import android.view.View;
 
 import com.heaven7.android.component.fragment.FragmentFactory;
 import com.heaven7.android.component.fragment.FragmentHelper;
-import com.heaven7.android.component.fragment.OnBindDataListener;
+import com.heaven7.android.component.fragment.IDataBinder;
 import com.heaven7.android.mini.demo.BaseActivity;
 import com.heaven7.android.mini.demo.R;
 import com.heaven7.core.util.BundleHelper;
@@ -17,7 +17,7 @@ import com.heaven7.core.util.ViewHelper;
  */
 public class FragmentComponentTestActivity extends BaseActivity {
 
-    private final OnBindDataListener mBindDataListener = new OnBindDataListener() {
+    private final IDataBinder mDataBinder = new IDataBinder() {
         @Override
         public void onBindData(ViewHelper view, Bundle arguments, Bundle saveBundle) {
             view.setText(R.id.tv_title, arguments.getString("title"))
@@ -41,7 +41,7 @@ public class FragmentComponentTestActivity extends BaseActivity {
                         new BundleHelper()
                                 .putString("title", "heaven7")
                                 .getBundle())
-                .setOnBindDataListener(mBindDataListener)
+                .setOnBindDataListener(mDataBinder)
         ));
     }
 }
