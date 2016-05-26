@@ -15,7 +15,7 @@ public final class FragmentHelper {
     private final Bundle mArgs;
     private ArrayList<IFragmentCallback> mCallbacks;
     private MenuCallback mMenuCallback;
-    private IDataBinder mBindDataListener;
+    private IDataBinder mDataBinder;
 
     public FragmentHelper(@LayoutRes int mLayoutId, Bundle mArgs) {
         this.mLayoutId = mLayoutId;
@@ -57,12 +57,12 @@ public final class FragmentHelper {
         return mMenuCallback;
     }
 
-    public IDataBinder getOnBindDataListener() {
-        return mBindDataListener;
+    public IDataBinder getDataBinder() {
+        return mDataBinder;
     }
 
-    public FragmentHelper setOnBindDataListener(IDataBinder mBindDataListener) {
-        this.mBindDataListener = mBindDataListener;
+    public FragmentHelper setDataBinder(IDataBinder binder) {
+        this.mDataBinder = binder;
         return this;
     }
 }

@@ -61,10 +61,10 @@ public final class FragmentMediator{
     public ViewHelper getViewHelper(){
         return mHelper;
     }
-    public IDataBinder getOnBindDataListener() {
+    public IDataBinder getDataBinder() {
         return mBindDataListener;
     }
-    /*public*/ void setOnBindDataListener(IDataBinder l) {
+    /*public*/ void setDataBinder(IDataBinder l) {
         this.mBindDataListener = l;
     }
 
