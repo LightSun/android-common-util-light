@@ -55,6 +55,9 @@ public final class FragmentMediator{
         this.mArgs = arguments;
     }
 
+    public Bundle getArguments(){
+        return mArgs;
+    }
     public Fragment getFragment(){
         return mFragment;
     }
