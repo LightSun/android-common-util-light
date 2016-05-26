@@ -3,6 +3,8 @@ package com.heaven7.android.component.fragment;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 
+import com.heaven7.core.util.BundleHelper;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -21,6 +23,9 @@ public final class FragmentHelper {
         this.mLayoutId = mLayoutId;
         this.mArgs = mArgs;
     }
+    public FragmentHelper(@LayoutRes int mLayoutId, BundleHelper helper) {
+        this(mLayoutId, helper.getBundle());
+    }
 
     public int getLayoutId() {
         return mLayoutId;
@@ -32,14 +37,14 @@ public final class FragmentHelper {
 
     public FragmentHelper addFragmentCallback(IFragmentCallback callback){
         if (mCallbacks==null){
-            mCallbacks = new ArrayList<>();
+            mCallbacks = new ArrayList<>(5);
         }
         this.mCallbacks.add(callback);
         return this;
     }
     public FragmentHelper addFragmentCallbacks(IFragmentCallback...callbacks){
         if (mCallbacks == null){
-            mCallbacks = new ArrayList<>();
+            mCallbacks = new ArrayList<>(5);
         }
         Collections.addAll(mCallbacks, callbacks);
         return this;

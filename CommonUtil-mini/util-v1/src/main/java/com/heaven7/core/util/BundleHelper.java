@@ -89,4 +89,8 @@ public class BundleHelper {
         b.putBoolean(key ,value);
         return this;
     }
+    public BundleHelper putAll(Bundle b) {
+        this.b.putAll(b);
+        return this;
+    }
 }

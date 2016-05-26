@@ -41,7 +41,7 @@ public class FragmentComponentTestActivity extends BaseActivity {
                         new BundleHelper()
                                 .putString("title", "heaven7")
                                 .getBundle())
-                .setOnBindDataListener(mDataBinder)
+                .setDataBinder(mDataBinder)
         ));
     }
 }
