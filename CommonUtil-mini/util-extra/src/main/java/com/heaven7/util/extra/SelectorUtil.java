@@ -19,7 +19,7 @@ public class SelectorUtil extends View{
 	 * @param normalResId 默认时图片的资源id
 	 * @param selectedResId 选中时图片的资源id
 	 * @param pressedResId 按下时图片的资源id
-	 * @return
+	 * @return StateListDrawable
 	 */
 	public static StateListDrawable getSelectorDrawable(Context context,int normalResId,int selectedResId,int pressedResId) {
 		if(context == null){

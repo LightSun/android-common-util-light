@@ -46,7 +46,10 @@ public class StyledText extends SpannableStringBuilder {
 	public static final String FAMILY_SERIFE="serif";
 	public static final String FAMILY_SANS_SERIF="sans-serif";
 	
-    /*** Append text and span to end of this text*/
+    /*** Append text and span to end of this text
+     * @param  text the text
+     * @param span  the span
+     * @return  this */
     public StyledText append(final CharSequence text, final Object span) {
         if (!TextUtils.isEmpty(text)) {
             append(text);
@@ -74,6 +77,9 @@ public class StyledText extends SpannableStringBuilder {
 
     /**
      * Append text and span to end of this text
+     * @param  text the text
+     * @param span  the span
+     * @return  this
      */
     public StyledText append(final char text, final Object span) {
         append(text);
@@ -117,6 +123,8 @@ public class StyledText extends SpannableStringBuilder {
     //--3种字体---//
     /**
      * Append text in monospace typeface
+     * @param  text the text
+     * @return  this
      */
     public StyledText appendMonospaceTypeface(final CharSequence text) {
         return append(text, new TypefaceSpan("monospace"));
@@ -129,14 +137,14 @@ public class StyledText extends SpannableStringBuilder {
     }
     /**
      * 设置url及点击这个url的监听器： text可以是url，电话，邮箱，地图，短信，彩信 等
-     * <li>需要TextView.setMovementMethod(LinkMovementMethod.getInstance());响应(一般最后调用) </li>
-     * <li>电话eg： msp.setSpan(new URLSpan("tel:4155551212"), 37, 39, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  </li>   
-        <li>邮件eg： msp.setSpan(new URLSpan("mailto:webmaster@google.com"), 39, 41, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);</li>   
-        <li>网址eg：msp.setSpan(new URLSpan("http://www.baidu.com"), 41, 43, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);     </li>
-        <li>短信:msp.setSpan(new URLSpan("sms:4155551212"), 43, 45, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //使用sms:或者smsto</li>
-       <li>彩信: msp.setSpan(new URLSpan("mms:4155551212"), 45, 47, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //使用mms:或者mmsto:</li>
-       <li>地图: msp.setSpan(new URLSpan("geo:38.899533,-77.036476"), 47, 49, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); //地图   </li>
-        
+     * <p>需要TextView.setMovementMethod(LinkMovementMethod.getInstance());响应(一般最后调用) </p>
+     * <p>电话eg： msp.setSpan(new URLSpan("tel:4155551212"), 37, 39, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  </p>
+        <p>邮件eg： msp.setSpan(new URLSpan("mailto:webmaster@google.com"), 39, 41, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);</p>
+        <p>网址eg：msp.setSpan(new URLSpan("http://www.baidu.com"), 41, 43, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);     </p>
+        <p>短信:msp.setSpan(new URLSpan("sms:4155551212"), 43, 45, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //使用sms:或者smsto</p>
+       <p>彩信: msp.setSpan(new URLSpan("mms:4155551212"), 45, 47, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //使用mms:或者mmsto:</p>
+       <p>地图: msp.setSpan(new URLSpan("geo:38.899533,-77.036476"), 47, 49, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); //地图   </p>
+        @return this
      */
     public StyledText appendUrl(final CharSequence text,
             final OnClickListener listener) {
@@ -159,7 +167,7 @@ public class StyledText extends SpannableStringBuilder {
         return append(text, new URLSpan(text.toString()));
     }
 
-    /**
+    /*
      * Append given date in relative time format
      */
    /* public StyledText append(final Date date) {
@@ -188,6 +196,8 @@ public class StyledText extends SpannableStringBuilder {
     }
     /**
      * @param proportion 默认字体大小的比例(eg 0.5f为一半.2f为2倍)
+     * @param text the text
+     * @return this
      */
     public StyledText appendRelative(CharSequence text, float proportion){
     	return append(text, new RelativeSizeSpan(proportion));
@@ -209,6 +219,11 @@ public class StyledText extends SpannableStringBuilder {
      * 设置组合样式
      * @param family 3种字体 eg：{@linkplain StyledText#FAMILY_MONOSPACE} 
      * @param style  eg: android.graphics.Typeface.BOLD_ITALIC
+     * @param text the text
+     * @param size the text size
+     * @param color the color
+     * @param linkColor the linke color
+     *  @return this
      */
     public StyledText appendComplex(CharSequence text,String family,int style,int size,
     		ColorStateList color,ColorStateList linkColor){
@@ -226,6 +241,9 @@ public class StyledText extends SpannableStringBuilder {
      * @param style  eg: android.graphics.Typeface.BOLD_ITALIC
      * @param normalColors 颜色数组：包括 正常颜色，选中颜色，按压颜色
      * @param linkColors   颜色数组：包括 正常颜色，选中颜色，按压颜色
+     * @param text the text
+     * @param size the size
+     * @return this
      */
     public StyledText appendComplex(CharSequence text,String family,int style,int size,
     		int[] normalColors,int[] linkColors,Context context){
