@@ -3,8 +3,12 @@ package com.heaven7.util.extra;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.IntDef;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -27,6 +31,9 @@ import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import static android.graphics.Typeface.BOLD;
 import static android.graphics.Typeface.BOLD_ITALIC;
 import static android.graphics.Typeface.ITALIC;
@@ -45,7 +52,19 @@ public class StyledText extends SpannableStringBuilder {
 	public static final String FAMILY_MONOSPACE="monospace";
 	public static final String FAMILY_SERIFE="serif";
 	public static final String FAMILY_SANS_SERIF="sans-serif";
-	
+
+    /** same to {@link ImageSpan#ALIGN_BOTTOM} */
+    public static final int ALIGN_TYPE_BOTTOM    = 1;
+    /** same to {@link ImageSpan#ALIGN_BASELINE} */
+    public static final int ALIGN_TYPE_BASELINE  = 2;
+    /** unlike {@link ImageSpan#ALIGN_BASELINE} or {@link ImageSpan#ALIGN_BOTTOM} , and align to the center */
+    public static final int ALIGN_TYPE_CENTER    = 3;
+
+    @IntDef({ ALIGN_TYPE_BOTTOM,ALIGN_TYPE_BASELINE ,ALIGN_TYPE_CENTER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AlignType{
+    }
+
     /*** Append text and span to end of this text
      * @param  text the text
      * @param span  the span
@@ -292,12 +311,63 @@ public class StyledText extends SpannableStringBuilder {
     }*/
     
     //图片
-    public StyledText setImage(Drawable drawable,int start,int end){
-    	setSpan(new ImageSpan(drawable,ImageSpan.ALIGN_BASELINE), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    public StyledText setImage(Drawable drawable,int start,int end ,@AlignType int alignType){
+    	setSpan(getImageSpan(drawable,alignType), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     	return this;
     }
-    public StyledText appendImage(Drawable drawable){
-    	return append("x", new ImageSpan(drawable,ImageSpan.ALIGN_BASELINE)); //x为任意一个非空字符序列,站位
+    public StyledText appendImage(Drawable drawable, @AlignType int alignType){
+    	return append("x", getImageSpan(drawable,alignType)); //x为任意一个非空字符序列,站位
     }
-    
+
+    private static ImageSpan getImageSpan(Drawable d,int alignType) {
+        switch (alignType){
+            case ALIGN_TYPE_BOTTOM :
+                return new ImageSpan(d, ImageSpan.ALIGN_BOTTOM);
+            case ALIGN_TYPE_BASELINE :
+                return new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
+            case ALIGN_TYPE_CENTER :
+            default:
+                return new CenterImageSpan(d);
+        }
+    }
+
+    static class CenterImageSpan extends ImageSpan {
+
+        public CenterImageSpan(Context arg0,int resourceId) {
+            super(arg0, resourceId);
+        }
+        public CenterImageSpan(Drawable d) {
+            super(d, ALIGN_TYPE_BOTTOM);
+        }
+        public int getSize(Paint paint, CharSequence text, int start, int end,
+                           Paint.FontMetricsInt fm) {
+            Drawable d = getDrawable();
+            Rect rect = d.getBounds();
+            if (fm != null) {
+                Paint.FontMetricsInt fmPaint=paint.getFontMetricsInt();
+                int fontHeight = fmPaint.bottom - fmPaint.top;
+                int drHeight=rect.bottom-rect.top;
+
+                int top= drHeight/2 - fontHeight/4;
+                int bottom=drHeight/2 + fontHeight/4;
+
+                fm.ascent=-bottom;
+                fm.top=-bottom;
+                fm.bottom=top;
+                fm.descent=top;
+            }
+            return rect.right;
+        }
+
+        @Override
+        public void draw(Canvas canvas, CharSequence text, int start, int end,
+                         float x, int top, int y, int bottom, Paint paint) {
+            Drawable b = getDrawable();
+            canvas.save();
+            int transY = ((bottom-top) - b.getBounds().bottom)/2 + top;
+            canvas.translate(x, transY);
+            b.draw(canvas);
+            canvas.restore();
+        }
+    }
 }
