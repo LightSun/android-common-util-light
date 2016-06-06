@@ -3,20 +3,11 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="I:\android\android-studio\gradle\gradle-2.8" />
+        <option name="gradleJvm" value="1.7" />
         <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/adapter" />
-            <option value="$PROJECT_DIR$/android-component" />
-            <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/savestate" />
-            <option value="$PROJECT_DIR$/util-extra" />
-            <option value="$PROJECT_DIR$/util-v1" />
-          </set>
-        </option>
-        <option name="myModules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/adapter" />

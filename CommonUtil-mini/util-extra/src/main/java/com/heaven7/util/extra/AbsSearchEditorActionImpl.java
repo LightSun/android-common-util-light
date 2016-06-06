@@ -14,7 +14,8 @@ public abstract class AbsSearchEditorActionImpl implements TextView.OnEditorActi
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         String keywords = v.getText().toString().trim();
         boolean isActionSearch =
-                actionId != 0 ? (actionId == EditorInfo.IME_ACTION_SEARCH) : (event.getKeyCode() == KeyEvent.KEYCODE_ENTER);
+                actionId != 0 ? (actionId == EditorInfo.IME_ACTION_SEARCH) :
+                        (event.getKeyCode() == KeyEvent.KEYCODE_ENTER);
         if (!TextUtils.isEmpty(keywords) && isActionSearch) {
             onSearch(keywords);
             return true;

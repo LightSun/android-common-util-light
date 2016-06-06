@@ -93,7 +93,8 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     }
 
     protected void replaceFragment(int containerViewId, Fragment fragment, boolean addToback) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction().replace(containerViewId, fragment);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction()
+                .replace(containerViewId, fragment);
         if (addToback) {
             ft.addToBackStack(fragment.getClass().getName());
         }
