@@ -35,8 +35,8 @@ import static android.graphics.Typeface.ITALIC;
 /**
  * Helpers on top of {@link SpannableStringBuilder}
  * 封装文本前景色，背景色，字体。样式等操作: 下划线。删除线。前景色背景色,图片等
+ * <p>一般是TextView使用</p>
  * @see Spannable
- * <li>一般是TextView使用</li>
  * {@link Typeface}
  * @author heaven7
  */
@@ -57,6 +57,23 @@ public class StyledText extends SpannableStringBuilder {
                 final int length = length();
                 setSpan(span, length - text.length(), length,
                         SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
+        return this;
+    }
+    /*** Append text and span to end of this text
+     * @param text the text
+     * @param spans  the all spans
+     * @return  this */
+    public StyledText append(final CharSequence text, final Object...spans) {
+        if (!TextUtils.isEmpty(text)) {
+            append(text);
+            if (spans != null && spans.length!=0) {
+                final int length = length();
+                for(int i=0, size = spans.length ;i<size ;i++){
+                    setSpan(spans[i], length - text.length(), length,
+                            SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
             }
         }
         return this;
@@ -111,7 +128,10 @@ public class StyledText extends SpannableStringBuilder {
     public StyledText appendBackground(final CharSequence text, final int color) {
         return append(text, new BackgroundColorSpan(color));
     }
-    
+    public StyledText appendBackgroundWithForeground(final CharSequence text, final int backgroundColor,int foregroundColor) {
+        return append(text, new BackgroundColorSpan(backgroundColor),new ForegroundColorSpan(foregroundColor));
+    }
+
     public StyledText appendForeground(final CharSequence text, final int color) {
         return append(text, new ForegroundColorSpan(color));
     }
@@ -144,6 +164,8 @@ public class StyledText extends SpannableStringBuilder {
         <p>短信:msp.setSpan(new URLSpan("sms:4155551212"), 43, 45, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //使用sms:或者smsto</p>
        <p>彩信: msp.setSpan(new URLSpan("mms:4155551212"), 45, 47, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);  //使用mms:或者mmsto:</p>
        <p>地图: msp.setSpan(new URLSpan("geo:38.899533,-77.036476"), 47, 49, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); //地图   </p>
+     @param text the context
+     @param listener the click listener
         @return this
      */
     public StyledText appendUrl(final CharSequence text,
@@ -243,6 +265,7 @@ public class StyledText extends SpannableStringBuilder {
      * @param linkColors   颜色数组：包括 正常颜色，选中颜色，按压颜色
      * @param text the text
      * @param size the size
+     * @param context the context
      * @return this
      */
     public StyledText appendComplex(CharSequence text,String family,int style,int size,
@@ -270,11 +293,11 @@ public class StyledText extends SpannableStringBuilder {
     
     //图片
     public StyledText setImage(Drawable drawable,int start,int end){
-    	setSpan(new ImageSpan(drawable), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    	setSpan(new ImageSpan(drawable,ImageSpan.ALIGN_BASELINE), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     	return this;
     }
     public StyledText appendImage(Drawable drawable){
-    	return append("x", new ImageSpan(drawable)); //x为任意一个非空字符序列,站位
+    	return append("x", new ImageSpan(drawable,ImageSpan.ALIGN_BASELINE)); //x为任意一个非空字符序列,站位
     }
     
 }
