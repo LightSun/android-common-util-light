@@ -5,7 +5,6 @@ import android.os.Build;
 import android.support.v4.app.Fragment;
 
 import java.lang.ref.WeakReference;
-import java.util.logging.Logger;
 
 /**
  * the runnable pool help get a runnable from the pool.
@@ -15,6 +14,14 @@ public final class RunnablePool {
     private RunnablePool() {}
     private static Cacher<Runner,Void> sCacher;
 
+    public static void initCacher(Cacher<Runner,Void> cacher){
+        if(sCacher!=null){
+            sCacher.clear();
+            System.out.println("RunnablePool_initCacher : reset cacher, " +
+                    "but previous have Runner ，pool size = " + sCacher.getCurrentPoolSize());
+        }
+        sCacher = cacher;
+    }
     /** init the cacher ,this only can init once
      * @param  maxPoolSize the max pool size */
     public static void initCacher(int maxPoolSize){
@@ -27,8 +34,7 @@ public final class RunnablePool {
                     @Override
                     public void run() {
                         super.run();
-                        afterRun();
-                        sCacher.recycle(this);
+                        recycle(this);
                     }
                 };
             }
@@ -119,6 +125,7 @@ public final class RunnablePool {
                 }
             }
             executor.execute(getWhat(), getParams());
+            afterRun();
         }
 
         protected void afterRun() {
