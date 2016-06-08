@@ -5,7 +5,6 @@ import android.os.Build;
 import android.support.v4.app.Fragment;
 
 import java.lang.ref.WeakReference;
-import java.util.logging.Logger;
 
 /**
  * the runnable pool help get a runnable from the pool.
