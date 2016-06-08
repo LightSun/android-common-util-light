@@ -5,6 +5,7 @@ import android.os.Build;
 import android.support.v4.app.Fragment;
 
 import java.lang.ref.WeakReference;
+import java.util.logging.Logger;
 
 /**
  * the runnable pool help get a runnable from the pool.
@@ -108,6 +109,12 @@ public final class RunnablePool {
                 if(((Fragment) executor).isDetached() || ((Fragment) executor).isRemoving()){
                     // ((Fragment) executor).isVisible()
                     System.out.println("RunnablePool_Runner_run : executor is Fragment and isDestroyed() ||  isRemoving() = true. ");
+                    return;
+                }
+            }else if(executor instanceof android.app.Fragment){
+                if(((android.app.Fragment) executor).isDetached() || ((android.app.Fragment) executor).isRemoving()){
+                    // ((Fragment) executor).isVisible()
+                    System.out.println("RunnablePool_Runner_run : executor is android.app.Fragment and isDestroyed() ||  isRemoving() = true. ");
                     return;
                 }
             }
