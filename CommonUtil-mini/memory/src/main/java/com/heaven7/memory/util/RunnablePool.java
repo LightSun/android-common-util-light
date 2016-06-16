@@ -8,12 +8,17 @@ import java.lang.ref.WeakReference;
 
 /**
  * the runnable pool help get a runnable from the pool.
+ *  the IRunnbleExecutor maybe Activity or Fragment . but i have cared about them.
  * Created by heaven7 on 2016/6/7.
  */
 public final class RunnablePool {
     private RunnablePool() {}
     private static Cacher<Runner,Void> sCacher;
 
+    /**
+     * init the cacher
+     * @param cacher the cacher
+     */
     public static void initCacher(Cacher<Runner,Void> cacher){
         if(sCacher!=null){
             sCacher.clear();
@@ -42,7 +47,8 @@ public final class RunnablePool {
     }
 
     /**
-     * obtain a Runner from the  pool. and the pool size is the default.
+     * obtain a Runner from the  pool. and the {@link com.heaven7.memory.util.RunnablePool.Runner}
+     *  will automatic be recycled after run.
      * @param executor the really runnable execute
      * @param what what message to execute
      * @param params the params to execute
@@ -107,20 +113,24 @@ public final class RunnablePool {
                     System.out.println("RunnablePool_Runner_run : executor is Activity and isFinishing() = true. ");
                     return;
                 }
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && ((Activity) executor).isDestroyed()){
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                        && ((Activity) executor).isDestroyed()){
                     System.out.println("RunnablePool_Runner_run : executor is Activity and isDestroyed() = true. ");
                     return;
                 }
             }else if(executor instanceof Fragment){
                 if(((Fragment) executor).isDetached() || ((Fragment) executor).isRemoving()){
                     // ((Fragment) executor).isVisible()
-                    System.out.println("RunnablePool_Runner_run : executor is Fragment and isDestroyed() ||  isRemoving() = true. ");
+                    System.out.println("RunnablePool_Runner_run : executor is Fragment and isDestroyed()" +
+                            " ||  isRemoving() = true. ");
                     return;
                 }
             }else if(executor instanceof android.app.Fragment){
-                if(((android.app.Fragment) executor).isDetached() || ((android.app.Fragment) executor).isRemoving()){
+                if(((android.app.Fragment) executor).isDetached()
+                        || ((android.app.Fragment) executor).isRemoving()){
                     // ((Fragment) executor).isVisible()
-                    System.out.println("RunnablePool_Runner_run : executor is android.app.Fragment and isDestroyed() ||  isRemoving() = true. ");
+                    System.out.println("RunnablePool_Runner_run : executor is android.app.Fragment" +
+                            " and isDestroyed() ||  isRemoving() = true. ");
                     return;
                 }
             }
@@ -142,6 +152,7 @@ public final class RunnablePool {
 
         /**
          *  execute the command impl
+         *  @param what indicate which is the executor
          */
         void execute(int what, Object... params);
     }
