@@ -5,10 +5,10 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -331,7 +331,8 @@ public class StyledText extends SpannableStringBuilder {
         }
     }
 
-    static class CenterImageSpan extends ImageSpan {
+    /*有行间距不行 */
+   /* static class CenterImageSpan extends ImageSpan {
 
         public CenterImageSpan(Context arg0,int resourceId) {
             super(arg0, resourceId);
@@ -369,11 +370,14 @@ public class StyledText extends SpannableStringBuilder {
             b.draw(canvas);
             canvas.restore();
         }
-    }
-   /* public class CenteredImageSpan extends ImageSpan {
+    }*/
+    static class CenterImageSpan extends ImageSpan {
 
-        public CenteredImageSpan(Context context, final int drawableRes) {
+        public CenterImageSpan(Context context, final int drawableRes) {
             super(context, drawableRes);
+        }
+        public CenterImageSpan(Drawable d) {
+            super(d, ALIGN_TYPE_BOTTOM);
         }
 
         @Override
@@ -392,5 +396,5 @@ public class StyledText extends SpannableStringBuilder {
             b.draw(canvas);
             canvas.restore();
         }
-    }*/
+    }
 }
