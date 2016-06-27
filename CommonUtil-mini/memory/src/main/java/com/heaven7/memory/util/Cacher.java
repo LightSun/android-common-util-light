@@ -2,10 +2,10 @@ package com.heaven7.memory.util;
 /**
  * help to cache the number of T,you'd call {@link #obtain()} and {@link #recycle(Object)},
  * and may override {@link #onRecycleSuccess(Object)} when you recycle success!
+ * <p> Note if the T is not big. you may not need to cache it </p>
  * @author heaven7
  * @param <T> the number t to cache
  * @param <P> the param to create T, can be null if not need.
- * @Note if the T is not big. you may not need to cache it
  */
 public abstract class Cacher<T,P> implements ICacher<T, P>{
 	
@@ -57,7 +57,8 @@ public abstract class Cacher<T,P> implements ICacher<T, P>{
 		}
 	}
 	
-    /*** equals to </pre> obtain(null) </pre>*/
+    /*** equals to <pre> obtain(null) </pre>
+	 * @return  the t */
 	public T obtain(){
 		return obtain(null);
 	}
@@ -101,7 +102,8 @@ public abstract class Cacher<T,P> implements ICacher<T, P>{
 		}
 	}
 	
-	/** when {@link #recycle(Object)} success ,this will be called */
+	/** when {@link #recycle(Object)} success ,this will be called
+	 * @param  t the t was recycled */
 	protected void onRecycleSuccess(T t){ };
 	
 	@SuppressWarnings("hiding")
