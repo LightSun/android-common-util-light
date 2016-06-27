@@ -2,7 +2,6 @@ package com.heaven7.core.util.log;
 
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.support.annotation.IntDef;
 import android.util.Log;
 
@@ -146,6 +145,12 @@ public class LogManager {
 
     private static HandlerThread sHandlerThread;
 
+    /**
+     * create a LogManager
+     * @param dir  the dir for read or write log file
+     * @param mMode the mode
+     * @param writeFileHandler the handler to write
+     */
     public LogManager(String dir, @ModeType int mMode, Handler writeFileHandler) {
         this.mDir = dir;
         this.mMode = mMode;
@@ -161,7 +166,7 @@ public class LogManager {
                 sHandlerThread = new HandlerThread("log_LogManager", Thread.MIN_PRIORITY );
                 sHandlerThread.start();
             }
-            mHandler = new InternalHandler(sHandlerThread.getLooper(),this);
+            mHandler = new WeakHandler<LogManager>(sHandlerThread.getLooper(),this){};
         }else {
             this.mHandler = writeFileHandler;
         }
@@ -256,25 +261,6 @@ public class LogManager {
                 } catch (IOException e) {
                     //ignore
                 }
-        }
-    }
-
-    public static class LogThread extends Thread{
-
-    }
-    class LogFileWritter{
-
-        public LogFileWritter() {
-        }
-
-    }
-    static class LogFileReader{
-
-    }
-    private static class InternalHandler extends WeakHandler<LogManager>{
-
-        public InternalHandler(Looper looper, LogManager logManager) {
-            super(looper, logManager);
         }
     }
 }
