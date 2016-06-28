@@ -13,7 +13,7 @@ compile 'com.heaven7.core.util:util-v1:1.0.2'
 compile 'com.heaven7.core.util:util-extra:1.0'
  ```
  
- the usedful memory util 
+ the useful memory util 
  ``` java
  compile 'com.heaven7.core.util:memory:1.0'
  ```
