@@ -7,28 +7,41 @@ import android.util.Log;
 
 import com.heaven7.core.util.Logger;
 import com.heaven7.core.util.WeakHandler;
+import com.heaven7.memory.util.RunnablePool;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * Created by heaven7 on 2016/6/17.
  */
-public class LogManager {
+public final class LogManager implements RunnablePool.IRunnbleExecutor{
+
+    private static final String TAG            = "LogManager";
+    private static final boolean DEBUG         = true;
 
     private static final String NEW_LINE       = "\r\n";
     private static final String GAP            = "_";
-    private static final String PREFIX_LINE    =  "【<<<!@#$%^&*()_+heaven7_log_begin+_)(*&^%$#@!>>>】";
-    private static final String SUFFIX_LINE    =  "【<<<!@#$%^&*()_+heaven7_log_end+_)(*&^%$#@!>>>】";
+    private static final String STATE          = "STATE";
+    private static final String CONTENT        = "CONTENT";
+    private static final String EQ             = "=";
+
+    private static final String START_LINE     =  "【<<<!@#$%^&*()_+heaven7_log_begin+_)(*&^%$#@!>>>】";
+    private static final String END_LINE       =  "【<<<!@#$%^&*()_+heaven7_log_end+_)(*&^%$#@!>>>】";
 
     //the out mode
     public static final int MODE_WRITE_FILE              = 1;
     public static final int MODE_WRITE_LOGCAT            = 1 << 1;
     public static final int MODE_WRITE_FILE_AND_LOGCAT   = MODE_WRITE_FILE | MODE_WRITE_LOGCAT;
+
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({MODE_WRITE_FILE, MODE_WRITE_LOGCAT, MODE_WRITE_FILE_AND_LOGCAT})
@@ -141,15 +154,22 @@ public class LogManager {
     private ILogWriterFilter mWriteFilter    = DEFAULT_FILTER;
     private ILogFormatter    mLogFormatter   = DEFAULT_FORMATTER;
 
+    /**
+     * a runnable pool for reuse
+     */
+    private final RunnablePool mPool = new RunnablePool(10);
     private final Handler mHandler;
 
+    /**
+     * the share handler thread if you don't care
+     */
     private static HandlerThread sHandlerThread;
 
     /**
      * create a LogManager
      * @param dir  the dir for read or write log file
      * @param mMode the mode
-     * @param writeFileHandler the handler to write
+     * @param writeFileHandler the handler thread to write the log file
      */
     public LogManager(String dir, @ModeType int mMode, Handler writeFileHandler) {
         this.mDir = dir;
@@ -166,7 +186,7 @@ public class LogManager {
                 sHandlerThread = new HandlerThread("log_LogManager", Thread.MIN_PRIORITY );
                 sHandlerThread.start();
             }
-            mHandler = new WeakHandler<LogManager>(sHandlerThread.getLooper(),this){};
+            this.mHandler = new WeakHandler<LogManager>(sHandlerThread.getLooper(),this){};
         }else {
             this.mHandler = writeFileHandler;
         }
@@ -176,6 +196,7 @@ public class LogManager {
          this(dir,mMode,null);
     }
 
+    // i consider that multi app use this
     public ILogCipherer getLogCipherer() {
         return mLogCipherer;
     }
@@ -197,6 +218,14 @@ public class LogManager {
         this.mLogFormatter = logFormatter;
     }
 
+    /**
+     * write the log to logcat or file or logcat and file
+     * @param level the log level
+     * @param tag the log tag
+     * @param methodTag the method tag
+     * @param exception the exception class name
+     * @param message the content message
+     */
     public void write(@LevelType  int level, String tag , String methodTag , String exception ,String message){
         if(!mWriteFilter.accept(level, tag, methodTag)){
             return;  //refused
@@ -222,33 +251,37 @@ public class LogManager {
             }
         }
         //for read filter : dir， date， level, main tag，methodTag, exception, content
+        //also need write
         if ((mMode & MODE_WRITE_FILE) != 0) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                      //TODO
-                }
-            });
-            final String filename = LogFileCutUtil.getLogFilename(mDir, "LogManager");
-            StringBuilder sb = new StringBuilder();
-            sb.append(PREFIX_LINE).append(NEW_LINE);
-            sb.append(System.currentTimeMillis()).append(GAP)
-                    .append(level).append(GAP)
-                    .append(tag).append(GAP)
-                    .append(methodTag).append(GAP)
-                    .append(exception).append(NEW_LINE);
-            sb.append(msg).append(NEW_LINE);
-            //write end
-            sb.append(SUFFIX_LINE).append(NEW_LINE);
-            final String result = sb.toString();
-            write2SD(filename, getLogCipherer().encrypt(result), true);
+            String tmp = String.valueOf(System.currentTimeMillis()).concat(GAP)
+                    .concat(String.valueOf(level)).concat(GAP)
+                    .concat(tag).concat(GAP)
+                    .concat(methodTag).concat(GAP)
+                    .concat(exception);
+
+             String result =  START_LINE.concat(NEW_LINE)
+                    .concat(STATE).concat(EQ).concat(getLogCipherer().encrypt(tmp)).concat(NEW_LINE)
+                    .concat(CONTENT).concat(EQ).concat(getLogCipherer().encrypt(message)).concat(NEW_LINE)
+                    .concat(END_LINE).concat(NEW_LINE);
+            //post to write
+            mHandler.post(mPool.obtain(this,0, result));
         }
     }
 
-    private static void write2SD(String filename, String message, boolean append) {
+    @Override
+    public void execute(int what, Object... params) {
+        final String filename = LogFileCutUtil.getLogFilename(mDir, "LogManager");
+        write2SD(filename, (String) params[0], true);
+    }
+
+    public void parse(){
+           //TODO
+    }
+
+    private static void write2SD(String filename, String message, boolean append ) {
         BufferedWriter bw = null;
         try {
-            bw = new BufferedWriter(new FileWriter(Logger.createFileIfNeed(filename), append)); // append
+            bw = new BufferedWriter(new FileWriter(Logger.createFileIfNeed(filename), append )); // append
             bw.append(message);
             bw.newLine();
             bw.flush();
@@ -261,6 +294,149 @@ public class LogManager {
                 } catch (IOException e) {
                     //ignore
                 }
+        }
+    }
+
+    private static void parse(String filename, ILogCipherer cipherer, List<LogRecord> outList){
+        File file = new File(filename);
+        if(!file.exists())
+            throw new RuntimeException("file not exist , filename = " + filename);
+        if(!file.isFile())
+            throw new RuntimeException("not a file , filename = " + filename);
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            String line;
+
+            LogRecord record;
+            String state;
+            String content;
+            String endLine;
+
+            while((line = br.readLine())!=null){
+                if(line.equals(START_LINE)){
+                     state = br.readLine();
+                     content = br.readLine();
+                     endLine = br.readLine();
+                     if(endLine.equals(END_LINE)){
+                         record = parseLogRecord(state,content,cipherer);
+                         if(record != null){
+                             outList.add(record);
+                         }
+                     }else{
+                         logWhenDebug("parse", "find a log record, but end line is incorrect.endLine = " + endLine);
+                     }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally{
+            if(br!=null)
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    //ignore
+                }
+        }
+    }
+
+    private static void logWhenDebug(String method, String msg) {
+        if(DEBUG){
+            Log.d(TAG, "called [ "+ method + "() ]: " + msg);
+        }
+    }
+
+    private static LogRecord parseLogRecord(String state, String content, ILogCipherer cipherer) {
+        logWhenDebug("parseLogRecord","begin parse: state = " + state +" ,content = " + content);
+        try{
+            String str = state.split(EQ)[1];
+            str = cipherer.decrypt(str);
+            final String[] tags = str.split(GAP);
+             //parse -> time,level,tag,methodTag,exceptionName
+            LogRecord record = new LogRecord();
+            record.setTime(Long.parseLong(tags[0]));
+            record.setLevel(Integer.parseInt(tags[1]));
+            record.setTag(tags[2]);
+            record.setMethodTag(tags[3]);
+            record.setExceptionName(tags[4]);
+
+            //parse content
+            str = content.split(EQ)[1];
+            str = cipherer.decrypt(str);
+            record.setMessage(str);
+            return record;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     *  the log record
+     *  dir， date， level, main tag，methodTag, exception, content
+     */
+    public static class LogRecord{
+         private int level;
+         private long time;
+         private String tag;
+         private String methodTag;
+         private String exceptionName;
+         private String message;
+
+        public int getLevel() {
+            return level;
+        }
+        public void setLevel(int level) {
+            this.level = level;
+        }
+
+        public long getTime() {
+            return time;
+        }
+        public void setTime(long time) {
+            this.time = time;
+        }
+
+        public String getTag() {
+            return tag;
+        }
+        public void setTag(String tag) {
+            this.tag = tag;
+        }
+
+        public String getMethodTag() {
+            return methodTag;
+        }
+        public void setMethodTag(String methodTag) {
+            this.methodTag = methodTag;
+        }
+
+        public String getExceptionName() {
+            return exceptionName;
+        }
+        public void setExceptionName(String exceptionName) {
+            this.exceptionName = exceptionName;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        @Override
+        public String toString() {
+            return "LogRecord{" +
+                    "level=" + level +
+                    ", time=" + time +
+                    ", tag='" + tag + '\'' +
+                    ", methodTag='" + methodTag + '\'' +
+                    ", exceptionName='" + exceptionName + '\'' +
+                    ", message='" + message + '\'' +
+                    '}';
         }
     }
 }
