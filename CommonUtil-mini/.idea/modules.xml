@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/adapter/adapter.iml" filepath="$PROJECT_DIR$/adapter/adapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/android-component/android-component.iml" filepath="$PROJECT_DIR$/android-component/android-component.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ipc/ipc.iml" filepath="$PROJECT_DIR$/ipc/ipc.iml" />
       <module fileurl="file://$PROJECT_DIR$/memory/memory.iml" filepath="$PROJECT_DIR$/memory/memory.iml" />
       <module fileurl="file://$PROJECT_DIR$/savestate/savestate.iml" filepath="$PROJECT_DIR$/savestate/savestate.iml" />
       <module fileurl="file://$PROJECT_DIR$/savestate/savestste.iml" filepath="$PROJECT_DIR$/savestate/savestste.iml" />
