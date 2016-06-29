@@ -275,6 +275,23 @@ public final class LogManager{
         this.mLogFormatter = logFormatter;
     }
 
+
+    public void v(String tag , String methodTag, String message){
+        write(LogManager.LEVEL_VERBOSE, tag, methodTag, message);
+    }
+    public void d(String tag , String methodTag, String message){
+        write(LogManager.LEVEL_DEBUG, tag, methodTag, message);
+    }
+    public void i(String tag , String methodTag, String message){
+        write(LogManager.LEVEL_INFO, tag, methodTag, message);
+    }
+    public void w(String tag , String methodTag, String message){
+        write(LogManager.LEVEL_WARNING, tag, methodTag, message);
+    }
+    public void e(String tag , String methodTag, String message){
+        write(LogManager.LEVEL_ERROR, tag, methodTag, message);
+    }
+
     /**
      * write the log to logcat or file or logcat with file
      * @param level the log level
@@ -286,15 +303,25 @@ public final class LogManager{
          write(level, tag,methodTag, e.getClass().getName(), Logger.toString(e));
     }
     /**
+     * write the log to logcat or file or logcat with file
+     * @param level the log level
+     * @param tag the log tag
+     * @param methodTag the method tag
+     * @param message the message
+     */
+    public void write(@LevelType  int level, String tag , String methodTag, String message){
+        write(level, tag,methodTag, null, message);
+    }
+    /**
      * write the log to logcat or file or logcat and file
      * @param level the log level
      * @param tag the log tag
      * @param methodTag the method tag
-     * @param exception the exception class name
+     * @param exception the exception class name,can be null
      * @param message the content message
      */
     public void write(@LevelType  int level, String tag , String methodTag, String exception ,String message){
-        if(!mWriteFilter.accept(level, tag, methodTag,exception)){
+        if(!mWriteFilter.accept(level, tag, methodTag, exception)){
             return;  //refused
         }
         final String msg = this.mLogFormatter.format(methodTag, message);
@@ -322,13 +349,13 @@ public final class LogManager{
         if ((mMode & MODE_WRITE_FILE) != 0) {
             String tmp = String.valueOf(System.currentTimeMillis()).concat(GAP)
                     .concat(String.valueOf(level)).concat(GAP)
-                    .concat(tag).concat(GAP)
-                    .concat(methodTag).concat(GAP)
-                    .concat(exception);
+                    .concat(String.valueOf(tag)).concat(GAP)
+                    .concat(String.valueOf(methodTag)).concat(GAP)
+                    .concat(String.valueOf(exception));
 
              String result =  START_LINE.concat(NEW_LINE)
-                    .concat(STATE).concat(EQ).concat(getLogCipherer().encrypt(tmp)).concat(NEW_LINE)
-                    .concat(CONTENT).concat(EQ).concat(getLogCipherer().encrypt(msg)).concat(NEW_LINE)
+                    .concat(STATE).concat(EQ).concat( String.valueOf(getLogCipherer().encrypt(tmp)) ).concat(NEW_LINE)
+                    .concat(CONTENT).concat(EQ).concat( String.valueOf(getLogCipherer().encrypt(msg)) ).concat(NEW_LINE)
                     .concat(END_LINE).concat(NEW_LINE);
             //post to write
             mHandler.post(sPool.obtain(mExecutor, WHAT_WRITE, result));
@@ -337,7 +364,7 @@ public final class LogManager{
 
     /**
      * read the logs from local file.
-     * @param ops  the filter options
+     * @param ops  the filter options,can be null, if you don't need fiter log
      * @param callback the read callback
      */
     public void read(FilterOptions ops, IReadCallback callback){
@@ -352,7 +379,7 @@ public final class LogManager{
         final ILogCipherer mLogCipherer = this.mLogCipherer;
         for (File f : files){
             if(f.isDirectory()){
-                if(ops.dir == null || f.getAbsolutePath().equals(ops.dir)){
+                if(ops==null || ops.dir == null || f.getAbsolutePath().equals(ops.dir)){
                     readLogsImpl(f, outList, ops);
                 }
             }else{
