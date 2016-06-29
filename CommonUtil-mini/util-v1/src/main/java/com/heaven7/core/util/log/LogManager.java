@@ -30,7 +30,7 @@ public final class LogManager{
     private static final boolean DEBUG         = true;
 
     private static final String NEW_LINE       = "\r\n";
-    private static final String GAP            = "_";
+    private static final String GAP            = "_=0123456789LogManager9876543210=_";
     private static final String STATE          = "STATE";
     private static final String CONTENT        = "CONTENT";
     private static final String EQ             = "=";
@@ -401,21 +401,25 @@ public final class LogManager{
             LogRecord record;
             String state;
             String content;
-            String endLine;
+            String tmp;
 
             while((line = br.readLine())!=null){
                 if(line.equals(START_LINE)){
                      state = br.readLine();
                      content = br.readLine();
-                     endLine = br.readLine();
-                     if(END_LINE.equals(endLine)){
-                         record = parseLogRecord(state, content, cipherer, ops);
-                         if(record != null){
-                             outList.add(record);
-                         }
-                     }else{
-                         logWhenDebug("parse", "find a log record, but end line is incorrect.endLine = " + endLine);
-                     }
+                    //find the end line
+                    while( (tmp = br.readLine() )!=null ) {
+                        if (END_LINE.equals(tmp)) {
+                            //parse and reset
+                            record = parseLogRecord(state, content, cipherer, ops);
+                            if (record != null) {
+                                outList.add(record);
+                            }
+                            break;
+                        } else {
+                            content = content.concat(tmp);
+                        }
+                    }
                 }
             }
         } catch (FileNotFoundException e) {
@@ -449,7 +453,7 @@ public final class LogManager{
     private static LogRecord parseLogRecord(String state, String content, ILogCipherer cipherer, FilterOptions ops) {
         logWhenDebug("parseLogRecord","begin parse: state = " + state +" ,content = " + content);
         try{
-            String str = state.split(EQ)[1];
+            String str = state.substring(state.indexOf(EQ)+1);
             str = cipherer.decrypt(str);
             final String[] tags = str.split(GAP);
              //parse -> time,level,tag,methodTag,exceptionName
@@ -461,7 +465,7 @@ public final class LogManager{
             record.setExceptionName(tags[4]);
 
             //parse content
-            str = content.split(EQ)[1];
+            str = content.substring(content.indexOf(EQ)+1);
             str = cipherer.decrypt(str);
             record.setMessage(str);
 
@@ -527,7 +531,7 @@ public final class LogManager{
         }
     }
     /**
-     * the filter options:  dir， date， level, main tag，methodTag, exception
+     * the filter options:  dir， date( startTime with endTime )， level(level with lowestLevel), main tag，methodTag, exception,content
      */
     public static class FilterOptions{
         public int level ;
