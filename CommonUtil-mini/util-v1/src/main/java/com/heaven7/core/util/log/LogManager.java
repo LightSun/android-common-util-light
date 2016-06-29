@@ -18,12 +18,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by heaven7 on 2016/6/17.
  */
-public final class LogManager implements RunnablePool.IRunnbleExecutor{
+public final class LogManager{
 
     private static final String TAG            = "LogManager";
     private static final boolean DEBUG         = true;
@@ -36,6 +37,8 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
 
     private static final String START_LINE     =  "【<<<!@#$%^&*()_+heaven7_log_begin+_)(*&^%$#@!>>>】";
     private static final String END_LINE       =  "【<<<!@#$%^&*()_+heaven7_log_end+_)(*&^%$#@!>>>】";
+    private static final int WHAT_WRITE        = 0x00000001;
+    private static final int WHAT_READ         = 0x00000002;
 
     //the out mode
     public static final int MODE_WRITE_FILE              = 1;
@@ -44,51 +47,49 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
 
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MODE_WRITE_FILE, MODE_WRITE_LOGCAT, MODE_WRITE_FILE_AND_LOGCAT})
+    @IntDef({ MODE_WRITE_FILE, MODE_WRITE_LOGCAT, MODE_WRITE_FILE_AND_LOGCAT })
     public @interface ModeType{
     }
 
     //the log level
-    public static final int LEVEL_VERBOSE    = 0x00000005;
-    public static final int LEVEL_DEBUG      = 0x00000004;
+    public static final int LEVEL_VERBOSE    = 0x00000001;
+    public static final int LEVEL_DEBUG      = 0x00000002;
     public static final int LEVEL_INFO       = 0x00000003;
-    public static final int LEVEL_WARNING    = 0x00000002;
-    public static final int LEVEL_ERROR      = 0x00000001;
+    public static final int LEVEL_WARNING    = 0x00000004;
+    public static final int LEVEL_ERROR      = 0x00000005;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LEVEL_VERBOSE, LEVEL_DEBUG, LEVEL_INFO , LEVEL_WARNING, LEVEL_ERROR })
     public @interface LevelType{
     }
 
-    //the filter mode of read
     // for read filter : dir，date， level, main tag，methodTag, exception, content
-
-    /** filter flag dir */
-    public static final int FILTER_FLAG_DIR            = 1 ;
-    /** filter flag date */
-    public static final int FILTER_FLAG_DATE           = 1 << 1;
-    /** filter flag log level */
-    public static final int FILTER_FLAG_LOG_LEVEL      = 1 << 2 ;
-    /** filter flag main tag */
-    public static final int FILTER_FLAG_MAIN_TAG       = 1 << 3 ;
-    /** filter flag method tag */
-    public static final int FILTER_FLAG_METHOD_TAG     = 1 << 4 ;
-    /** filter flag exception */
-    public static final int FILTER_FLAG_EXCEPTION      = 1 << 5 ;
-    /** filter flag contains content  */
-    public static final int FILTER_FLAG_CONTENT        = 1 << 6 ;
+   /* *//** filter flag dir *//*
+    public static final int FILTER_FLAG_DIR                = 1 ;
+    *//** filter flag date *//*
+    public static final int FILTER_FLAG_DATE               = 1 << 1;
+    *//** filter flag log level *//*
+    public static final int FILTER_FLAG_LOG_LEVEL          = 1 << 2 ;
+    *//** filter flag main tag *//*
+    public static final int FILTER_FLAG_MAIN_TAG           = 1 << 3 ;
+    *//** filter flag method tag *//*
+    public static final int FILTER_FLAG_METHOD_TAG         = 1 << 4 ;
+    *//** filter flag exception class name *//*
+    public static final int FILTER_FLAG_EXCEPTION          = 1 << 5 ;
+    *//** filter flag contains content  *//*
+    public static final int FILTER_FLAG_CONTAINS_CONTENT   = 1 << 6 ;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(value = {FILTER_FLAG_DIR, FILTER_FLAG_DATE, FILTER_FLAG_LOG_LEVEL ,
             FILTER_FLAG_MAIN_TAG, FILTER_FLAG_METHOD_TAG,
-            FILTER_FLAG_EXCEPTION, FILTER_FLAG_CONTENT
+            FILTER_FLAG_EXCEPTION, FILTER_FLAG_CONTAINS_CONTENT
                      } , flag = true)
     public @interface FilterType{
-    }
+    }*/
 
     private static final ILogWriterFilter DEFAULT_FILTER = new ILogWriterFilter() {
         @Override
-        public boolean accept(int logLevel, String firstTag, String secondTag) {
+        public boolean accept(int logLevel, String firstTag, String secondTag, String exception) {
             return true;
         }
     };
@@ -110,17 +111,29 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
     };
 
     /**
+     * the callback of read logs.
+     */
+    public interface IReadCallback{
+        /**
+         * this will be called after read done.
+         * @param records the result list.
+         */
+        void onResult(List<LogRecord> records);
+    }
+    /**
      * the log filter
      */
     public interface ILogWriterFilter {
 
         /**
+         *  true to accept it or else will ignored.
          * @param level the log level
          * @param mainTag the main tag , often is the simple name of class.
          * @param otherTag the other tag, maybe the method name
+         * @param exceptionClassName the exception class name
          * @return true to accept the log. otherwise the current log will be refused.
          */
-        boolean accept(int level, String mainTag, String otherTag);
+        boolean accept(int level, String mainTag, String otherTag, String exceptionClassName);
     }
 
     /**
@@ -147,6 +160,30 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
 
     }
 
+    /**
+     * the runnable executor for write/read log file
+     */
+    private final RunnablePool.IRunnbleExecutor mExecutor = new RunnablePool.IRunnbleExecutor() {
+        @Override
+        public void execute(int what, Object... params) {
+            switch (what){
+                case WHAT_WRITE:
+                    final String filename = LogFileCutUtil.getLogFilename(mDir, "LogManager");
+                    write2SD(filename, (String) params[0], true);
+                    break;
+
+                case WHAT_READ: {
+                    FilterOptions ops = (FilterOptions) params[0];
+                    IReadCallback callback = (IReadCallback) params[1];
+                    List<LogRecord> list = new ArrayList<>();
+                    readLogsImpl(new File(mDir), list, ops);
+                    callback.onResult(list);
+                }
+                break;
+            }
+        }
+    };
+
     private final String mDir;
     private final int mMode;
 
@@ -157,7 +194,7 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
     /**
      * a runnable pool for reuse
      */
-    private final RunnablePool mPool = new RunnablePool(10);
+    private static final RunnablePool sPool = new RunnablePool(10);
     private final Handler mHandler;
 
     /**
@@ -165,13 +202,14 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
      */
     private static HandlerThread sHandlerThread;
 
+
     /**
      * create a LogManager
      * @param dir  the dir for read or write log file
      * @param mMode the mode
-     * @param writeFileHandler the handler thread to write the log file
+     * @param workHandler the handler thread to write/read the log file
      */
-    public LogManager(String dir, @ModeType int mMode, Handler writeFileHandler) {
+    public LogManager(String dir, @ModeType int mMode, Handler workHandler) {
         this.mDir = dir;
         this.mMode = mMode;
         File dirFile = new File(dir);
@@ -181,19 +219,38 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
         if(!dirFile.exists()){
             dirFile.mkdirs();
         }
-        if(writeFileHandler == null){
+        if(workHandler == null){
             if(sHandlerThread == null){
                 sHandlerThread = new HandlerThread("log_LogManager", Thread.MIN_PRIORITY );
                 sHandlerThread.start();
             }
             this.mHandler = new WeakHandler<LogManager>(sHandlerThread.getLooper(),this){};
         }else {
-            this.mHandler = writeFileHandler;
+            this.mHandler = workHandler;
         }
     }
-
+    /**
+     * create a LogManager and the mode is {@link #MODE_WRITE_FILE_AND_LOGCAT}
+     * @param dir  the dir for read or write log file
+     * @param workHandler the handler thread to write/read the log file
+     */
+    public LogManager(String dir, Handler workHandler) {
+        this(dir, MODE_WRITE_FILE_AND_LOGCAT, workHandler);
+    }
+    /**
+     * create a LogManager and the workHandler is the global share handler
+     * @param dir  the dir for read or write log file
+     * @param mMode the mode
+     */
     public LogManager(String dir,@ModeType int mMode) {
          this(dir,mMode,null);
+    }
+    /**
+     * create a LogManager and the workHandler is the global share handler,the mode is {@link #MODE_WRITE_FILE_AND_LOGCAT}
+     * @param dir  the dir for read or write log file
+     */
+    public LogManager(String dir) {
+         this(dir, null );
     }
 
     // i consider that multi app use this
@@ -219,6 +276,16 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
     }
 
     /**
+     * write the log to logcat or file or logcat with file
+     * @param level the log level
+     * @param tag the log tag
+     * @param methodTag the method tag
+     * @param e the Throwable
+     */
+    public void write(@LevelType  int level, String tag , String methodTag, Throwable e){
+         write(level, tag,methodTag, e.getClass().getName(), Logger.toString(e));
+    }
+    /**
      * write the log to logcat or file or logcat and file
      * @param level the log level
      * @param tag the log tag
@@ -226,8 +293,8 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
      * @param exception the exception class name
      * @param message the content message
      */
-    public void write(@LevelType  int level, String tag , String methodTag , String exception ,String message){
-        if(!mWriteFilter.accept(level, tag, methodTag)){
+    public void write(@LevelType  int level, String tag , String methodTag, String exception ,String message){
+        if(!mWriteFilter.accept(level, tag, methodTag,exception)){
             return;  //refused
         }
         final String msg = this.mLogFormatter.format(methodTag, message);
@@ -261,48 +328,44 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
 
              String result =  START_LINE.concat(NEW_LINE)
                     .concat(STATE).concat(EQ).concat(getLogCipherer().encrypt(tmp)).concat(NEW_LINE)
-                    .concat(CONTENT).concat(EQ).concat(getLogCipherer().encrypt(message)).concat(NEW_LINE)
+                    .concat(CONTENT).concat(EQ).concat(getLogCipherer().encrypt(msg)).concat(NEW_LINE)
                     .concat(END_LINE).concat(NEW_LINE);
             //post to write
-            mHandler.post(mPool.obtain(this,0, result));
+            mHandler.post(sPool.obtain(mExecutor, WHAT_WRITE, result));
         }
     }
 
-    @Override
-    public void execute(int what, Object... params) {
-        final String filename = LogFileCutUtil.getLogFilename(mDir, "LogManager");
-        write2SD(filename, (String) params[0], true);
+    /**
+     * read the logs from local file.
+     * @param ops  the filter options
+     * @param callback the read callback
+     */
+    public void read(FilterOptions ops, IReadCallback callback){
+        mHandler.post(sPool.obtain(mExecutor, WHAT_READ, ops, callback ));
     }
 
-    public void parse(){
-           //TODO
-    }
-
-    private static void write2SD(String filename, String message, boolean append ) {
-        BufferedWriter bw = null;
-        try {
-            bw = new BufferedWriter(new FileWriter(Logger.createFileIfNeed(filename), append )); // append
-            bw.append(message);
-            bw.newLine();
-            bw.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (bw != null)
-                try {
-                    bw.close();
-                } catch (IOException e) {
-                    //ignore
+    private void readLogsImpl(File dir, List<LogRecord> outList, FilterOptions ops){
+        final File[] files = dir.listFiles();
+        if(files == null || files.length == 0){
+            return ;
+        }
+        final ILogCipherer mLogCipherer = this.mLogCipherer;
+        for (File f : files){
+            if(f.isDirectory()){
+                if(ops.dir == null || f.getAbsolutePath().equals(ops.dir)){
+                    readLogsImpl(f, outList, ops);
                 }
+            }else{
+                readLogFile(f, mLogCipherer, outList, ops);
+            }
         }
     }
 
-    private static void parse(String filename, ILogCipherer cipherer, List<LogRecord> outList){
-        File file = new File(filename);
+    private static void readLogFile(File file, ILogCipherer cipherer, List<LogRecord> outList, FilterOptions ops){
         if(!file.exists())
-            throw new RuntimeException("file not exist , filename = " + filename);
+            throw new RuntimeException("file not exist , filename = " + file.getAbsolutePath());
         if(!file.isFile())
-            throw new RuntimeException("not a file , filename = " + filename);
+            throw new RuntimeException("not a file , filename = " + file.getAbsolutePath());
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(file));
@@ -318,8 +381,8 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
                      state = br.readLine();
                      content = br.readLine();
                      endLine = br.readLine();
-                     if(endLine.equals(END_LINE)){
-                         record = parseLogRecord(state,content,cipherer);
+                     if(END_LINE.equals(endLine)){
+                         record = parseLogRecord(state, content, cipherer, ops);
                          if(record != null){
                              outList.add(record);
                          }
@@ -348,7 +411,15 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
         }
     }
 
-    private static LogRecord parseLogRecord(String state, String content, ILogCipherer cipherer) {
+    /**
+     *  parse to a log record
+     * @param state the state line
+     * @param content the content line
+     * @param cipherer the Log Cipherer
+     * @param ops the filter options
+     * @return a LogRecord if successed parsed or else null。
+     */
+    private static LogRecord parseLogRecord(String state, String content, ILogCipherer cipherer, FilterOptions ops) {
         logWhenDebug("parseLogRecord","begin parse: state = " + state +" ,content = " + content);
         try{
             String str = state.split(EQ)[1];
@@ -366,15 +437,85 @@ public final class LogManager implements RunnablePool.IRunnbleExecutor{
             str = content.split(EQ)[1];
             str = cipherer.decrypt(str);
             record.setMessage(str);
-            return record;
+
+            if(verifyFilterOptions(record,ops)){
+                return record;
+            }else{
+                return null;
+            }
         }catch (Exception e){
+            //may be decrypt failed.
             e.printStackTrace();
             return null;
         }
     }
 
+    private static boolean verifyFilterOptions(LogRecord record, FilterOptions ops) {
+        if(ops == null){
+            return true;
+        }
+        if(ops.startTime != 0 && record.getTime() < ops.startTime){
+            return false;
+        }
+        if(ops.endTime != 0 && record.getTime() > ops.endTime){
+            return false;
+        }
+        if(ops.level!=0 && record.getLevel() != ops.level){
+            return false;
+        }
+        if(ops.lowestLevel!=0 && record.getLevel() < ops.lowestLevel){
+            return false;
+        }
+        if(ops.tag!=null && !record.getTag().equals(ops.tag)){
+            return false;
+        }
+        if(ops.methodTag!=null && !ops.methodTag.equals(record.getMethodTag())){
+            return false;
+        }
+        if(ops.exceptionName!=null && !ops.exceptionName.equals(record.getExceptionName())){
+            return false;
+        }
+        if(ops.content!=null && !record.getMessage().contains(ops.content)){
+            return false;
+        }
+        return true;
+    }
+
+    private static void write2SD(String filename, String message, boolean append ) {
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new FileWriter(Logger.createFileIfNeed(filename), append )); // append
+            bw.append(message);
+            bw.newLine();
+            bw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bw != null)
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    //ignore
+                }
+        }
+    }
     /**
-     *  the log record
+     * the filter options:  dir， date， level, main tag，methodTag, exception
+     */
+    public static class FilterOptions{
+        public int level ;
+        public int lowestLevel ; //all >= level will allow
+        public long startTime ;
+        public long endTime ;
+        public String tag ;
+        public String methodTag ;
+        public String exceptionName ;
+        public String dir ;
+        public String content ;
+    }
+
+    /**
+     *  the log record:
      *  dir， date， level, main tag，methodTag, exception, content
      */
     public static class LogRecord{

@@ -55,7 +55,9 @@ public class ViewHelperImpl{
     }
     public ViewHelperImpl(){}
 
-    /** change the current view to the target */
+    /** change the current view to the target
+     * @param target the target to view
+     * @return  this */
     public ViewHelperImpl view(View target){
         if(target==null)
             throw new NullPointerException("target view can;t be null!");
@@ -66,7 +68,8 @@ public class ViewHelperImpl{
     /**
      * reverse to the  t
      * @param  t  the object to reverse.
-     * @return
+     * @param <T> the t
+     * @return the t
      */
     public <T>T reverse(T t ){
         return t;
@@ -173,7 +176,11 @@ public class ViewHelperImpl{
         Linkify.addLinks((TextView) v, Linkify.ALL);
         return this;
     }
-    /** @see  Linkify#addLinks(TextView, int)  */
+    /**
+     *@see  Linkify#addLinks(TextView, int)
+     * @param mask the mast
+     * @return this
+     */
     public ViewHelperImpl linkify(int mask) {
         Linkify.addLinks((TextView) v, mask);
         return this;

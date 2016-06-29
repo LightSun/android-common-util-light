@@ -91,12 +91,10 @@ public class SPHelper {
 		return context.getSharedPreferences(FILENAME, Context.MODE_MULTI_PROCESS);
 	}	
 
-	/** 清空*/
 	public static void clear(Context context) {
 		getSp(context).edit().clear().commit();
 	}
 
-	/** * 获得所有*/
 	public static Map<String,?> getAllByFileName(Context context){
 		return getSp(context).getAll();
 	}
@@ -156,8 +154,8 @@ public class SPHelper {
 		/**
 		 * @return true , if successed and the editor will be null, so you cann't continue to edit
 		 * (you must recall {@link #begin()} to edit it again). 
-		 * <li>But, if failed ,the Editor is still exist, so you can continue to put value-values
-		 * until {@link #commit()} successed.
+		 * <p>But, if failed ,the Editor is still exist, so you can continue to put value-values
+		 * until {@link #commit()} successed. </p>
 		 */
 		public boolean commit(){
 			boolean result = mEditor.commit();

@@ -51,7 +51,8 @@ public class Logger {
 	/**default true(only called internal)*/
 	public static boolean IsDebug = true;
 
-	/** enable or disable debug */
+	/** enable or disable debug
+	 * @param debug if debug */
 	public static void setDebug(boolean debug) {
 		IsDebug = debug;
 		if (debug)
@@ -60,8 +61,6 @@ public class Logger {
 			setLevel(INFO);
 	}
 
-	/**
-	 */
 	public static void setLevel(int lowestLevel) {
 		switch (lowestLevel) {
 		case VERBOSE:
@@ -198,7 +197,7 @@ public class Logger {
 	}
 	
 
-	/** use default append */
+	//** use default append */
 	public static void write2SD(String tag, String message, String filename) {
 		write2SD(tag, message, filename, true);
 	}
@@ -207,7 +206,7 @@ public class Logger {
 		write2SD(tag, message, DEFAULT_LOG_PATH, append);
 	}
 
-	/** use default file and append */
+	//** use default file and append */
 	public static void write2SD(String tag, String message) {
 		write2SD(tag, message, DEFAULT_LOG_PATH, true);
 	}
@@ -221,12 +220,12 @@ public class Logger {
 		write2SD(tag, toString(t), DEFAULT_LOG_PATH, append);
 	}
 
-	/** use default append */
+	//** use default append */
 	public static void write2SD(String tag, Throwable t, String filename) {
 		write2SD(tag, toString(t), filename, true);
 	}
 
-	/** use default file and append */
+	//** use default file and append */
 	public static void write2SD(String tag, Throwable t) {
 		write2SD(tag, toString(t), DEFAULT_LOG_PATH, true);
 	}

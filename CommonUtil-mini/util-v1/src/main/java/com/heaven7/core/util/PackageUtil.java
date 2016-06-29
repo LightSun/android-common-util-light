@@ -37,9 +37,6 @@ public class PackageUtil {
 
 		context.startActivity(intent);
 	}
-	/**
-	 * 根据包名判断机器是否安装了该应用或游戏
-	 */
 	public static boolean isAppInstalled(Context context, String packageName) {
 		if (TextUtils.isEmpty(packageName)) {
 			return false;
@@ -54,10 +51,6 @@ public class PackageUtil {
 		}
 	}
 
-	/**
-	 * 根据包名启动应用
-	 * @param packageName
-	 */
 	public static void openApp(Context context, String packageName) {
 		PackageInfo pi ;
 		try {
@@ -84,11 +77,11 @@ public class PackageUtil {
 			intent.setComponent(cn);
 			context.startActivity(intent);
 		}else{
-			Logger.w(packageName, "指定包名的程序并未安装...");
+			Logger.w(packageName, "not installed...");
 		}
 	}
 
-	/*** 根据浏览器打开URL(下载也可以用这个) */
+	//open web url , download also can use this too.
 	public static void openWebURL(Context context, String inURL) {
 		Intent it = new Intent(Intent.ACTION_VIEW, Uri.parse(inURL));
 		it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -109,7 +102,6 @@ public class PackageUtil {
 		return null;
 	}
 	
-	/**获取当前应用的版本号*/
 	public static  String getVersionName(Context context) {
 		try {
 			PackageInfo packInfo = context.getPackageManager().getPackageInfo(context.getPackageName(),0);
@@ -118,7 +110,6 @@ public class PackageUtil {
 			return null;
 		}
 	}       
-	/**if not found return -1*/
 	public static  int getVersionCode(Context context) {
 		PackageManager packageManager = context.getPackageManager();
 		PackageInfo packInfo;
