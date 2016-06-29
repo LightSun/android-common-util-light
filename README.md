@@ -5,7 +5,7 @@ a light lib of android-common-utils for use.
 
 common util
  ``` java
-compile 'com.heaven7.core.util:util-v1:1.0.2'
+compile 'com.heaven7.core.util:util-v1:1.0.7'
  ```
  
  util-extra
