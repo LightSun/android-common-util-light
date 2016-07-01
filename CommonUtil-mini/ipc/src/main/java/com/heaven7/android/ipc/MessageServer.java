@@ -38,9 +38,9 @@ public class MessageServer extends RemoteMessageContext{
 
     @Override
     protected void bindImpl() {
-        super.bindImpl();
         getContext().bindService(new Intent(MessageService.ACTION_SERVER_MANAGER),
                 mConn = new ServerCallbackConnectionImpl(), Context.BIND_AUTO_CREATE );
+        super.bindImpl();
     }
 
     @Override
@@ -53,11 +53,11 @@ public class MessageServer extends RemoteMessageContext{
                 // has crashed.
             }
         }
-        super.unbindImpl();
         if(mConn != null) {
             getContext().unbindService(mConn);
             mConn = null;
         }
+        super.unbindImpl();
     }
 
     private class ServerCallbackConnectionImpl implements ServiceConnection{

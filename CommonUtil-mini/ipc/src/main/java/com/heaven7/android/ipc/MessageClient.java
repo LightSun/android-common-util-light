@@ -47,9 +47,9 @@ public class MessageClient extends RemoteMessageContext{
 
     @Override
     protected void bindImpl() {
-        super.bindImpl();
         getContext().bindService(new Intent(MessageService.ACTION_CLIENT_MANAGER),
                 mClientManagerConn = new ClientManagerConnectionImpl(), Context.BIND_AUTO_CREATE);
+        super.bindImpl();
     }
 
     @Override
@@ -64,12 +64,12 @@ public class MessageClient extends RemoteMessageContext{
                 // has crashed.
             }
         }
-        super.unbindImpl();
         // Detach our existing connection.
         if(mClientManagerConn!=null) {
             getContext().unbindService(mClientManagerConn);
             mClientManagerConn = null;
         }
+        super.unbindImpl();
     }
 
     @Override
@@ -77,20 +77,6 @@ public class MessageClient extends RemoteMessageContext{
         return mClient;
     }
 
-    /**
-     * called when client is connected.
-     * @param context the context
-     */
-    protected void afterConnected(Context context){
-
-    }
-    /**
-     * called when client is disconnected.
-     * @param context the context
-     */
-    protected void afterDisconnected(Context context){
-       // RemoteCallbackList
-    }
     /**
      *  called when client receive a broadcast message from server
      * @param msg the new message
@@ -127,13 +113,11 @@ public class MessageClient extends RemoteMessageContext{
                 // disconnected (and then reconnected if it can be restarted)
                 // so there is no need to do anything here.
             }
-            afterConnected(getContext());
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mClientManager = null;
-            afterDisconnected(getContext());
         }
     }
 

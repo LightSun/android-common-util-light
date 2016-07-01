@@ -87,16 +87,33 @@ public abstract class RemoteMessageContext {
     }
 
     /**
+     * called when this client is connected.
+     * @param context the context
+     */
+    protected void afterConnected(Context context){
+
+    }
+    /**
+     * called when this client is disconnected.
+     * @param context the context
+     */
+    protected void afterDisconnected(Context context){
+
+    }
+
+    /**
      * the message service ServiceConnection implement
      */
     private class MessageServiceConnectionImpl implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mMessageService = new Messenger(service);
+            afterConnected(getContext());
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mMessageService = null;
+            afterDisconnected(getContext());
         }
     }
 }
