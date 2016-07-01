@@ -26,15 +26,15 @@ public class MessageService extends Service{
     public static final String ACTION_SERVER_MANAGER   = IRemoteServerManager.class.getName();
 
     /** this indicate the message is a broadcast message .*/
-    public static final int TYPE_BROADCAST  =  0x0001 ;
+    public static final int POLICY_BROADCAST    =  0x0001 ;
     /** this indicate the message is a 'consume-mode' message. */
-    public static final int TYPE_CONSUME    =  0x0002 ;
+    public static final int POLICY_CONSUME      =  0x0002 ;
     /** this indicate the message is a 'need-reply' message .*/
-    public static final int TYPE_REPLY      =  0x0003 ;
+    public static final int POLICY_REPLY        =  0x0003 ;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ TYPE_BROADCAST, TYPE_CONSUME, TYPE_REPLY })
-    public @interface MessageResponseType{
+    @IntDef({POLICY_BROADCAST, POLICY_CONSUME, POLICY_REPLY})
+    public @interface MessagePolicy {
 
     }
 
@@ -102,16 +102,16 @@ public class MessageService extends Service{
                  * 3, reply
                  */
                 switch (msg.arg2){
-                    case TYPE_CONSUME:
+                    case POLICY_CONSUME:
                         handleConsumeMessage(service, newMsg);
                         break;
 
-                    case TYPE_REPLY:
+                    case POLICY_REPLY:
                         handleReplyMessage(msg.replyTo, newMsg);
                         break;
 
                     default:
-                    case TYPE_BROADCAST:
+                    case POLICY_BROADCAST:
                         handleBroadcastMessage(service, newMsg);
                         break;
                 }

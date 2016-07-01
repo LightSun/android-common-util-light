@@ -29,9 +29,9 @@ public class MessageServer extends RemoteMessageContext{
     }
 
     @Override
-    public void sendMessage(Message msg, @MessageService.MessageResponseType int type) {
-        if(type == MessageService.TYPE_REPLY){
-            throw new IllegalArgumentException("message server don't support this type('TYPE_REPLY').");
+    public void sendMessage(Message msg, @MessageService.MessagePolicy int type) {
+        if(type == MessageService.POLICY_REPLY){
+            throw new IllegalArgumentException("message server don't support this type('POLICY_REPLY').");
         }
         super.sendMessage(msg, type);
     }
