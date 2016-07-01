@@ -1,67 +1,82 @@
 package com.heaven7.android.ipc;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
-import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 
 /**
- * Created by heaven7 on 2016/6/29.
+ * the message server
+ * Created by heaven7 on 2016/7/1.
  */
-public class MessageServer {
+public class MessageServer extends RemoteMessageContext{
 
-    public static final String INTENT_DEFAULT = MessageServer.class.getName();
+    private ServiceConnection mConn;
+    private IRemoteServerManager mServerManager;
 
-    private final RemoteCallbackList<IRemoteServiceCallback> mCallbacks
-            = new RemoteCallbackList<IRemoteServiceCallback>();
-
-    private final InternalHandler mHandler = new InternalHandler(this);
-    /**
-     * The IRemoteInterface is defined through AIDL
-     */
-    private final IRemoteService.Stub mBinder = new IRemoteService.Stub() {
-        public void registerCallback(IRemoteServiceCallback cb) {
-            if (cb != null) mCallbacks.register(cb);
-        }
-        public void unregisterCallback(IRemoteServiceCallback cb) {
-            if (cb != null) mCallbacks.unregister(cb);
-        }
-
+    private final IRemoteServerCallback mCallback = new IRemoteServerCallback.Stub(){
         @Override
-        public void sendMessage(Message msg) throws RemoteException {
-            mHandler.sendMessage(msg);
+        public Message processMessage(int flag, Message msg) throws RemoteException {
+            return null;
         }
     };
-    //mCallbacks.kill();
 
-    public IBinder getBinder(){
-        return mBinder;
+    public MessageServer(Context context) {
+        super(context);
     }
-    private static class InternalHandler extends WeakHandler<MessageServer>{
 
-        public InternalHandler(MessageServer messageServer) {
-            super(messageServer);
+    @Override
+    public void sendMessage(Message msg, @MessageService.MessageResponseType int type) {
+        if(type == MessageService.TYPE_REPLY){
+            throw new IllegalArgumentException("message server don't support this type('TYPE_REPLY').");
         }
-        public InternalHandler(Looper looper, MessageServer messageServer) {
-            super(looper, messageServer);
+        super.sendMessage(msg, type);
+    }
+
+    @Override
+    protected void bindImpl() {
+        super.bindImpl();
+        getContext().bindService(new Intent(MessageService.ACTION_SERVER_MANAGER),
+                mConn = new ServerCallbackConnectionImpl(), Context.BIND_AUTO_CREATE );
+    }
+
+    @Override
+    protected void unbindImpl() {
+        if(mServerManager!=null){
+            try {
+                mServerManager.setRemoteServerCallback(null);
+            } catch (RemoteException e) {
+                // There is nothing special we need to do if the service
+                // has crashed.
+            }
+        }
+        super.unbindImpl();
+        if(mConn != null) {
+            getContext().unbindService(mConn);
+            mConn = null;
+        }
+    }
+
+    private class ServerCallbackConnectionImpl implements ServiceConnection{
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mServerManager = IRemoteServerManager.Stub.asInterface(service);
+            try {
+                mServerManager.setRemoteServerCallback(mCallback);
+            } catch (RemoteException e) {
+                // In this case the service has crashed before we could even
+                // do anything with it; we can count on soon being
+                // disconnected (and then reconnected if it can be restarted)
+                // so there is no need to do anything here.
+            }
         }
 
         @Override
-        public void handleMessage(Message msg) {
-            // Broadcast to all clients the new value.
-            final MessageServer server = get();
-            final int N = server.mCallbacks.beginBroadcast();
-            for (int i=0; i<N; i++) {
-                try {
-                    server.mCallbacks.getBroadcastItem(i).onMessageReceived(msg);
-                } catch (RemoteException e) {
-                    // The RemoteCallbackList will take care of removing
-                    // the dead object for us.
-                }
-            }
-            server.mCallbacks.finishBroadcast();
+        public void onServiceDisconnected(ComponentName name) {
+            mServerManager = null;
         }
     }
-
 }

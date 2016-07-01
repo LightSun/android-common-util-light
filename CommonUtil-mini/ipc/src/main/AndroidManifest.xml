@@ -6,6 +6,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
+        <service android:name=".MessageService" android:process=":MessageService">
+        </service>
+
     </application>
 
 </manifest>

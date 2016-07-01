@@ -4,91 +4,136 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.Messenger;
 import android.os.RemoteException;
 
 /**
+ * the message client
  * Created by heaven7 on 2016/6/29.
  */
-public class MessageClient {
+public class MessageClient extends RemoteMessageContext{
 
-    private final Context mContext;
-    private ServiceConnection mConn;
-    private IRemoteService mService = null;
+    private ServiceConnection mClientManagerConn;
 
-    private boolean mIsBound;
-    private final IRemoteServiceCallback mCallback = new IRemoteServiceCallback.Stub(){
+    private IRemoteClientManager mClientManager;
+    private Messenger mClient ;
+
+    /**
+     * the remote client callback
+     */
+    private final IRemoteClientCallback mCallback = new IRemoteClientCallback.Stub(){
         @Override
-        public void onMessageReceived(Message msg) throws RemoteException {
-
+        public void onReceive(Message msg) throws RemoteException {
+            MessageClient.this.onReceive(msg);
+        }
+        @Override
+        public boolean consumeMessage(Message msg) throws RemoteException {
+            return MessageClient.this.consumeMessage(msg);
         }
     };
 
     public MessageClient(Context context) {
-        this.mContext = context.getApplicationContext();
+        super(context);
+        this.mClient = new Messenger(new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                MessageClient.this.handleReplyMessage(msg);
+            }
+        });
     }
 
-    public void bind(Intent service){
-        mContext.bindService(service, mConn = new ServiceConnectionImpl(), Context.BIND_AUTO_CREATE);
-        mIsBound = true;
+    @Override
+    protected void bindImpl() {
+        super.bindImpl();
+        getContext().bindService(new Intent(MessageService.ACTION_CLIENT_MANAGER),
+                mClientManagerConn = new ClientManagerConnectionImpl(), Context.BIND_AUTO_CREATE);
     }
-    public void unbind(){
-        if(!mIsBound){
-            return;
-        }
+
+    @Override
+    protected void unbindImpl() {
         // If we have received the service, and hence registered with
         // it, then now is the time to unregister.
-        if (mService != null) {
+        if (mClientManager != null) {
             try {
-                mService.unregisterCallback(mCallback);
+                mClientManager.unregisterCallback(mCallback);
             } catch (RemoteException e) {
                 // There is nothing special we need to do if the service
                 // has crashed.
             }
         }
+        super.unbindImpl();
         // Detach our existing connection.
-        if(mConn != null){
-            mContext.unbindService(mConn);
+        if(mClientManagerConn!=null) {
+            getContext().unbindService(mClientManagerConn);
+            mClientManagerConn = null;
         }
-        mIsBound = false;
     }
 
-    public void sendMessageToServer(Bundle data){
-        //mService.sendMessage(Message.obtain());
+    @Override
+    protected Messenger getClientMessager() {
+        return mClient;
     }
 
+    /**
+     * called when client is connected.
+     * @param context the context
+     */
     protected void afterConnected(Context context){
 
     }
+    /**
+     * called when client is disconnected.
+     * @param context the context
+     */
     protected void afterDisconnected(Context context){
        // RemoteCallbackList
     }
+    /**
+     *  called when client receive a broadcast message from server
+     * @param msg the new message
+     */
+    protected void onReceive(Message msg){
 
-    private class ServiceConnectionImpl implements ServiceConnection{
+    }
+    /**
+     * @param msg the new message
+     * @return true if you handle it .
+     */
+    protected boolean consumeMessage(Message msg){
+        return false;
+    }
+    /**
+     * called when server reply message to the message requester.
+     * @param msg the new message
+     */
+    protected void handleReplyMessage(Message msg){
+
+    }
+    private class ClientManagerConnectionImpl implements ServiceConnection{
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-             //TODO
-            mService = IRemoteService.Stub.asInterface(service);
+            mClientManager = IRemoteClientManager.Stub.asInterface(service);
             // We want to monitor the service for as long as we are
             // connected to it.
             try {
-                mService.registerCallback(mCallback);
+                mClientManager.registerCallback(mCallback);
             } catch (RemoteException e) {
                 // In this case the service has crashed before we could even
                 // do anything with it; we can count on soon being
                 // disconnected (and then reconnected if it can be restarted)
                 // so there is no need to do anything here.
             }
-            afterConnected(mContext);
+            afterConnected(getContext());
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            mService = null;
-            afterDisconnected(mContext);
+            mClientManager = null;
+            afterDisconnected(getContext());
         }
     }
 
