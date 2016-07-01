@@ -9,30 +9,16 @@ import java.lang.ref.WeakReference;
 /**
  * the runnable pool help get a runnable from the pool.
  *  the IRunnbleExecutor maybe Activity or Fragment . but i have cared about them.
+ *  <p>and the 'runner' from cache will automatic be recycled after run. </p>
  * Created by heaven7 on 2016/6/7.
  */
 public final class RunnablePool {
-    private RunnablePool() {}
-    private static Cacher<Runner,Void> sCacher;
 
-    /**
-     * init the cacher
-     * @param cacher the cacher
-     */
-    public static void initCacher(Cacher<Runner,Void> cacher){
-        if(sCacher!=null){
-            sCacher.clear();
-            System.out.println("RunnablePool_initCacher : reset cacher, " +
-                    "but previous have Runner ，pool size = " + sCacher.getCurrentPoolSize());
-        }
-        sCacher = cacher;
-    }
-    /** init the cacher ,this only can init once
-     * @param  maxPoolSize the max pool size */
-    public static void initCacher(int maxPoolSize){
-        if(sCacher!=null)
-            return ;
-        sCacher = new Cacher<Runner,Void>(maxPoolSize) {
+    private final Cacher<Runner,Void> mCacher;
+    private static RunnablePool sPool;
+
+    public RunnablePool(int maxPoolSize) {
+        this.mCacher = new Cacher<Runner,Void>(maxPoolSize) {
             @Override
             public Runner create(Void aa) {
                 return new Runner() {
@@ -52,17 +38,25 @@ public final class RunnablePool {
      * @param executor the really runnable execute
      * @param what what message to execute
      * @param params the params to execute
-     * @return the Runner from cacher.
+     * @return the Runner from cache.
      */
-    public static Runner obtain(IRunnbleExecutor executor, int what,Object...params){
-        if(sCacher == null){
-            initCacher(10);
-        }
-        final Runner runner = sCacher.obtain();
+    public Runner obtain(IRunnbleExecutor executor, int what,Object...params){
+        final Runner runner = mCacher.obtain();
         runner.setExecutor(executor);
         runner.setWhat(what);
         runner.setParams(params);
         return runner;
+    }
+
+    public static Runner obtainRunner(IRunnbleExecutor executor, int what,Object...params){
+        return getDefault().obtain(executor,what,params);
+    }
+
+    public static synchronized RunnablePool getDefault(){
+        if(sPool == null){
+            sPool = new RunnablePool(10);
+        }
+        return sPool;
     }
 
     /**
@@ -135,10 +129,11 @@ public final class RunnablePool {
                 }
             }
             executor.execute(getWhat(), getParams());
-            afterRun();
+            reset();
         }
 
-        protected void afterRun() {
+        /** reset the all member of this */
+        protected void reset() {
             this.mWeakExecutor = null;
             this.mExecutor = null;
             this.mParams = null;
@@ -153,6 +148,7 @@ public final class RunnablePool {
         /**
          *  execute the command impl
          *  @param what indicate which is the executor
+         *  @param params  the params to execute
          */
         void execute(int what, Object... params);
     }

@@ -18,8 +18,9 @@ public class MD5Util {
 	}
 	
 	/**
-	 * MD5加密
-	 * @param message 要加密的字符串
+	 * encode
+	 * @param message the message to encrypt
+	 *                @return the result
 	 */
 	public static String encode(String message){
 		MessageDigest md5 = null;

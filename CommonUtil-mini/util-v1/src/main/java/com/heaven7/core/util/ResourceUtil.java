@@ -20,8 +20,15 @@ import android.content.Context;
 
 public class ResourceUtil {
 
-	/** if you use shard uid(eg：  android:sharedUserId="com.heaven7.skin")，
-	 * package name must be target package name*/
+	/**
+	 * if you use shard uid(eg：  android:sharedUserId="com.heaven7.skin")，
+	 * package name must be target package name
+	 * @param ctx the context
+	 * @param packageName the package name of resource
+	 * @param resName the resource name
+	 * @param type the resource type
+     * @return the id
+     */
 	public static int getRemoteResId(Context ctx,String packageName,String resName,ResourceType type){
 		return ctx.getResources().getIdentifier(resName, type.name,packageName);
 	}

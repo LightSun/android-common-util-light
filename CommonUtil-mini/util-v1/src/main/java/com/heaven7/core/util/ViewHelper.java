@@ -97,12 +97,17 @@ public class ViewHelper {
 	/**
 	 * toogle the visibility of the view.such as: VISIBLE to gone or gone to VISIBLE
 	 * @param viewId  the id of view
+	 *                @return this
 	 */
 	public ViewHelper toogleVisibility(int viewId){
 		return view(viewId).toogleVisibility().reverse(this);
 	}
 
-	/** get the view in current layout . return null if the viewid can't find in current layout*/
+	/** get the view in current layout . return null if the viewid can't find in current layout
+	 * @param viewId the id of view
+	 *  @param <T> the any view
+	 * @return  the view
+	 *  */
 	@SuppressWarnings("unchecked")
 	public <T extends View > T getView(int viewId) {
 		View view = mViewMap.get(viewId);
@@ -170,6 +175,9 @@ public class ViewHelper {
 	/**
 	 * Sets the text color, size, style, hint color, and highlight color
 	 * from the specified TextAppearance resource.
+	 * @param viewId the id of view
+	 * @param  resId the id of TextAppearance resource
+	 * @return this
 	 */
 	public ViewHelper setTextAppearance(int viewId, int resId) {
 		return view(viewId).setTextAppearance(resId).reverse(this);
@@ -216,12 +224,18 @@ public class ViewHelper {
 	}
 	/**set the image uri
 	 * @since 1.0.2
+	 * @param viewId the id of view
+	 * @param uri the uri
+	 * @return this
 	 * */
 	public ViewHelper setImageURI(int viewId, Uri uri) {
 		return view(viewId).setImageURI(uri).reverse(this);
 	}
 	/**set the image scale type
 	 * @since 1.0.2
+	 * @param viewId the id of view
+	 * @param type the scale type
+	 * @return  this
 	 * */
 	public ViewHelper setScaleType(int viewId, ImageView.ScaleType type) {
 		return view(viewId).setScaleType(type).reverse(this);
@@ -229,6 +243,9 @@ public class ViewHelper {
 	/**
 	 * Add an action to set the image of an image view. Can be called multiple
 	 * times.
+	 * @param viewId this id of viewId
+	 * @param bitmap the bit map
+	 * @return this
 	 */
 	public ViewHelper setImageBitmap(int viewId, Bitmap bitmap) {
 		return view(viewId).setImageBitmap(bitmap).reverse(this);
@@ -237,6 +254,9 @@ public class ViewHelper {
 	/**
 	 * Add an action to set the alpha of a view. Can be called multiple times.
 	 * Alpha between 0-1.
+	 * @param viewId the id of view
+	 * @param value the alpha value
+	 * @return this
 	 */
 	public ViewHelper setAlpha(int viewId, float value) {
 		return view(viewId).setAlpha(value).reverse(this);
@@ -275,12 +295,17 @@ public class ViewHelper {
 	}
 
 	/** Add links into a TextView,
-	 * @param  linkifyMask ,see {@link Linkify#ALL} and etc.*/
+	 * @param  linkifyMask ,see {@link Linkify#ALL} and etc.
+	 * @param viewId the if of view
+	 * @return this*/
 	public ViewHelper linkify(int viewId,int linkifyMask) {
 		return view(viewId).linkify(linkifyMask).reverse(this);
 	}
 
-	/** Apply the typeface to the given viewId, and enable subpixel rendering. */
+	/** Apply the typeface to the given viewId, and enable subpixel rendering.
+	 * @param typeface the typeface
+	 * @param viewId the ids of view
+	 * @return this */
 	public ViewHelper setTypeface(int viewId, Typeface typeface) {
 		return view(viewId).setTypeface(typeface).reverse(this);
 	}
@@ -288,6 +313,9 @@ public class ViewHelper {
 	/**
 	 * Apply the typeface to all the given viewIds, and enable subpixel
 	 * rendering.
+	 * @param typeface the typeface
+	 * @param viewIds the ids of views
+	 * @return this
 	 */
 	public ViewHelper setTypeface(Typeface typeface, int... viewIds) {
 		for (int viewId : viewIds) {
@@ -406,7 +434,10 @@ public class ViewHelper {
 		return view(viewId).setChecked(checked).reverse(this);
 	}
 	
-	/** set OnCheckedChangeListener to CompoundButton or it's children. */
+	/** set OnCheckedChangeListener to CompoundButton or it's children.
+	 * @param viewId the id of view
+	 * @param l the OnCheckedChangeListener
+	 * @return  this */
 	public ViewHelper setOnCheckedChangeListener(int viewId, OnCheckedChangeListener l){
 		return view(viewId).setOnCheckedChangeListener(l).reverse(this);
 	}
@@ -481,6 +512,7 @@ public class ViewHelper {
 
 	/** view the root view
 	 * @since 1.0.2
+	 * @return ViewHelperImpl
 	 * */
 	public ViewHelperImpl viewRoot(){
 		return mImpl.view(getRootView());

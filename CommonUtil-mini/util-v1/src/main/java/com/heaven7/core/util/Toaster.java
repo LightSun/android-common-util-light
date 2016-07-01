@@ -61,19 +61,19 @@ public class Toaster {
 		return true;
 	}
 	
-	/**Toast.LENGTH_SHORT */
+	//**Toast.LENGTH_SHORT */
 	public static void show(Context ctx,String msg){
 		show(ctx, msg, false);
 	}
-	/**Toast.LENGTH_SHORT */
+	//**Toast.LENGTH_SHORT */
 	public static void show(Context ctx,int resId,int gravity){
 		show(ctx, resId, false,gravity);
 	}
-	/**Toast.LENGTH_SHORT */
+	//**Toast.LENGTH_SHORT */
 	public static void show(Context ctx,String msg,int toastLaction){
 		show(ctx, msg, true,toastLaction);
 	}
-	/** warning meas Toast.LENGTH_LONG */
+	//** warning meas Toast.LENGTH_LONG */
 	public static void show(final Context ctx,final CharSequence msg,final boolean warn){
 		MainWorker.post(new Runnable() {
 			public void run() {
@@ -89,14 +89,12 @@ public class Toaster {
 			}
 		});
 	}
-	/** warning meas Toast.LENGTH_LONG */
+	//** warning meas Toast.LENGTH_LONG */
 	public static void show(final Context ctx,final int resId,final boolean warn, int gravity){
 		CharSequence msg = ctx.getResources().getText(resId);
 		show(ctx, msg, warn,gravity);
 	}
 
-
-	/** warning meas Toast.LENGTH_LONG */
 	public static void show(final Context ctx,final CharSequence msg,final boolean warn, final int gravity){
 		MainWorker.post(new Runnable() {
 			public void run() {
