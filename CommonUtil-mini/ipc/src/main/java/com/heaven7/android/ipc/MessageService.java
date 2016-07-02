@@ -2,7 +2,10 @@ package com.heaven7.android.ipc;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteCallbackList;
@@ -42,8 +45,10 @@ public class MessageService extends Service{
             = new RemoteCallbackList<IRemoteClientCallback>();
 
     private final InternalHandler mHandler = new InternalHandler(this);
-    private final Messenger mMessenger = new Messenger(mHandler);
-    private IRemoteServerCallback mServerCallback;
+    private volatile Looper mServiceLooper;
+    private Messenger mMessenger;
+
+    private volatile IRemoteServerCallback mServerCallback;
     /**
      * The IRemoteInterface is defined through AIDL
      */
@@ -77,8 +82,39 @@ public class MessageService extends Service{
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        HandlerThread thread = new HandlerThread("MessageService");
+        thread.start();
+
+        mServiceLooper = thread.getLooper();
+        mMessenger = new Messenger(new Handler(mServiceLooper){
+            @Override
+            public void handleMessage(Message msg) {
+                if(mServerCallback == null){
+                    Log.w(TAG, "called [ handleMessage() ]: but there is no server to process(convert) message.");
+                    return;
+                }
+                try {
+                    Message newMsg = mServerCallback.processMessage(msg.arg2, msg);
+                    if(newMsg == null){
+                        //ignore this message
+                        return;
+                    }
+                    newMsg.arg2 = msg.arg2;
+                    newMsg.replyTo = msg.replyTo;
+                    mHandler.sendMessage(newMsg);
+                } catch (RemoteException e) {
+                   //ignore
+                }
+            }
+        });
+    }
+
+    @Override
     public void onDestroy() {
         mClientCallbacks.kill();
+        mServiceLooper.quit();
         super.onDestroy();
     }
 
@@ -90,33 +126,24 @@ public class MessageService extends Service{
         @Override
         public void handleMessage(Message msg) {
             final MessageService service = get();
-            if(service.mServerCallback == null){
-                Log.w(TAG, "called [ handleMessage() ]: there is no server to process(convert) message.");
-                return;
-            }
-            try {
-                Message newMsg = service.mServerCallback.processMessage(msg.arg2, msg);
-                /**
-                 * 1, broadcast message
-                 * 2, consume
-                 * 3, reply
-                 */
-                switch (msg.arg2){
-                    case POLICY_CONSUME:
-                        handleConsumeMessage(service, newMsg);
-                        break;
+            /**
+             * 1, broadcast message
+             * 2, consume
+             * 3, reply
+             */
+            switch (msg.arg2){
+                case POLICY_CONSUME:
+                    handleConsumeMessage(service, msg);
+                    break;
 
-                    case POLICY_REPLY:
-                        handleReplyMessage(msg.replyTo, newMsg);
-                        break;
+                case POLICY_REPLY:
+                    handleReplyMessage(msg.replyTo, msg);
+                    break;
 
-                    default:
-                    case POLICY_BROADCAST:
-                        handleBroadcastMessage(service, newMsg);
-                        break;
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
+                default:
+                case POLICY_BROADCAST:
+                    handleBroadcastMessage(service, msg);
+                    break;
             }
         }
 

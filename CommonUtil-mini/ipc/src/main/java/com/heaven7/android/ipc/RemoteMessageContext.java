@@ -42,6 +42,7 @@ public abstract class RemoteMessageContext {
             msg.replyTo = getClientMessager();
         }
         try {
+            //msg.setAsynchronous();
             mMessageService.send(msg);
         } catch (RemoteException e) {
             //just ignore
@@ -88,16 +89,14 @@ public abstract class RemoteMessageContext {
 
     /**
      * called when this client is connected.
-     * @param context the context
      */
-    protected void afterConnected(Context context){
+    protected void afterConnected(){
 
     }
     /**
      * called when this client is disconnected.
-     * @param context the context
      */
-    protected void afterDisconnected(Context context){
+    protected void afterDisconnected(){
 
     }
 
@@ -108,12 +107,12 @@ public abstract class RemoteMessageContext {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mMessageService = new Messenger(service);
-            afterConnected(getContext());
+            afterConnected();
         }
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mMessageService = null;
-            afterDisconnected(getContext());
+            afterDisconnected();
         }
     }
 }
