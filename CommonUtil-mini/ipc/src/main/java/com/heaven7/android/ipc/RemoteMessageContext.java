@@ -95,7 +95,7 @@ public abstract class RemoteMessageContext {
 
     }
     /**
-     * called when this client is disconnected.
+     * called when this client is disconnected. this normally not called. it is called in special case.
      */
     protected void afterDisconnected(){
 
@@ -110,7 +110,6 @@ public abstract class RemoteMessageContext {
             mMessageService = new Messenger(service);
             afterConnected();
         }
-        //normally not called. it is called in special case.
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mMessageService = null;
