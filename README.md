@@ -73,7 +73,7 @@ a light lib of android-common-utils for use.
            mClient.sendMessage(...);
            mServer.sendMessage(...);
 ```
-          th more to see in demo [IpcTestActivity](https://github.com/LightSun/android-common-util-light/blob/master/CommonUtil-mini/app/src/main/java/com/heaven7/android/mini/demo/sample/IpcTestActivity.java).
+      the more to see in demo [IpcTestActivity](https://github.com/LightSun/android-common-util-light/blob/master/CommonUtil-mini/app/src/main/java/com/heaven7/android/mini/demo/sample/IpcTestActivity.java).
     
 
 ## Gradle config
