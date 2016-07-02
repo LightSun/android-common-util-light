@@ -64,7 +64,7 @@ public class MessageService extends Service{
     private final IRemoteServerManager.Stub mServerManagerBinder = new IRemoteServerManager.Stub(){
         @Override
         public void setRemoteServerCallback(IRemoteServerCallback callback) throws RemoteException {
-             mServerCallback = callback;
+            mServerCallback = callback;
         }
     };
 

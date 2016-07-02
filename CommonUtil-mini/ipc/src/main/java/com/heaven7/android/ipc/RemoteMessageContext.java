@@ -30,6 +30,11 @@ public abstract class RemoteMessageContext {
         return mContext;
     }
 
+    /** return if client/server is bind to the remote service. */
+    public boolean isBound(){
+        return mIsBound;
+    }
+
     /**
      * as clien: send a message to server. and the server will process the message.
      * as server: send a message to clients
