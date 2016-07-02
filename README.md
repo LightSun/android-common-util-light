@@ -10,7 +10,7 @@ a light lib of android-common-utils for use.
             - third,  support multi work policy(or mode): broadcast, consume, reply
             - forth, server support work in background thread.
           -(3), calling flow:
-           ```java
+```java
            // 1, init client and server .offen in multi app.
            mClient = new MessageClient(this){
              @Override
@@ -72,7 +72,7 @@ a light lib of android-common-utils for use.
            void sendMessage(Message msg , @MessageService.MessagePolicy int policy);
            mClient.sendMessage(...);
            mServer.sendMessage(...);
-           ```
+```
           th more to see in demo [IpcTestActivity](https://github.com/LightSun/android-common-util-light/blob/master/CommonUtil-mini/app/src/main/java/com/heaven7/android/mini/demo/sample/IpcTestActivity.java).
     
 
