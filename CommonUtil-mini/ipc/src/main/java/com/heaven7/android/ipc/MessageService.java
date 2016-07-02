@@ -18,15 +18,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
+ * the service of background
  * Created by heaven7 on 2016/6/29.
  */
 public class MessageService extends Service{
 
     private static final String TAG = "MessageService";
 
-    public static final String ACTION_CLIENT_MANAGER   = IRemoteClientManager.class.getName();
-    public static final String ACTION_MESSAGE_SERVICE  = IRemoteClientCallback.class.getName();
-    public static final String ACTION_SERVER_MANAGER   = IRemoteServerManager.class.getName();
+    public static final String ACTION_CLIENT_MANAGER   = "com.heaven7.android.ipc.client_manager";
+    public static final String ACTION_MESSAGE_SERVICE  = "com.heaven7.android.ipc.message_service";
+    public static final String ACTION_SERVER_MANAGER   = "com.heaven7.android.ipc.server_manager";
 
     /** this indicate the message is a broadcast message .*/
     public static final int POLICY_BROADCAST    =  0x0001 ;
@@ -101,8 +102,10 @@ public class MessageService extends Service{
                         //ignore this message
                         return;
                     }
-                    newMsg.arg2 = msg.arg2;
-                    newMsg.replyTo = msg.replyTo;
+                    if(newMsg != msg) {
+                        newMsg.arg2 = msg.arg2;
+                        newMsg.replyTo = msg.replyTo;
+                    }
                     mHandler.sendMessage(newMsg);
                 } catch (RemoteException e) {
                    //ignore

@@ -47,7 +47,8 @@ public class MessageClient extends RemoteMessageContext{
 
     @Override
     protected void bindImpl() {
-        getContext().bindService(new Intent(MessageService.ACTION_CLIENT_MANAGER),
+        getContext().bindService(new Intent(getContext(),MessageService.class)
+                        .setAction(MessageService.ACTION_CLIENT_MANAGER),
                 mClientManagerConn = new ClientManagerConnectionImpl(), Context.BIND_AUTO_CREATE);
         super.bindImpl();
     }

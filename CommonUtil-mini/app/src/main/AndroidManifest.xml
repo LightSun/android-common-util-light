@@ -22,6 +22,7 @@
         </activity>
         <activity android:name=".sample.FragmentComponentTestActivity"></activity>
         <activity android:name=".sample.LogTestActivity"></activity>
+        <activity android:name=".sample.IpcTestActivity"></activity>
 
     </application>
 

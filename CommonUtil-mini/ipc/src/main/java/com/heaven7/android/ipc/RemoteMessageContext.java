@@ -74,7 +74,8 @@ public abstract class RemoteMessageContext {
 
     /** called in the {@link #bind()}  */
     protected void bindImpl(){
-        getContext().bindService(new Intent(MessageService.ACTION_MESSAGE_SERVICE),
+        getContext().bindService(new Intent(getContext(),MessageService.class)
+                .setAction(MessageService.ACTION_MESSAGE_SERVICE),
                 mMessageServiceConn = new MessageServiceConnectionImpl(), Context.BIND_AUTO_CREATE);
     }
 
@@ -109,6 +110,7 @@ public abstract class RemoteMessageContext {
             mMessageService = new Messenger(service);
             afterConnected();
         }
+        //normally not called. it is called in special case.
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mMessageService = null;

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/bt_bind_client"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAllCaps="false"
+        android:text="bind client"
+        />
+    <Button
+        android:id="@+id/bt_unbind_client"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAllCaps="false"
+        android:text="unbind client"
+        />
+
+    <Button
+        android:id="@+id/bt_bind_server"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAllCaps="false"
+        android:text="bind server"
+        />
+    <Button
+        android:id="@+id/bt_unbind_server"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAllCaps="false"
+        android:text="unbind server"
+        />
+
+    <EditText
+        android:id="@+id/et_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:lineSpacingExtra="5dp"
+        android:lines="3"
+        android:hint="please input the message to send"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <Button
+            android:id="@+id/bt_send_by_client"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:textAllCaps="false"
+            android:text="send by client"
+            />
+        <Button
+            android:id="@+id/bt_send_by_server"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:textAllCaps="false"
+            android:text="send by server"
+            />
+    </LinearLayout>
+</LinearLayout>

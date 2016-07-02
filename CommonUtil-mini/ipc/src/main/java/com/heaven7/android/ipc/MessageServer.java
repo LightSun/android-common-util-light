@@ -12,21 +12,29 @@ import android.os.RemoteException;
  * the message server
  * Created by heaven7 on 2016/7/1.
  */
-public class MessageServer extends RemoteMessageContext{
+public abstract class MessageServer extends RemoteMessageContext{
 
     private ServiceConnection mConn;
     private IRemoteServerManager mServerManager;
 
     private final IRemoteServerCallback mCallback = new IRemoteServerCallback.Stub(){
         @Override
-        public Message processMessage(int flag, Message msg) throws RemoteException {
-            return null;
+        public Message processMessage(int policy, Message msg) throws RemoteException {
+            return MessageServer.this.processMessage(policy, msg);
         }
     };
 
     public MessageServer(Context context) {
         super(context);
     }
+
+    /**
+     *  process the target message to a new message, or null if ignore this message
+     * @param policy  the message policy ,see {@link MessageService#POLICY_BROADCAST} and etc.
+     * @param msg the  source message
+     * @return a new message to send, or null if ignore this message
+     */
+    protected abstract Message processMessage(int policy, Message msg);
 
     @Override
     public void sendMessage(Message msg, @MessageService.MessagePolicy int type) {
@@ -38,7 +46,8 @@ public class MessageServer extends RemoteMessageContext{
 
     @Override
     protected void bindImpl() {
-        getContext().bindService(new Intent(MessageService.ACTION_SERVER_MANAGER),
+        getContext().bindService(new Intent(getContext(),MessageService.class)
+                        .setAction(MessageService.ACTION_SERVER_MANAGER),
                 mConn = new ServerCallbackConnectionImpl(), Context.BIND_AUTO_CREATE );
         super.bindImpl();
     }
