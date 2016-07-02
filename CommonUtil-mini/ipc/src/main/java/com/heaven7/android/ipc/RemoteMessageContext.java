@@ -34,11 +34,11 @@ public abstract class RemoteMessageContext {
      * as clien: send a message to server. and the server will process the message.
      * as server: send a message to clients
      * @param msg the message to send
-     * @param type the type of message response ,see {@link MessageService#POLICY_BROADCAST} and etc.
+     * @param policy the policy of message ,see {@link MessageService#POLICY_BROADCAST} and etc.
      */
-    public void sendMessage(Message msg , @MessageService.MessagePolicy int type){
-        msg.arg2 = type;
-        if(type == MessageService.POLICY_REPLY){
+    public void sendMessage(Message msg , @MessageService.MessagePolicy int policy){
+        msg.arg2 = policy;
+        if(policy == MessageService.POLICY_REPLY){
             msg.replyTo = getClientMessager();
         }
         try {

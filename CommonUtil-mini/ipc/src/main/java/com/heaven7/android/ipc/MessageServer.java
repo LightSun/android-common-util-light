@@ -29,7 +29,8 @@ public abstract class MessageServer extends RemoteMessageContext{
     }
 
     /**
-     *  process the target message to a new message, or null if ignore this message
+     *  process the target message to a new message, or null if ignore this message.
+     *  this method is called in sub thread.
      * @param policy  the message policy ,see {@link MessageService#POLICY_BROADCAST} and etc.
      * @param msg the  source message
      * @return a new message to send, or null if ignore this message
