@@ -2,14 +2,14 @@
 a light lib of android-common-utils for use.
 
 ## introduce
-  1, module -> android-ipc
-    (1), desc: this is a common ipc lib of android.
-    (2), features: 
-            first, support multi clients communicate with a server.
-            second, support client can send a message to server, so is server.
-            third,  support multi work policy(or mode): broadcast, consume, reply
-            forth, server support work in background thread.
-    (3), calling flow:
+   - 1, module -> android-ipc
+     -(1), desc: this is a common ipc lib of android.
+     -(2), features: 
+            - first, support multi clients communicate with a server.
+            - second, support client can send a message to server, so is server.
+            - third,  support multi work policy(or mode): broadcast, consume, reply
+            - forth, server support work in background thread.
+     -(3), calling flow:
       ``` java
          // 1, init client and server .offen in multi app.
           mClient = new MessageClient(this){
