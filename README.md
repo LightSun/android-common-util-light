@@ -2,46 +2,46 @@
 a light lib of android-common-utils for use.
 
 ## introduce
-   - 1, module -> android-ipc
-     -(1), desc: this is a common ipc lib of android.
-     -(2), features: 
+    -1, module -> android-ipc
+       -(1), desc: this is a common ipc lib of android.
+       -(2), features: 
             - first, support multi clients communicate with a server.
             - second, support client can send a message to server, so is server.
             - third,  support multi work policy(or mode): broadcast, consume, reply
             - forth, server support work in background thread.
-     -(3), calling flow:
-      ``` java
-         // 1, init client and server .offen in multi app.
+          -(3), calling flow:
+          ``` java
+          // 1, init client and server .offen in multi app.
           mClient = new MessageClient(this){
-            @Override
-            protected void afterConnected() {
+             @Override
+             protected void afterConnected() {
                 showToast("client is connected.");
                 Logger.i(TAG, "MessageClient_afterConnected", "client is connected.");
-            }
-            @Override
-            protected void afterDisconnected() {
+             }
+             @Override
+             protected void afterDisconnected() {
                 showToast("client is disconnected.");
                 Logger.i(TAG, "MessageClient_afterDisconnected", "client is disconnected.");
-            }
+             }
             
-            //broadcast policy message
-            @Override
-            protected void onReceive(Message msg) {
+             //broadcast policy message
+             @Override
+             protected void onReceive(Message msg) {
                 Logger.i(TAG, "MessageClient_onReceive", toTestString(msg));
-            }
-            //consume policy message
-            @Override
-            protected boolean consumeMessage(Message msg) {
+             }
+             //consume policy message
+             @Override
+             protected boolean consumeMessage(Message msg) {
                 Logger.i(TAG, "MessageClient_consumeMessage", toTestString(msg));
                 return super.consumeMessage(msg);
-            }
-            // reply policy message.
-            @Override
-            protected void handleReplyMessage(Message msg) {
+             }
+             // reply policy message.
+             @Override
+             protected void handleReplyMessage(Message msg) {
                 Logger.i(TAG, "MessageClient_handleReplyMessage", toTestString(msg));
-            }
-        };
-        mServer = new MessageServer(this){
+             }
+           };
+          mServer = new MessageServer(this){
             
             //this is very important for server handle client message.
             @Override
@@ -60,19 +60,19 @@ a light lib of android-common-utils for use.
                 showToast("server is disconnected.");
                 Logger.i(TAG, "MessageServer_afterDisconnected", "server is disconnected.");
             }
-        };
-        //2, bind and unbind
+          };
+          //2, bind and unbind
            //for client
            mClient.bind();  
            mClient.unbind();
            //for server
            mServer.bind();  
            mServer.unbind();
-        // send message , client and server both can do it.
-        void sendMessage(Message msg , @MessageService.MessagePolicy int policy);
-         mClient.sendMessage(...);
-         mServer.sendMessage(...);
-       ```
+          // send message , client and server both can do it.
+          void sendMessage(Message msg , @MessageService.MessagePolicy int policy);
+           mClient.sendMessage(...);
+          mServer.sendMessage(...);
+          ```
     
 
 ## Gradle config
