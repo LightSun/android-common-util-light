@@ -72,11 +72,11 @@ public class MessageService extends Service{
     @Override
     public IBinder onBind(Intent intent) {
         final String action = intent.getAction();
-        if(action.equals(ACTION_CLIENT_MANAGER)){
+        if(ACTION_CLIENT_MANAGER.equals(action)){
             return mClientManagerBinder;
-        }else if(action.equals(ACTION_MESSAGE_SERVICE)){
+        }else if(ACTION_MESSAGE_SERVICE.equals(action)){
             return mMessenger.getBinder();
-        }else if(action.equals(ACTION_SERVER_MANAGER)){
+        }else if(ACTION_SERVER_MANAGER.equals(action)){
             return mServerManagerBinder;
         }
         return null;
