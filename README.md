@@ -95,7 +95,7 @@ compile 'com.heaven7.core.util:util-extra:1.0'
  
  common ipc lib (beta)
  ``` java
-  compile 'com.heaven7.android.ipc:ipc:1.0'
+  compile 'com.heaven7.android.ipc:ipc:1.0.1'
  ```
 
 ## hope
