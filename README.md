@@ -17,7 +17,11 @@ compile 'com.heaven7.core.util:util-extra:1.0'
  ``` java
  compile 'com.heaven7.core.util:memory:1.0'
  ```
-
+ 
+ common ipc lib (beta)
+ ``` java
+  compile 'com.heaven7.android.ipc:ipc:1.0'
+ ```
 
 ## hope
 i like technology. especially the open-source technology.And previous i didn't contribute to it caused by i am a little lazy, but now i really want to do some for the open-source. So i hope to share and communicate with the all of you.
