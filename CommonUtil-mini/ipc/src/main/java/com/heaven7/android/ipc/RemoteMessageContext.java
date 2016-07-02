@@ -36,7 +36,7 @@ public abstract class RemoteMessageContext {
     }
 
     /**
-     * as clien: send a message to server. and the server will process the message.
+     * as client: send a message to server. and the server will process the message.
      * as server: send a message to clients
      * @param msg the message to send
      * @param policy the policy of message ,see {@link MessageService#POLICY_BROADCAST} and etc.
