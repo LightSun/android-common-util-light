@@ -42,6 +42,10 @@ public abstract class RemoteMessageContext {
      * @param policy the policy of message ,see {@link MessageService#POLICY_BROADCAST} and etc.
      */
     public void sendMessage(Message msg , @MessageService.MessagePolicy int policy){
+        if(mMessageService == null){
+            System.err.println("have not bound success, have you call 'bind()' ?.");
+            return;
+        }
         msg.arg2 = policy;
         if(policy == MessageService.POLICY_REPLY){
             msg.replyTo = getClientMessager();
