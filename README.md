@@ -80,7 +80,7 @@ a light lib of android-common-utils for use.
 
 common util
  ``` java
-compile 'com.heaven7.core.util:util-v1:1.0.7'
+compile 'com.heaven7.core.util:util-v1:1.0.9'
  ```
  
  util-extra
