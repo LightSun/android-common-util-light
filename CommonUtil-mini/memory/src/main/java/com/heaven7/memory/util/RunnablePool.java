@@ -102,33 +102,34 @@ public final class RunnablePool {
                 System.err.println("RunnablePool_Runner_run : executor == null or is recycled(Fragment or Activity)");
                 return;
             }
+            boolean shouldExecute = true;
             if(executor instanceof Activity){
                 if(((Activity) executor).isFinishing()){
                     System.out.println("RunnablePool_Runner_run : executor is Activity and isFinishing() = true. ");
-                    return;
+                    shouldExecute = false;
                 }
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
                         && ((Activity) executor).isDestroyed()){
                     System.out.println("RunnablePool_Runner_run : executor is Activity and isDestroyed() = true. ");
-                    return;
+                    shouldExecute = false;
                 }
             }else if(executor instanceof Fragment){
                 if(((Fragment) executor).isDetached() || ((Fragment) executor).isRemoving()){
-                    // ((Fragment) executor).isVisible()
                     System.out.println("RunnablePool_Runner_run : executor is Fragment and isDestroyed()" +
                             " ||  isRemoving() = true. ");
-                    return;
+                    shouldExecute = false;
                 }
             }else if(executor instanceof android.app.Fragment){
-                if(((android.app.Fragment) executor).isDetached()
+                if( (Build.VERSION.SDK_INT >=13 && ((android.app.Fragment) executor).isDetached())
                         || ((android.app.Fragment) executor).isRemoving()){
-                    // ((Fragment) executor).isVisible()
                     System.out.println("RunnablePool_Runner_run : executor is android.app.Fragment" +
                             " and isDestroyed() ||  isRemoving() = true. ");
-                    return;
+                    shouldExecute = false;
                 }
             }
-            executor.execute(getWhat(), getParams());
+            if(shouldExecute) {
+                executor.execute(getWhat(), getParams());
+            }
             reset();
         }
 
