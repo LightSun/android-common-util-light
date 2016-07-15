@@ -12,7 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 
-/** 直播权限管理
+/** camera and audio permission manager
  * Created by heaven7 on 2016/6/21.
  */
 public class LivePermissionProcessor {
@@ -68,10 +68,6 @@ public class LivePermissionProcessor {
         }
     }
 
-    //只有主播才需要
-    /**
-     * 请求音频权限
-     */
     public void requestAudioPermission(){
         if(ContextCompat.checkSelfPermission(mActivity, Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
