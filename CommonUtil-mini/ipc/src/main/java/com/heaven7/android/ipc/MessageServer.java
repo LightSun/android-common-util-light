@@ -31,24 +31,24 @@ public abstract class MessageServer extends RemoteMessageContext{
     /**
      *  process the target message to a new message, or null if ignore this message.
      *  this method is called in sub thread.
-     * @param policy  the message policy ,see {@link MessageService#POLICY_BROADCAST} and etc.
+     * @param policy  the message policy ,see {@link IpcConstant#POLICY_BROADCAST} and etc.
      * @param msg the  source message
      * @return a new message to send, or null if ignore this message
      */
     protected abstract Message processMessage(int policy, Message msg);
 
     @Override
-    public void sendMessage(Message msg, @MessageService.MessagePolicy int type) {
-        if(type == MessageService.POLICY_REPLY){
+    public boolean sendMessage(Message msg, @IpcConstant.MessagePolicy int type) {
+        if(type == IpcConstant.POLICY_REPLY){
             throw new IllegalArgumentException("message server don't support this type('POLICY_REPLY').");
         }
-        super.sendMessage(msg, type);
+        return super.sendMessage(msg, type);
     }
 
     @Override
     protected void bindImpl() {
-        getContext().bindService(new Intent(getContext(),MessageService.class)
-                        .setAction(MessageService.ACTION_SERVER_MANAGER),
+        getContext().bindService(new Intent().setComponent(createServiceComponentName())
+                        .setAction(IpcConstant.ACTION_SERVER_MANAGER),
                 mConn = new ServerCallbackConnectionImpl(), Context.BIND_AUTO_CREATE );
         super.bindImpl();
     }
@@ -57,7 +57,7 @@ public abstract class MessageServer extends RemoteMessageContext{
     protected void unbindImpl() {
         if(mServerManager!=null){
             try {
-                mServerManager.setRemoteServerCallback(null);
+                mServerManager.unregisterRemoteServerCallback(mCallback);
             } catch (RemoteException e) {
                 // There is nothing special we need to do if the service
                 // has crashed.
@@ -75,7 +75,7 @@ public abstract class MessageServer extends RemoteMessageContext{
         public void onServiceConnected(ComponentName name, IBinder service) {
             mServerManager = IRemoteServerManager.Stub.asInterface(service);
             try {
-                mServerManager.setRemoteServerCallback(mCallback);
+                mServerManager.registerRemoteServerCallback(mCallback);
             } catch (RemoteException e) {
                 // In this case the service has crashed before we could even
                 // do anything with it; we can count on soon being

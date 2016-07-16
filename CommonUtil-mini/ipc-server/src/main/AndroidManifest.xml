@@ -1,0 +1,24 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.heaven7.android.ipc">
+
+    <!--
+    normal：低风险权限，只要申请了就可以使用（在AndroidManifest.xml中添加<uses-permission>标签），安装时不需要用户确认；
+    dangerous：高风险权限，安装时需要用户的确认才可使用；
+    signature：只有当申请权限的应用程序的数字签名与声明此权限的应用程序的数字签名相同时（如果是申请系统权限，则需要与系统签名相同），才能将权限授给它；
+    signatureOrSystem：签名相同，或者申请权限的应用为系统应用（在system image中）。
+    -->
+    <permission android:name="com.heaven7.android.ipc.service" android:protectionLevel="normal"/>
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true">
+
+        <service android:name="com.heaven7.android.ipc.MessageService" android:exported="true"
+            android:permission="com.heaven7.android.ipc.service"
+            android:process="com.heaven7.android.ipc.MessageService"
+            >
+        </service>
+
+    </application>
+
+</manifest>

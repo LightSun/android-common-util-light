@@ -36,18 +36,19 @@ public abstract class RemoteMessageContext {
     }
 
     /**
-     * as client: send a message to server. and the server will process the message.
+     * <p> as client: send a message to server. and the server will process the message(eg: send new message to clients ).</p>
      * as server: send a message to clients
      * @param msg the message to send
-     * @param policy the policy of message ,see {@link MessageService#POLICY_BROADCAST} and etc.
+     * @param policy the policy of message ,see {@link IpcConstant#POLICY_BROADCAST} and etc.
+     * @return true if send message success.
      */
-    public void sendMessage(Message msg , @MessageService.MessagePolicy int policy){
+    public boolean sendMessage(Message msg , @IpcConstant.MessagePolicy int policy){
         if(mMessageService == null){
             System.err.println("have not bound success, have you call 'bind()' ?.");
-            return;
+            return false;
         }
         msg.arg2 = policy;
-        if(policy == MessageService.POLICY_REPLY){
+        if(policy == IpcConstant.POLICY_REPLY){
             msg.replyTo = getClientMessager();
         }
         try {
@@ -55,7 +56,9 @@ public abstract class RemoteMessageContext {
             mMessageService.send(msg);
         } catch (RemoteException e) {
             //just ignore
+            return false;
         }
+        return true;
     }
 
     /** get the client messager,server don't need  */
@@ -83,9 +86,15 @@ public abstract class RemoteMessageContext {
 
     /** called in the {@link #bind()}  */
     protected void bindImpl(){
-        getContext().bindService(new Intent(getContext(),MessageService.class)
-                .setAction(MessageService.ACTION_MESSAGE_SERVICE),
+        getContext().bindService(
+                new Intent( /*getContext(), MessageService.class*/ )
+                .setComponent(createServiceComponentName())
+                .setAction(IpcConstant.ACTION_MESSAGE_SERVICE),
                 mMessageServiceConn = new MessageServiceConnectionImpl(), Context.BIND_AUTO_CREATE);
+    }
+
+    protected ComponentName createServiceComponentName(){
+        return new ComponentName("com.heaven7.android.ipc","com.heaven7.android.ipc.MessageService");
     }
 
     /** called in the {@link #unbind()}  */
