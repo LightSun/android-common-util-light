@@ -80,7 +80,6 @@ public class IpcTestActivity extends BaseActivity {
                 msg.getData().putString("processor","MessageServer");
                 return msg;
             }
-
             @Override
             protected void afterConnected() {
                 showToast("server is connected.");
