@@ -1,4 +1,4 @@
-package com.heaven7.android.ipc.server;
+package com.heaven7.android.server.server;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

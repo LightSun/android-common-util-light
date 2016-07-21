@@ -1,4 +1,4 @@
-package com.heaven7.android.ipc;
+package com.heaven7.android.ipc.server;
 
 import android.os.Handler;
 import android.os.Looper;

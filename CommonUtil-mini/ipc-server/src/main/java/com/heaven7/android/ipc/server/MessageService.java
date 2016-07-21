@@ -1,4 +1,4 @@
-package com.heaven7.android.ipc;
+package com.heaven7.android.ipc.server;
 
 import android.app.Service;
 import android.content.Intent;
@@ -13,6 +13,12 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.heaven7.android.ipc.IRemoteClientCallback;
+import com.heaven7.android.ipc.IRemoteClientManager;
+import com.heaven7.android.ipc.IRemoteServerCallback;
+import com.heaven7.android.ipc.IRemoteServerManager;
+import com.heaven7.android.ipc.IpcConstant;
 
 /**
  * the service of background
@@ -195,7 +201,7 @@ public class MessageService extends Service{
             service.mClientCallbacks.finishBroadcast();
         }
 
-        private void handleBroadcastMessage(MessageService service,Message msg) {
+        private void handleBroadcastMessage(MessageService service, Message msg) {
             final int N = service.mClientCallbacks.beginBroadcast();
             for (int i=0; i<N; i++) {
                 try {
