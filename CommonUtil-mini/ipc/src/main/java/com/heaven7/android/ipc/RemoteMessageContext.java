@@ -46,7 +46,7 @@ public abstract class RemoteMessageContext {
      */
     public boolean sendMessage(Message msg , @IpcConstant.MessagePolicy int policy){
         if(mMessageService == null){
-            System.err.println("have not bound success, have you call 'bind()' or is the 'MessageService' is running ?.");
+            System.err.println("have not bound success, have you call 'bind()' or is the service '"+SERVICE_NAME+"' is running ?.");
             return false;
         }
         msg.arg2 = policy;
