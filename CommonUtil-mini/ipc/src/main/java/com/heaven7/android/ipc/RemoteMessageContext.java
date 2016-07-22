@@ -15,6 +15,8 @@ import android.os.RemoteException;
  */
 public abstract class RemoteMessageContext {
 
+    private static final String SERVICE_NAME     = "com.heaven7.android.ipc.server.MessageService";
+
     private final Context mContext;
     private boolean mIsBound;
 
@@ -44,7 +46,7 @@ public abstract class RemoteMessageContext {
      */
     public boolean sendMessage(Message msg , @IpcConstant.MessagePolicy int policy){
         if(mMessageService == null){
-            System.err.println("have not bound success, have you call 'bind()' ?.");
+            System.err.println("have not bound success, have you call 'bind()' or is the 'MessageService' is running ?.");
             return false;
         }
         msg.arg2 = policy;
@@ -94,7 +96,7 @@ public abstract class RemoteMessageContext {
     }
 
     protected ComponentName createServiceComponentName(){
-        return new ComponentName("com.heaven7.android.ipc","com.heaven7.android.ipc.MessageService");
+        return new ComponentName(SERVICE_NAME.substring(0, SERVICE_NAME.lastIndexOf(".")), SERVICE_NAME);
     }
 
     /** called in the {@link #unbind()}  */
