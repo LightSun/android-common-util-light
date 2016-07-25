@@ -55,6 +55,7 @@ public class IpcTestActivity extends BaseActivity {
 
     @Override
     protected void initData(Bundle savedInstanceState) {
+        getExplicitIntent(this, new Intent(IpcConstant.ACTION_MESSAGE_SERVICE));
         mClient = new MessageClient(this){
             @Override
             protected void afterConnected() {
@@ -75,18 +76,6 @@ public class IpcTestActivity extends BaseActivity {
                 Logger.i(TAG, "MessageClient_handleReplyMessage", toTestString(msg));
             }
         };
-      /*  mServer = new MessageServer(this){
-            @Override
-            protected Message processMessage(int policy, Message msg) {
-                msg.getData().putString("processor","MessageServer");
-                return msg;
-            }
-            @Override
-            protected void afterDisconnected() {
-                showToast("server is disconnected.");
-                Logger.i(TAG, "MessageServer_afterDisconnected", "server is disconnected.");
-            }
-        };*/
     }
     public static Intent getExplicitIntent(Context context, Intent implicitIntent) {
         // Retrieve all services that can match the given intent

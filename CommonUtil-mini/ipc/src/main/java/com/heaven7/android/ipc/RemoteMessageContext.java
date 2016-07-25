@@ -15,7 +15,7 @@ import android.os.RemoteException;
  */
 public abstract class RemoteMessageContext {
 
-    private static final String SERVICE_PACKAGE     = "com.heaven7.android.ipc.server";
+    private static final String SERVICE_NAME     = "com.heaven7.android.ipc.server.MessageService";
 
     private final Context mContext;
     private boolean mIsBound;
@@ -94,7 +94,7 @@ public abstract class RemoteMessageContext {
     }
 
     protected Intent createServiceIntent(Intent implicitIntent) throws IpcException{
-       return IpcUtil.getExplicitIntent(getContext(), implicitIntent, SERVICE_PACKAGE);
+       return IpcUtil.getExplicitIntent(getContext(), implicitIntent, SERVICE_NAME);
     }
 
     /** called in the {@link #unbind()}  */

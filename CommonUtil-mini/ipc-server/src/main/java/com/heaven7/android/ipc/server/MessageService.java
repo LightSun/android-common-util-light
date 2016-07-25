@@ -146,6 +146,9 @@ public class MessageService extends Service{
         super.onDestroy();
     }
 
+    /**
+     * the internal handler
+     */
     private static class InternalHandler extends WeakHandler<MessageService> {
 
         public InternalHandler(MessageService messageServer) {
