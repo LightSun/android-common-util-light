@@ -89,14 +89,16 @@ public abstract class RemoteMessageContext {
     /** called in the {@link #bind()}  */
     protected void bindImpl(){
         getContext().bindService(
-                new Intent( /*getContext(), MessageService.class*/ )
-                .setComponent(createServiceComponentName())
-                .setAction(IpcConstant.ACTION_MESSAGE_SERVICE),
+                createServiceIntent().setAction(IpcConstant.ACTION_MESSAGE_SERVICE),
                 mMessageServiceConn = new MessageServiceConnectionImpl(), Context.BIND_AUTO_CREATE);
     }
 
-    protected ComponentName createServiceComponentName(){
-        return new ComponentName(SERVICE_NAME.substring(0, SERVICE_NAME.lastIndexOf(".")), SERVICE_NAME);
+    protected Intent createServiceIntent() throws IpcException{
+        try {
+            return new Intent(getContext(), Class.forName(SERVICE_NAME));
+        } catch (ClassNotFoundException e) {
+            throw new IpcException( "can't find the class "+ SERVICE_NAME, e);
+        }
     }
 
     /** called in the {@link #unbind()}  */
@@ -134,6 +136,23 @@ public abstract class RemoteMessageContext {
         public void onServiceDisconnected(ComponentName name) {
             mMessageService = null;
             afterDisconnected();
+        }
+    }
+    public static class IpcException extends RuntimeException {
+
+        public IpcException() {
+        }
+
+        public IpcException(String detailMessage) {
+            super(detailMessage);
+        }
+
+        public IpcException(String detailMessage, Throwable throwable) {
+            super(detailMessage, throwable);
+        }
+
+        public IpcException(Throwable throwable) {
+            super(throwable);
         }
     }
 }

@@ -2,7 +2,6 @@ package com.heaven7.android.ipc;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Message;
@@ -47,7 +46,7 @@ public abstract class MessageServer extends RemoteMessageContext{
 
     @Override
     protected void bindImpl() {
-        getContext().bindService(new Intent().setComponent(createServiceComponentName())
+        getContext().bindService(createServiceIntent()
                         .setAction(IpcConstant.ACTION_SERVER_MANAGER),
                 mConn = new ServerCallbackConnectionImpl(), Context.BIND_AUTO_CREATE );
         super.bindImpl();
