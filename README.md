@@ -93,9 +93,14 @@ compile 'com.heaven7.core.util:util-extra:1.0'
  compile 'com.heaven7.core.util:memory:1.0'
  ```
  
- common ipc lib (beta)
+ common ipc lib 
+ in client:
  ``` java
-  compile 'com.heaven7.android.ipc:ipc:1.0.2'
+  compile 'com.heaven7.android.ipc:ipc:2.1.1'
+ ```
+  in server:
+ ``` java
+  compile 'com.heaven7.android.ipc.server:ipc-server:1.1.1'
  ```
 
 ## hope
