@@ -2,6 +2,7 @@ package com.heaven7.android.ipc;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
@@ -46,8 +47,7 @@ public class MessageClient extends RemoteMessageContext{
 
     @Override
     protected void bindImpl() {
-        getContext().bindService(createServiceIntent()
-                        .setAction(IpcConstant.ACTION_CLIENT_MANAGER),
+        getContext().bindService(createServiceIntent(new Intent(IpcConstant.ACTION_CLIENT_MANAGER)),
                 mClientManagerConn = new ClientManagerConnectionImpl(), Context.BIND_AUTO_CREATE);
         super.bindImpl();
     }

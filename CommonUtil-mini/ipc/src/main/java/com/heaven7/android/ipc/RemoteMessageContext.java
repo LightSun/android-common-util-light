@@ -15,7 +15,7 @@ import android.os.RemoteException;
  */
 public abstract class RemoteMessageContext {
 
-    private static final String SERVICE_NAME     = "com.heaven7.android.ipc.server.MessageService";
+    private static final String SERVICE_PACKAGE     = "com.heaven7.android.ipc.server";
 
     private final Context mContext;
     private boolean mIsBound;
@@ -46,7 +46,7 @@ public abstract class RemoteMessageContext {
      */
     public boolean sendMessage(Message msg , @IpcConstant.MessagePolicy int policy){
         if(mMessageService == null){
-            System.err.println("have not bound success, have you call 'bind()' or is the service '"+SERVICE_NAME+"' is running ?.");
+            System.err.println("have not bound success, have you call 'bind()' or is the message service is running ?.");
             return false;
         }
         msg.arg2 = policy;
@@ -89,16 +89,12 @@ public abstract class RemoteMessageContext {
     /** called in the {@link #bind()}  */
     protected void bindImpl(){
         getContext().bindService(
-                createServiceIntent().setAction(IpcConstant.ACTION_MESSAGE_SERVICE),
+                createServiceIntent(new Intent(IpcConstant.ACTION_MESSAGE_SERVICE)),
                 mMessageServiceConn = new MessageServiceConnectionImpl(), Context.BIND_AUTO_CREATE);
     }
 
-    protected Intent createServiceIntent() throws IpcException{
-        try {
-            return new Intent(getContext(), Class.forName(SERVICE_NAME));
-        } catch (ClassNotFoundException e) {
-            throw new IpcException( "can't find the class "+ SERVICE_NAME, e);
-        }
+    protected Intent createServiceIntent(Intent implicitIntent) throws IpcException{
+       return IpcUtil.getExplicitIntent(getContext(), implicitIntent, SERVICE_PACKAGE);
     }
 
     /** called in the {@link #unbind()}  */
