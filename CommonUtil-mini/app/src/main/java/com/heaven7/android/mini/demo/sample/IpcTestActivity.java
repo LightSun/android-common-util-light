@@ -1,11 +1,17 @@
 package com.heaven7.android.mini.demo.sample;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.heaven7.android.ipc.IpcConstant;
 import com.heaven7.android.ipc.MessageClient;
 import com.heaven7.android.ipc.MessageServer;
 import com.heaven7.android.mini.demo.BaseActivity;
@@ -13,6 +19,7 @@ import com.heaven7.android.mini.demo.R;
 import com.heaven7.core.util.BundleHelper;
 import com.heaven7.core.util.Logger;
 
+import java.util.List;
 import java.util.Random;
 
 import butterknife.InjectView;
@@ -55,12 +62,6 @@ public class IpcTestActivity extends BaseActivity {
                 Logger.i(TAG, "MessageClient_afterConnected", "client is connected.");
             }
             @Override
-            protected void afterDisconnected() {
-                showToast("client is disconnected.");
-                Logger.i(TAG, "MessageClient_afterDisconnected", "client is disconnected.");
-            }
-
-            @Override
             protected void onReceive(Message msg) {
                 Logger.i(TAG, "MessageClient_onReceive", toTestString(msg));
             }
@@ -74,24 +75,39 @@ public class IpcTestActivity extends BaseActivity {
                 Logger.i(TAG, "MessageClient_handleReplyMessage", toTestString(msg));
             }
         };
-        mServer = new MessageServer(this){
+      /*  mServer = new MessageServer(this){
             @Override
             protected Message processMessage(int policy, Message msg) {
                 msg.getData().putString("processor","MessageServer");
                 return msg;
             }
             @Override
-            protected void afterConnected() {
-                showToast("server is connected.");
-                Logger.i(TAG, "MessageServer_afterConnected", "server is connected.");
-            }
-            @Override
             protected void afterDisconnected() {
                 showToast("server is disconnected.");
                 Logger.i(TAG, "MessageServer_afterDisconnected", "server is disconnected.");
             }
-        };
+        };*/
     }
+    public static Intent getExplicitIntent(Context context, Intent implicitIntent) {
+        // Retrieve all services that can match the given intent
+        PackageManager pm = context.getPackageManager();
+        List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
+        // Make sure only one match was found
+        if (resolveInfo == null || resolveInfo.size() != 1) {
+            return null;
+        }
+        // Get component info and create ComponentName
+        ResolveInfo serviceInfo = resolveInfo.get(0);
+        String packageName = serviceInfo.serviceInfo.packageName;
+        String className = serviceInfo.serviceInfo.name;
+        ComponentName component = new ComponentName(packageName, className);
+        // Create a new intent. Use the old one for extras and such reuse
+        Intent explicitIntent = new Intent(implicitIntent);
+        // Set the component to be explicit
+        explicitIntent.setComponent(component);
+        return explicitIntent;
+    }
+
 
     private String toTestString(Message msg) {
         return "msg = " + msg.getData().getString("msg") +

@@ -5,6 +5,10 @@ import android.os.Looper;
 
 import java.lang.ref.WeakReference;
 
+/**
+ * a weak handler
+ * @param <T> the t to WeakReference
+ */
 class WeakHandler<T> extends Handler {
 
     private final WeakReference<T> mWeakRef;

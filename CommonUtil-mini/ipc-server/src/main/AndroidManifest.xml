@@ -18,6 +18,11 @@
             android:permission="com.heaven7.android.ipc.service"
             android:process="com.heaven7.android.ipc.server.MessageService"
             >
+            <intent-filter>
+                <action android:name="com.heaven7.android.ipc.client_manager"/>
+                <action android:name="com.heaven7.android.ipc.message_service"/>
+                <action android:name="com.heaven7.android.ipc.server_manager"/>
+            </intent-filter>
         </service>
 
     </application>
