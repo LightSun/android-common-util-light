@@ -37,9 +37,9 @@ a light lib of android-common-utils for use.
   //服务端需要导入的
   compile 'com.heaven7.android.ipc.server:ipc-server:1.1.1'
  ```
-      - 2：创建MessageClient和MessageServer对象。（代表消息客户端和服务端）
-      - 3：绑定和解绑消息服务： 调用MessageClient.bind()/MessageClient.unbind() , MessageServer同理.
-      - 4: 发送和接收消息。
+       - 2：创建MessageClient和MessageServer对象。（代表消息客户端和服务端）
+       - 3：绑定和解绑消息服务： 调用MessageClient.bind()/MessageClient.unbind() , MessageServer同理.
+       - 4: 发送和接收消息。
           - 发送： boolean sendMessage(Message msg , @IpcConstant.MessagePolicy int policy)
                   -  (MessageClient和MessageServer这点基本相同，只是server端不能发送reply消息)
           - 处理/接收消息：
