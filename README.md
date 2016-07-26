@@ -3,13 +3,13 @@ a light lib of android-common-utils for use.
 
 ##  ipc框架介绍及使用
 
-    简述：ipc就是进程间通信, 所以本库就是进程间通信的框架。
+  - 简述：ipc就是进程间通信, 所以本库就是进程间通信的框架。
           为了app间通信，我特意写了2个库：ipc和ipc-server (就是指客户端和服务端)
 
-    原理： 稍后以图的形势补上. 
+  - 原理： 稍后以图的形势补上. 
     
-    已经使用ipc框架的案例：
-        - 开源库[android-fully-log](https://github.com/LightSun/android-fully-log)
+  - 已经使用ipc框架的案例：
+        - 开源库 [android-fully-log](https://github.com/LightSun/android-fully-log)
         - android完整的日志系统，通过Ipc来读写日志。支持日志的格式化，加解密，过滤等。
 
     本库的特点：
@@ -48,21 +48,21 @@ a light lib of android-common-utils for use.
                         
                  client有3个方法分别代表3种消息。
  ```java
-   /**
+   /**  接收广播消息
      *  called when client receive a broadcast message from server
      * @param msg the new message
      */
     protected void onReceive(Message msg){
 
     }
-    /**
+    /** 处理消耗模式的消息
      * @param msg the new message
      * @return true if you handle it .
      */
     protected boolean consumeMessage(Message msg){
         return false;
     }
-    /**
+    /** 处理reply消息
      * called when server reply message to the message requester.
      * @param msg the new message
      */
