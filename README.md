@@ -20,7 +20,16 @@ a light lib of android-common-utils for use.
       4, 消息的处理在单独的子线程。(考虑到比如文件操作什么的)
       
     使用介绍：
+       
        步骤1：添加权限 <uses-permission android:name="com.heaven7.android.ipc.service"/>
+              导入对应的库：
+                  client和server
+ ``` java
+  compile 'com.heaven7.android.ipc:ipc:2.1.1'
+ ```
+ ``` java
+  compile 'com.heaven7.android.ipc.server:ipc-server:1.1.1'
+ ```
            2：创建MessageClient和MessageServer对象。（代表消息客户端和服务端）
            3：绑定和解绑消息服务： 调用MessageClient.bind()/MessageClient.unbind() , MessageServer同理.
            4: 发送和接收消息。
