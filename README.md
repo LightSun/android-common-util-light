@@ -26,9 +26,9 @@ a light lib of android-common-utils for use.
     - 使用介绍：
        
        - 步骤1：添加权限 
-        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-        <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-        <uses-permission android:name="com.heaven7.android.ipc.service"/>
+              <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+              <uses-permission android:name="com.heaven7.android.ipc.service"/>
               导入对应的库：
  ``` java
    //客户端需要导入的
