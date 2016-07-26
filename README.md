@@ -18,7 +18,7 @@ a light lib of android-common-utils for use.
           ps: 当前设计只支持1个服务端.
       - 3, client 和 server 都可以发送消息。但是server端不能发送reply消息。        
       - 4，支持3种消息模式：
-          - 广播(broadcast): 就是说server端接收到广播后可以 处理后直接下发给岁 所有的client。
+          - 广播(broadcast): 就是说server端接收到广播后可以 处理后直接下发给所有的client。
           - 回执(reply)：    相当于1个client和1个server之间的通信。 server端接收到消息处理后回执消息给对应的client. 
           - 消费(comsume):   就是client或者server可以发送一条comsume的消息，只要有一个客户端消耗了，消息的传递也就终止了。
       - 5, 消息的处理在单独的子线程。(考虑到比如文件操作什么的)
