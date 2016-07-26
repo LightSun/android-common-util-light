@@ -1,7 +1,7 @@
 # android-common-util-light
 a light lib of android-common-utils for use.
 
-##   ipc框架介绍及使用
+##  ipc框架介绍及使用
 
     简述：ipc就是进程间通信, 所以本库就是进程间通信的框架。
           为了app间通信，我特意写了2个库：ipc和ipc-server (就是指客户端和服务端)
