@@ -12,20 +12,20 @@ a light lib of android-common-utils for use.
         - 开源库 [android-fully-log](https://github.com/LightSun/android-fully-log)
         - android完整的日志系统，通过Ipc来读写日志。支持日志的格式化，加解密，过滤等。
 
-    本库的特点：
-      1, 支持app间的进程间通信。
-      2, 支持多个客户端(client)和一个服务端(server)通信。服务端接收到消息后可以群发给其他客户端。
-        ps: 当前设计只支持1个服务端.
-      3, client 和 server 都可以发送消息。但是server端不能发送reply消息。        
-      4，支持3种消息模式：
-               广播(broadcast): 就是说server端接收到广播后可以 处理后直接下发给岁 所有的client。
-               回执(reply)：    相当于1个client和1个server之间的通信。 server端接收到消息处理后回执消息给对应的client. 
-               消费(comsume):   就是client或者server可以发送一条comsume的消息，只要有一个客户端消耗了，消息的传递也就终止了。
-      4, 消息的处理在单独的子线程。(考虑到比如文件操作什么的)
+  - 本库的特点：
+      - 1, 支持app间的进程间通信。
+      - 2, 支持多个客户端(client)和一个服务端(server)通信。服务端接收到消息后可以群发给其他客户端。
+          ps: 当前设计只支持1个服务端.
+      - 3, client 和 server 都可以发送消息。但是server端不能发送reply消息。        
+      - 4，支持3种消息模式：
+              - 广播(broadcast): 就是说server端接收到广播后可以 处理后直接下发给岁 所有的client。
+              - 回执(reply)：    相当于1个client和1个server之间的通信。 server端接收到消息处理后回执消息给对应的client. 
+              - 消费(comsume):   就是client或者server可以发送一条comsume的消息，只要有一个客户端消耗了，消息的传递也就终止了。
+      - 5, 消息的处理在单独的子线程。(考虑到比如文件操作什么的)
       
-    使用介绍：
+    - 使用介绍：
        
-       步骤1：添加权限 
+       - 步骤1：添加权限 
         <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
         <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
         <uses-permission android:name="com.heaven7.android.ipc.service"/>
@@ -36,17 +36,17 @@ a light lib of android-common-utils for use.
   //服务端需要导入的
   compile 'com.heaven7.android.ipc.server:ipc-server:1.1.1'
  ```
-           2：创建MessageClient和MessageServer对象。（代表消息客户端和服务端）
-           3：绑定和解绑消息服务： 调用MessageClient.bind()/MessageClient.unbind() , MessageServer同理.
-           4: 发送和接收消息。
-              发送： boolean sendMessage(Message msg , @IpcConstant.MessagePolicy int policy)
+          - 2：创建MessageClient和MessageServer对象。（代表消息客户端和服务端）
+          - 3：绑定和解绑消息服务： 调用MessageClient.bind()/MessageClient.unbind() , MessageServer同理.
+          - 4: 发送和接收消息。
+              - 发送： boolean sendMessage(Message msg , @IpcConstant.MessagePolicy int policy)
                      (MessageClient和MessageServer这点基本相同，只是server端不能发送reply消息)
-              处理/接收消息：
-                 server只有1个方法：
+              - 处理/接收消息：
+                 - server只有1个方法：
                       //处理来源消息，返回新的消息，如果返回null就表示忽略这条消息
                       protected abstract Message processMessage(int policy, Message msg);
                         
-                 client有3个方法分别代表3种消息。
+                 - client有3个方法分别代表3种消息。
  ```java
    /**  接收广播消息
      *  called when client receive a broadcast message from server
