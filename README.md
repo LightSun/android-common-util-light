@@ -9,7 +9,8 @@ a light lib of android-common-utils for use.
     原理： 稍后以图的形势补上. 
     
     已经使用ipc框架的案例：
-        开源库[android-fully-log](https://github.com/LightSun/android-fully-log):   android完整的日志系统，通过Ipc来读写日志。支持日志的格式化，加解密，过滤等。
+        - 开源库[android-fully-log](https://github.com/LightSun/android-fully-log)
+        - android完整的日志系统，通过Ipc来读写日志。支持日志的格式化，加解密，过滤等。
 
     本库的特点：
       1, 支持app间的进程间通信。
@@ -29,11 +30,10 @@ a light lib of android-common-utils for use.
         <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
         <uses-permission android:name="com.heaven7.android.ipc.service"/>
               导入对应的库：
-                  client和server
  ``` java
+   //客户端需要导入的
   compile 'com.heaven7.android.ipc:ipc:2.1.1'
- ```
- ``` java
+  //服务端需要导入的
   compile 'com.heaven7.android.ipc.server:ipc-server:1.1.1'
  ```
            2：创建MessageClient和MessageServer对象。（代表消息客户端和服务端）
@@ -90,11 +90,6 @@ a light lib of android-common-utils for use.
                 showToast("client is connected.");
                 Logger.i(TAG, "MessageClient_afterConnected", "client is connected.");
              }
-             @Override
-             protected void afterDisconnected() {
-                showToast("client is disconnected.");
-                Logger.i(TAG, "MessageClient_afterDisconnected", "client is disconnected.");
-             }
             
              //broadcast policy message
              @Override
@@ -127,11 +122,6 @@ a light lib of android-common-utils for use.
                 showToast("server is connected.");
                 Logger.i(TAG, "MessageServer_afterConnected", "server is connected.");
             }
-            @Override
-            protected void afterDisconnected() {
-                showToast("server is disconnected.");
-                Logger.i(TAG, "MessageServer_afterDisconnected", "server is disconnected.");
-            }
            };
            //2, bind and unbind
            //for client
@@ -141,7 +131,7 @@ a light lib of android-common-utils for use.
            mServer.bind();  
            mServer.unbind();
            // send message , client and server both can do it.
-           void sendMessage(Message msg , @MessageService.MessagePolicy int policy);
+           boolean sendMessage(Message msg , @MessageService.MessagePolicy int policy);
            mClient.sendMessage(...);
            mServer.sendMessage(...);
 ```
