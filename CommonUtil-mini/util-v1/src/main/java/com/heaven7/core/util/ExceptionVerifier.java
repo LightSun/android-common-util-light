@@ -47,9 +47,7 @@ public abstract class ExceptionVerifier<Param, Result> {
      * @return the run result
      * @throws VerifyException if VerifyException occurs.
      */
-    protected Result run(Param[] params) throws VerifyException {
-        return null;
-    }
+    protected  abstract Result run(Param[] params) throws VerifyException ;
 
     /**
      * called when verify failed. that means exception occured.
