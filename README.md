@@ -6,7 +6,7 @@ a light lib of android-common-utils for use.
   - 简述：ipc就是进程间通信, 所以本库就是进程间通信的框架。
           为了app间通信，我特意写了2个库：ipc和ipc-server (就是指客户端和服务端)
 
-  - 原理： 稍后以图的形势补上. 
+  - 原理：  <img src="/imgs/ipc_principle.png" alt="ipc principle image" width="858px" height="635px"/>
     
   - 已经使用ipc框架的案例：
       - 开源库 [android-fully-log](https://github.com/LightSun/android-fully-log)
