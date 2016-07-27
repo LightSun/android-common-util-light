@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 
 /**
  * the permission helper to request a list of permissions.
+ * if any permission request failed. the permission list of request is end and call callback right now.
  * Created by heaven7 on 2016/7/25.
  */
 public class PermissionHelper {
