@@ -45,6 +45,29 @@ public abstract class MessageServer extends RemoteMessageContext{
         return super.sendMessage(msg, type);
     }
 
+    /**
+     * send message to the clients directly.
+     * @param msg  the message to send
+     * @param type  the message policy
+     * @return true if send success.
+     */
+    public boolean sendMessageDirectly(Message msg, @IpcConstant.MessagePolicy int type){
+        if(type == IpcConstant.POLICY_REPLY){
+            throw new IllegalArgumentException("message server don't support this type('POLICY_REPLY').");
+        }
+        if(mServerManager == null){
+            System.err.println("server: @"+hashCode()+" have not bound success, have you call 'bind()'?.");
+            return false;
+        }
+        msg.arg2 = type;
+        try {
+            return mServerManager.sendMessageDirectly(msg);
+        } catch (RemoteException e) {
+           //ignore
+            return false;
+        }
+    }
+
     @Override
     protected void bindImpl() {
         getContext().bindService(createServiceIntent(new Intent(IpcConstant.ACTION_SERVER_MANAGER)),

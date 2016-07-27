@@ -7,7 +7,7 @@ interface IRemoteServerManager {
        /**
         * set the remote server callback
         * @param callback the server callback
-        * @deprecated
+        * @deprecated use #registerRemoteServerCallback(IRemoteServerCallback) instead
         */
       void setRemoteServerCallback(IRemoteServerCallback callback);
 
@@ -22,4 +22,10 @@ interface IRemoteServerManager {
         * @param callback the server callback
         */
      void unregisterRemoteServerCallback(IRemoteServerCallback callback);
+
+     /**
+      * send message to clients directly
+      * @param msg the message to send
+      */
+      boolean sendMessageDirectly(in Message msg);
 }
