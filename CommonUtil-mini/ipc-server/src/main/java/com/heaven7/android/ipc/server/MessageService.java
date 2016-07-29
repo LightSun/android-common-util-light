@@ -70,6 +70,11 @@ public class MessageService extends Service{
         public void unregisterRemoteServerCallback(IRemoteServerCallback callback) throws RemoteException {
             mServerCallbacks.unregister(callback);
         }
+
+        @Override
+        public boolean sendMessageDirectly(Message message) throws RemoteException {
+            return mHandler.sendMessage(message);
+        }
     };
 
     private boolean isServerCallbackListEmpty(){

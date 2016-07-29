@@ -19,7 +19,7 @@ public class IpcConstant {
     /** this indicate the message is a 'consume-mode' message. */
     public static final int POLICY_CONSUME      =  0x0002 ;
     /** this indicate the message is a 'need-reply' message .*/
-    public static final int POLICY_REPLY        =  0x0003 ;
+    public static final int POLICY_REPLY        =  0x0004 ;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({POLICY_BROADCAST, POLICY_CONSUME, POLICY_REPLY})
