@@ -45,7 +45,7 @@ public abstract class ExceptionVerifier<Param, Result> {
      *
      * @param params the params to run
      * @return the run result
-     * @throws VerifyException if VerifyException occurs.
+     * @throws VerifyException if verify failed with VerifyException occurs.
      */
     protected  abstract Result run(Param[] params) throws VerifyException ;
 
@@ -59,6 +59,9 @@ public abstract class ExceptionVerifier<Param, Result> {
 
     }
 
+    /**
+     * this class indicate verification failed .
+     */
     public static class VerifyException extends Exception{
         public VerifyException() {
         }
