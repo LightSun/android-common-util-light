@@ -9,8 +9,11 @@ import com.heaven7.android.component.fragment.IDataBinder;
 import com.heaven7.android.mini.demo.BaseActivity;
 import com.heaven7.android.mini.demo.R;
 import com.heaven7.core.util.BundleHelper;
+import com.heaven7.core.util.Logger;
 import com.heaven7.core.util.Toaster;
 import com.heaven7.core.util.ViewHelper;
+
+import java.lang.reflect.Field;
 
 /**
  * Created by heaven7 on 2016/5/25.
@@ -43,5 +46,14 @@ public class FragmentComponentTestActivity extends BaseActivity {
                                 .getBundle())
                 .setDataBinder(mDataBinder)
         ),false);
+
+        try {
+            Field f = Class.forName("sun.misc.Unsafe").getDeclaredField("THE_ONE");
+            f.setAccessible(true);
+            Object unsafe = f.get(null);
+            Logger.i("FragmentComponentTestActivity", "test unsafe: " + unsafe);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
