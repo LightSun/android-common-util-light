@@ -13,7 +13,7 @@ public abstract class Cacher<T,P> implements ICacher<T, P>{
 	
 	private Node<T> node;
 	private int mCurrentPoolSize;
-	private final int mMaxPoolSize;
+	private int mMaxPoolSize;
 	
 	public Cacher(int maxPoolSize) {
 		this.node = new Node<T>();
@@ -22,7 +22,9 @@ public abstract class Cacher<T,P> implements ICacher<T, P>{
 	public Cacher(){
 		this(DEFAULT_MAX_POOL_SIZE);
 	}
-	
+	public  void setMaxPoolSize(int maxPoolSize){
+		this.mMaxPoolSize = maxPoolSize;
+	}
 	public int getMaxPoolSize() {
 		return mMaxPoolSize;
 	}
@@ -79,8 +81,9 @@ public abstract class Cacher<T,P> implements ICacher<T, P>{
 	}
 	
 	public void recycle(T t){
+		final int max = mMaxPoolSize;
 		synchronized (this) {
-            if (mCurrentPoolSize < mMaxPoolSize) {
+            if (mCurrentPoolSize < max) {
             	Node<T> nodeNew = new Node<T>();
             	nodeNew.next = node ;
             	nodeNew.t = t;
@@ -104,7 +107,7 @@ public abstract class Cacher<T,P> implements ICacher<T, P>{
 	
 	/** when {@link #recycle(Object)} success ,this will be called
 	 * @param  t the t was recycled */
-	protected void onRecycleSuccess(T t){ };
+	protected void onRecycleSuccess(T t){ }
 	
 	@SuppressWarnings("hiding")
 	public class Node<T>{
