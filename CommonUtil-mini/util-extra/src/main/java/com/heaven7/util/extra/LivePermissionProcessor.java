@@ -13,6 +13,7 @@ import android.util.Log;
 
 
 /** camera and audio permission manager
+ * <p>use lib(util-v1) PermissionHelper instead.</p>
  * Created by heaven7 on 2016/6/21.
  */
 @Deprecated
