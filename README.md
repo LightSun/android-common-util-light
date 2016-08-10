@@ -153,7 +153,7 @@ compile 'com.heaven7.core.util:util-extra:1.0'
  
  the useful memory util 
  ``` java
- compile 'com.heaven7.core.util:memory:1.0'
+ compile 'com.heaven7.core.util:memory:1.0.3'
  ```
  
  common ipc lib : latest Release
