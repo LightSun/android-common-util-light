@@ -109,6 +109,7 @@ public class HeaderFooterHelper {
     /**
      * find the view in header or footer,or null if not.
      * @param position the position of adapter,must be header  or footer position of view
+     * @param dataSize  the size of really datas
      * @return the view */
     public View findView(int position,int dataSize) {
         if(isInHeader(position))

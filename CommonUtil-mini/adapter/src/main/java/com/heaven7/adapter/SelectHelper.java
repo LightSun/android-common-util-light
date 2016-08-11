@@ -29,7 +29,10 @@ public class SelectHelper<T extends ISelectable>{
         }
         this.mSelectMode = selectMode;
     }
-    /** @since 1.7.5 */
+    /** @since 1.7.5
+     * @param callback the callabck
+     * @param selectMode the select mode
+     * */
     public SelectHelper(int selectMode,Callback<T> callback) {
         this(selectMode);
         this.mCallback = callback;
@@ -62,7 +65,8 @@ public class SelectHelper<T extends ISelectable>{
         }else
             mCallback.notifyDataSetChanged();
     }
-    /** {@link ISelectable#SELECT_MODE_MULTI} and {@link ISelectable#SELECT_MODE_SINGLE} both support */
+    /** {@link ISelectable#SELECT_MODE_MULTI} and {@link ISelectable#SELECT_MODE_SINGLE} both support
+     * @param position the position */
     public void unselect(int position){
         if(mSelectMode == ISelectable.SELECT_MODE_MULTI){
             addUnselected(position);
@@ -72,6 +76,7 @@ public class SelectHelper<T extends ISelectable>{
     }
     /** unselect the position of item ,
      * only support select mode = {@link ISelectable#SELECT_MODE_SINGLE}
+     * @param position the position
      * */
     public void setUnselected(int position){
         if(mSelectMode == ISelectable.SELECT_MODE_MULTI)
@@ -93,7 +98,8 @@ public class SelectHelper<T extends ISelectable>{
             mCallback.notifyDataSetChanged();
         }
     }
-    /** only support select mode = {@link ISelectable#SELECT_MODE_MULTI}**/
+    /** only support select mode = {@link ISelectable#SELECT_MODE_MULTI}
+     * @param position the position **/
     public void addUnselected(int position){
         if(mSelectMode == ISelectable.SELECT_MODE_SINGLE)
             return ;
@@ -112,7 +118,8 @@ public class SelectHelper<T extends ISelectable>{
             mCallback.notifyDataSetChanged();
     }
 
-    /** only support select mode = {@link ISelectable#SELECT_MODE_MULTI}**/
+    /** only support select mode = {@link ISelectable#SELECT_MODE_MULTI}
+     * @param selectPosition the select position **/
     public void addSelected(int selectPosition){
         if(mSelectMode == ISelectable.SELECT_MODE_SINGLE)
             return ;
@@ -172,7 +179,8 @@ public class SelectHelper<T extends ISelectable>{
         }
     }
 
-    /** toogle the all selected state and notify data change. */
+    /** toogle the all selected state and notify data change.
+     * @param position the position */
     public void toogleSelected(int position){
         if(position < 0){
             throw new IllegalArgumentException(" position can't be negative !");
@@ -256,15 +264,17 @@ public class SelectHelper<T extends ISelectable>{
 
     /**
      * @since 1.7.5
-     * @param <T>
+     * @param <T> the data
      */
     public interface Callback<T>{
-        /** indicate it use BaseAdapter/BaseExpandableListAdapter or QuickRecycleViewAdapter */
+        /** indicate it use BaseAdapter/BaseExpandableListAdapter or QuickRecycleViewAdapter
+         * @return is recyclable */
          boolean isRecyclable();
         /** update the datas of adapter */
         void notifyDataSetChanged();
 
-        /** only used for  RecycleViewAdapter  */
+        /** only used for  RecycleViewAdapter
+         * @param itemPosition the position of item */
         void notifyItemChanged(int itemPosition);
 
         T getSelectedItemAtPosition(int position);

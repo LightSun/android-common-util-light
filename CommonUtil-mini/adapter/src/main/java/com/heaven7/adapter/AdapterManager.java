@@ -291,7 +291,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     /**
      * a callback will run after quickAdapter.onBindData(...) and in Runnable .
      * this is useful when you need post a runnable at last of bind adapter data in every position.
-     * @param <T>
+     * @param <T> the entity
      */
     public interface IPostRunnableCallback<T extends ISelectable>{
 

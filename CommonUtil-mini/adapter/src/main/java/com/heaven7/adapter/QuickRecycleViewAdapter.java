@@ -372,9 +372,11 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
     }
 
     public interface IRecyclerViewHolder {
-        /** get the item layout id*/
+        /** get the item layout id.
+         * @return the item layout id */
         int getLayoutId();
-        /** get the ViewHelper */
+        /** get the ViewHelper
+         * @return  the view helper */
         ViewHelper getViewHelper();
     }
 }
