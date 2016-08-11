@@ -1,4 +1,7 @@
 package com.heaven7.memory.util;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * help to cache the number of T,you'd call {@link #obtain()} and {@link #recycle(Object)},
  * and may override {@link #onRecycleSuccess(Object)} when you recycle success!
@@ -10,23 +13,23 @@ package com.heaven7.memory.util;
 public abstract class Cacher<T,P> implements ICacher<T, P>{
 	
 	private static final int DEFAULT_MAX_POOL_SIZE = 10;
-	
+
+	private final AtomicInteger mMaxPoolSize = new AtomicInteger();
 	private Node<T> node;
 	private int mCurrentPoolSize;
-	private int mMaxPoolSize;
-	
+
 	public Cacher(int maxPoolSize) {
 		this.node = new Node<T>();
-		this.mMaxPoolSize = maxPoolSize;
+		this.mMaxPoolSize.set(maxPoolSize);
 	}
 	public Cacher(){
 		this(DEFAULT_MAX_POOL_SIZE);
 	}
-	public  void setMaxPoolSize(int maxPoolSize){
-		this.mMaxPoolSize = maxPoolSize;
+	public void setMaxPoolSize(int maxPoolSize){
+		this.mMaxPoolSize.set(maxPoolSize);
 	}
 	public int getMaxPoolSize() {
-		return mMaxPoolSize;
+		return mMaxPoolSize.get();
 	}
 	
 	public int getCurrentPoolSize(){
@@ -39,10 +42,10 @@ public abstract class Cacher<T,P> implements ICacher<T, P>{
 	@Override
 	public void prepare(P p) {
 		synchronized (this) {
+			final int max = this.getMaxPoolSize() ;
 			Node<T> n     = this.node ;
 			int current   = this.mCurrentPoolSize ;
-			final int max = this.mMaxPoolSize ;
-			
+
 			while(current < max){
 				if(n.t == null){
 					n.t = create(p);
@@ -81,9 +84,9 @@ public abstract class Cacher<T,P> implements ICacher<T, P>{
 	}
 	
 	public void recycle(T t){
-		final int max = mMaxPoolSize;
 		synchronized (this) {
-            if (mCurrentPoolSize < max) {
+			final int max = getMaxPoolSize();
+			if (mCurrentPoolSize < max) {
             	Node<T> nodeNew = new Node<T>();
             	nodeNew.next = node ;
             	nodeNew.t = t;
