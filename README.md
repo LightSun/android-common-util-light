@@ -141,6 +141,11 @@ a light lib of android-common-utils for use.
 
 ## Gradle config
 
+common adapter
+``` java
+compile 'com.heaven7.core.adapter:adapter:1.5.3'
+```
+
 common util
  ``` java
 compile 'com.heaven7.core.util:util-v1:1.0.9'
