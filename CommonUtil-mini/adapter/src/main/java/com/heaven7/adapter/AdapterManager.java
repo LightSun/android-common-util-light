@@ -279,6 +279,8 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         void removeFooterView(View v);
         int getHeaderSize();
         int getFooterSize();
+        boolean isFooter(int position);
+        boolean isHeader(int position);
     }
 
     public interface IAdapterManagerCallback<T extends ISelectable>{

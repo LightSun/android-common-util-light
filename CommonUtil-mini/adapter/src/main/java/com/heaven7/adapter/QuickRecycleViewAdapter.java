@@ -20,6 +20,7 @@ import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,6 +139,15 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
     public int getFooterSize() {
         return mHeaderFooterHelper ==null ? 0 : mHeaderFooterHelper.getFooterViewSize();
     }
+
+    @Override
+    public boolean isHeader(int position) {
+        return mHeaderFooterHelper.isInHeader(position);
+    }
+    @Override
+    public boolean isFooter(int position) {
+        return mHeaderFooterHelper.isInFooter(position, mAdapterManager.getItemSize());
+    }
     // =================== end header footer view ======================= //
 
 
@@ -253,6 +263,13 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
         if(mHeaderFooterHelper !=null) {
             if ( mHeaderFooterHelper.isInHeader(position)
                     || mHeaderFooterHelper.isInFooter(position,mAdapterManager.getItemSize())){
+                /** let head/footer fullspan in StaggeredGridLayoutManager
+                 * added in 1.5
+                 */
+                ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
+                if(layoutParams instanceof StaggeredGridLayoutManager.LayoutParams) {
+                    ((StaggeredGridLayoutManager.LayoutParams) layoutParams).setFullSpan(true);
+                }
                 return ;
             }
             position -= mHeaderFooterHelper.getHeaderViewSize();
