@@ -75,6 +75,10 @@ public abstract class Cacher<T,P> implements ICacher<T, P>{
 				Node<T> tmp = this.node;
 				T t = tmp.t;
 				node = tmp.next;
+				//may null
+				if(node == null){
+					node = new Node<T>();
+				}
 				tmp.next = null;
 				mCurrentPoolSize --;
 				return t;
