@@ -9,19 +9,26 @@ import android.support.v7.widget.RecyclerView;
 public abstract class AbstractLoadMoreScrollListener extends RecyclerView.OnScrollListener {
 
     protected int mLastVisiblePosition = RecyclerView.NO_POSITION;
+    private boolean mLoading;
 
     @Override
     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
         int itemCount = recyclerView.getLayoutManager().getItemCount();
         if(newState == RecyclerView.SCROLL_STATE_IDLE && mLastVisiblePosition!= RecyclerView.NO_POSITION
                 && mLastVisiblePosition >= itemCount - 1){
-            onLoadMore(recyclerView);
+            if(!mLoading) {
+                onLoadMore(recyclerView);
+            }
         }
     }
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         mLastVisiblePosition = RecyclerViewUtils.findLastVisibleItemPosition(recyclerView);
+    }
+
+    public void setLoadingComplete(){
+        mLoading = false;
     }
 
     /**
