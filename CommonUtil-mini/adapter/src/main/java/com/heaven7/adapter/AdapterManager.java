@@ -106,6 +106,18 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
             return;
         addItems(Arrays.asList(items));
     }
+    public void addItems(int startIndex, Collection<T> items){
+        final int preSize = mDatas.size();
+        if(startIndex < 0 || startIndex > preSize){
+            throw new IllegalArgumentException();
+        }
+        mDatas.addAll(startIndex, items);
+        if(isRecyclable()){
+            notifyItemRangeInserted(startIndex + getHeaderSize(), items.size());
+        } else {
+            notifyDataSetChanged();
+        }
+    }
     public void addItems(Collection<T> items){
         final int preSize = mDatas.size();
         mDatas.addAll(items);
