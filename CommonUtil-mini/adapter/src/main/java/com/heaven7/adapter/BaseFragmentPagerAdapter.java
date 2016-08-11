@@ -173,4 +173,9 @@ public class  BaseFragmentPagerAdapter  extends PagerAdapter {
 	public boolean isViewFromObject(View view, Object object) {
 		return ((ItemData) object).fragment.getView() == view;
 	}
+
+	@Override
+	public CharSequence getPageTitle(int position) {
+		return fragmentDatas.get(position).title;
+	}
 }
