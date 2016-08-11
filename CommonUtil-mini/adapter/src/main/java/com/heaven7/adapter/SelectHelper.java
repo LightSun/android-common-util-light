@@ -37,7 +37,9 @@ public class SelectHelper<T extends ISelectable>{
 
     /**
      * select the target position with notify data.if currentPosition  == position.ignore it.
-     * <li></>only support select mode = {@link ISelectable#SELECT_MODE_SINGLE} ,this will auto update**/
+     * <p>only support select mode = {@link ISelectable#SELECT_MODE_SINGLE} ,this will auto update</p>
+     * @param position the position of adapter
+     */
     public void setSelected(int position){
         if(mSelectMode == ISelectable.SELECT_MODE_MULTI)
             return ;

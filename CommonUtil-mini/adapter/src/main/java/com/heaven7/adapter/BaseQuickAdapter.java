@@ -31,7 +31,7 @@ import java.util.List;
 
 /**
  * Abstraction class of a BaseAdapter in which you only need to provide the
- * onBindData() implementation.<br/>
+ * onBindData() implementation.
  * Using the provided BaseAdapterHelper, your code is minimalist.
  * 
  * @param <T>
@@ -251,12 +251,15 @@ import java.util.List;
 
 	/**
 	 * select the target position with notify data.if currentPosition  == position.ignore it.
-	 * <li></>only support select mode = {@link ISelectable#SELECT_MODE_SINGLE} ,this will auto update**/
+	 * <p>only support select mode = {@link ISelectable#SELECT_MODE_SINGLE} ,this will auto update </p>
+	 * @param position  the position
+	 **/
 	public void setSelected(int position){
 		getSelectHelper().setSelected(position);
 	}
 
-	/** only support select mode = {@link ISelectable#SELECT_MODE_MULTI}**/
+	/** only support select mode = {@link ISelectable#SELECT_MODE_MULTI}
+	 * @param selectPosition  the position **/
 	public void addSelected(int selectPosition){
 		getSelectHelper().addSelected(selectPosition);
 	}

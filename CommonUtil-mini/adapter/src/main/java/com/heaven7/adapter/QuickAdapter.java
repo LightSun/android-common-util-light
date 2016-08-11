@@ -24,8 +24,8 @@ import java.util.List;
 
 /**
  * Abstraction class of a BaseAdapter in which you only need to provide the
- * onBindData() implementation.<br/>
- * Using the provided BaseAdapterHelper, your code is minimalist.
+ * onBindData() implementation.
+ * <p>Using the provided BaseAdapterHelper, your code is minimalist.</p>
  * 
  * @param <T>
  *            The type of the items in the list.

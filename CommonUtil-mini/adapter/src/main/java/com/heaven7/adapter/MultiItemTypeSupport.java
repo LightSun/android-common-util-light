@@ -22,7 +22,7 @@ import android.support.annotation.LayoutRes;
  * used to multi item support. such as: Listview contains two items
  * @author heaven7
  *
- * @param <T>
+ * @param <T> the data
  */
 public interface MultiItemTypeSupport<T> {
 

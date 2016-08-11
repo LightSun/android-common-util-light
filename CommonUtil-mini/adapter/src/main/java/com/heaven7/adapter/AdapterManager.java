@@ -295,7 +295,13 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
      */
     public interface IPostRunnableCallback<T extends ISelectable>{
 
-        /** called in every position's bind data. */
+        /**
+         * called in every position's bind data.
+         * @param position the position
+         * @param item the data
+         * @param itemLayoutId  the layout id
+         * @param helper the view helper
+         */
         void onPostCallback(int position, T item, int itemLayoutId, ViewHelper helper);
     }
 

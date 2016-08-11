@@ -46,7 +46,7 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
      * create QuickRecycleViewAdapter with the layout id. if layoutId==0, the method
      * {@link #getItemLayoutId(int, ISelectable)} will be called.
      * @param layoutId the layout id you want to inflate, or 0 if you want multi item.
-     * @param mDatas
+     * @param mDatas the datas
      */
     public QuickRecycleViewAdapter(int layoutId, List<T> mDatas) {
        this(layoutId, mDatas, ISelectable.SELECT_MODE_SINGLE);
@@ -55,7 +55,7 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
      * create QuickRecycleViewAdapter with the layout id. if layoutId==0, the method
      * {@link #getItemLayoutId(int, ISelectable)} will be called.
      * @param layoutId the layout id you want to inflate, or 0 if you want multi item.
-     * @param mDatas
+     * @param mDatas the datas
      * @param selectMode  select mode
      */
     public QuickRecycleViewAdapter(int layoutId, List<T> mDatas, int selectMode) {
@@ -165,13 +165,17 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
     }
     /**
      * select the target position
-     * only support select mode = {@link ISelectable#SELECT_MODE_MULTI}**/
+     * <p>only support select mode = {@link ISelectable#SELECT_MODE_MULTI}</p>
+     * @param selectPosition the position of adapter
+     **/
     public void addSelected(int selectPosition){
         getSelectHelper().addSelected(selectPosition);
     }
 
     /**  un select the target position  .
-     * <li>only support select mode = {@link ISelectable#SELECT_MODE_MULTI}*/
+     * <p>only support select mode = {@link ISelectable#SELECT_MODE_MULTI}</p>
+     *  @param position the position of adapter
+     **/
     public void addUnselected(int position){
         getSelectHelper().addUnselected(position);
     }
@@ -184,18 +188,22 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
     }
     /**
      * select the target position with notify data.if currentPosition  == position.ignore it.
-     * <li></>only support select mode = {@link ISelectable#SELECT_MODE_SINGLE} ,this will auto update**/
+     * <p>only support select mode = {@link ISelectable#SELECT_MODE_SINGLE} ,this will auto update </p>
+     *  @param position the position of adapter
+     **/
     public void setSelected(int position){
         getSelectHelper().setSelected(position);
     }
     /** un select the target position
-     * <li>only support select mode = {@link ISelectable#SELECT_MODE_SINGLE} */
+     * <p>only support select mode = {@link ISelectable#SELECT_MODE_SINGLE}</p>
+     * @param position the position of adapter
+     * */
     public void setUnselected(int position){
         getSelectHelper().setUnselected(position);
     }
 
     /** clear selected positions  . this just clear record. bu not notify item change
-     * <li> support select mode = {@link ISelectable#SELECT_MODE_SINGLE} or {@link ISelectable#SELECT_MODE_MULTI}*/
+     * <p> support select mode = {@link ISelectable#SELECT_MODE_SINGLE} or {@link ISelectable#SELECT_MODE_MULTI}</p>*/
     public void clearSelectedPositions(){
         getSelectHelper().clearSelectedPositions();
     }
@@ -321,7 +329,11 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
         }
     }
 
-    /** if you use multi item ,override this */
+    /** if you use multi item ,override this
+     * @param position  the position
+     * @param t the data
+     * @return this item layout id
+     **/
     protected @LayoutRes int getItemLayoutId(int position,T t) {
         return mLayoutId;
     }

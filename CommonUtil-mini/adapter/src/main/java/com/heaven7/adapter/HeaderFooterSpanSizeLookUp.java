@@ -31,7 +31,8 @@ public class HeaderFooterSpanSizeLookUp extends GridLayoutManager.SpanSizeLookup
     }
 
     /** get the span size
-     * @param position the position that without header and footer */
+     * @param position the position that without header and footer
+     * @return  the really span size */
     protected int getSpanSizeImpl(int position) {
         return 1;
     }

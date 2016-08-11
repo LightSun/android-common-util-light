@@ -22,6 +22,7 @@ public class HeaderFooterHelper {
              mHeaders.add(v);
     }
     /***
+     * @param v the view
      * @return the index of v ,or -1 if not exist
      */
     public int removeHeaderView(View v){
@@ -40,6 +41,7 @@ public class HeaderFooterHelper {
     }
 
     /***
+     * @param v the view
      * @return the index of v or -1  if not exist
      */
     public int removeFooterView(View v){
@@ -59,6 +61,7 @@ public class HeaderFooterHelper {
     /**
      * @param rawPosition   the raw position
      * @param dataSize     the size of datas ,often is List
+     * @return  true if is in footer
      */
     public boolean isInFooter(int rawPosition,int dataSize){
         return getFooterViewSize() != 0 && rawPosition > getHeaderViewSize() + dataSize - 1;
@@ -73,18 +76,22 @@ public class HeaderFooterHelper {
 
     /**
      * @param index   the index of {@link #mHeaders}
+     *  @return the view
      */
     public View getHeaderView(int index){
          return mHeaders!=null ? mHeaders.get(index) :null;
     }
     /**
      * @param index   the index of {@link #mHeaders}
+     * @return the view
      */
     public View getFooterView(int index){
          return mFooter!=null ? mFooter.get(index) :null;
     }
 
-    /** record the layout id if need */
+    /** record the layout id if need
+     * @param layoutId the layout id
+     * */
     public void recordLayoutId(int layoutId) {
         if(mLayoutIds == null)
             mLayoutIds = new ArrayList<>();
@@ -92,14 +99,17 @@ public class HeaderFooterHelper {
              mLayoutIds.add(layoutId);
          }
     }
-    /** is the recorded layout id  */
+    /** is the recorded layout id
+     * @param layoutId the layout id
+     * @return  true if the layoutid in pool */
     public boolean isLayoutIdInRecord(int layoutId){
         return mLayoutIds!=null && mLayoutIds.contains(layoutId);
     }
 
     /**
      * find the view in header or footer,or null if not.
-     * @param position the position of adapter,must be header  or footer position of view */
+     * @param position the position of adapter,must be header  or footer position of view
+     * @return the view */
     public View findView(int position,int dataSize) {
         if(isInHeader(position))
             return getHeaderView(position);
