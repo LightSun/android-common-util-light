@@ -17,6 +17,7 @@ public abstract class AbstractLoadMoreScrollListener extends RecyclerView.OnScro
         if(newState == RecyclerView.SCROLL_STATE_IDLE && mLastVisiblePosition!= RecyclerView.NO_POSITION
                 && mLastVisiblePosition >= itemCount - 1){
             if(!mLoading) {
+                mLoading = true;
                 onLoadMore(recyclerView);
             }
         }
