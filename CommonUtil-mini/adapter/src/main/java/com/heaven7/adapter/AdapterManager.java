@@ -92,6 +92,15 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     }
     //============================================
 
+    public void addItem(int index, T item){
+        mDatas.add(index, item);
+        if( isRecyclable()){
+            notifyItemInserted(index + getHeaderSize());
+        } else {
+            notifyDataSetChanged();
+        }
+    }
+
     public void addItem(T item){
         mDatas.add(item);
         if( isRecyclable()){
