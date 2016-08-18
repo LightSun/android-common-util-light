@@ -27,7 +27,7 @@ public class  BaseFragmentPagerAdapter  extends PagerAdapter {
 	private FragmentTransaction mCurTransaction = null;
 
 	private SparseArray<Fragment.SavedState> mSavedState = new SparseArray<Fragment.SavedState>();
-	private Map<FragmentData, ItemData> cache = new HashMap<FragmentData, ItemData>();
+	private Map<FragmentData, ItemData> mCache = new HashMap<FragmentData, ItemData>();
 
 	public static class FragmentData {
 		public String title;
@@ -85,7 +85,7 @@ public class  BaseFragmentPagerAdapter  extends PagerAdapter {
 		// from its saved state, where the fragment manager has already
 		// taken care of restoring the fragments we previously had instantiated.
 		FragmentData data = fragmentDatas.get(position);
-		ItemData item = cache.get(data);
+		ItemData item = mCache.get(data);
 		if (item != null) {
 			item.position = position;
 			if (item.fragment.getView().getParent() == null)
@@ -96,7 +96,7 @@ public class  BaseFragmentPagerAdapter  extends PagerAdapter {
 		Fragment fragment = Fragment.instantiate(container.getContext(),
 				data.fragmentClass.getName(), data.bundle);
 		item = new ItemData(data, fragment, position);
-		cache.put(data, item);
+		mCache.put(data, item);
 		if (mCurTransaction == null) {
 			mCurTransaction = mFragmentManager.beginTransaction();
 		}
@@ -126,7 +126,7 @@ public class  BaseFragmentPagerAdapter  extends PagerAdapter {
 						" v=" + ((Fragment) object).getView());
 			mSavedState.put(position, mFragmentManager.saveFragmentInstanceState(itemData.fragment));
 			mCurTransaction.remove(itemData.fragment);
-			cache.remove(itemData.data);
+			mCache.remove(itemData.data);
 		} else {
 			container.removeView(itemData.fragment.getView());
 		}

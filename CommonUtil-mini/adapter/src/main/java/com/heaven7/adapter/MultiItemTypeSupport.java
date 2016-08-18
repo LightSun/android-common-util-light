@@ -26,9 +26,25 @@ import android.support.annotation.LayoutRes;
  */
 public interface MultiItemTypeSupport<T> {
 
+	/**
+	 *  get the layout id
+	 * @param position the position of adapter
+	 * @param t  the data
+     * @return  the layout id for multi item.
+     */
 	@LayoutRes int getLayoutId(int position, T t);
 
+	/**
+	 * get thw view type count.
+	 * @return thw view type count.
+     */
 	int getViewTypeCount();
 
+	/**
+	 * get item view type. often from 1.
+	 * @param postion the position of  adapter
+	 * @param t the data
+     * @return the item view type
+     */
 	int getItemViewType(int postion, T t);
 }

@@ -37,12 +37,27 @@ public class RecyclerViewUtils {
         return lastVisibleItemPosition;
     }
 
+
+    /**
+     * create FullSpannableStaggeredGridLayoutManager and set ISpanSizeLookupHelper for full span of header/footer.
+     * @param hfm the header/footer manager
+     * @param spanCount the really span count of layoutManager
+     * @param orientation the orientation of StaggeredGridLayoutManager.
+     * @return a instance of FullSpannableStaggeredGridLayoutManager.
+     */
     public static FullSpannableStaggeredGridLayoutManager createStaggeredGridLayoutManager(
             AdapterManager.IHeaderFooterManager hfm, int spanCount, int orientation){
         FullSpannableStaggeredGridLayoutManager lm = new FullSpannableStaggeredGridLayoutManager(spanCount,orientation);
         lm.setSpanSizeLookupHelper(new HeaderFooterSpanSizeLookUp(hfm,spanCount));
         return lm;
     }
+    /**
+     * create GridLayoutManager and set {@link android.support.v7.widget.GridLayoutManager.SpanSizeLookup} for full span of header/footer.
+     * @param hfm the header/footer manager
+     * @param spanCount the really span count of layoutManager
+     * @param context the context.
+     * @return a instance of GridLayoutManager.
+     */
     public static GridLayoutManager createGridLayoutManager(AdapterManager.IHeaderFooterManager hfm,
                                                             Context context, int spanCount){
         GridLayoutManager lm = new GridLayoutManager(context,spanCount);
