@@ -178,4 +178,11 @@ public class  BaseFragmentPagerAdapter  extends PagerAdapter {
 	public CharSequence getPageTitle(int position) {
 		return fragmentDatas.get(position).title;
 	}
+	// =========================== self ======================
+
+	public Fragment getItem(int position){
+		FragmentData data = fragmentDatas.get(position);
+		ItemData item = mCache.get(data);
+		return item!=null ? item.fragment : null;
+	}
 }

@@ -288,6 +288,16 @@ public class ViewHelperImpl{
             this.context = context;
             this.gd = gd;
         }
+
+        /**
+         * reverse to the  t
+         * @param  t  the object to reverse.
+         * @param <T> the t
+         * @return the t
+         */
+        public <T>T reverse(T t ){
+            return t;
+        }
         public GradientDrawableHelper setColor(int color){
             gd.setColor(color);
             return this;
