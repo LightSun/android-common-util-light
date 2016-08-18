@@ -16,13 +16,18 @@
  */
 package com.heaven7.core.util;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextWatcher;
 import android.text.util.Linkify;
@@ -268,5 +273,84 @@ public class ViewHelperImpl{
     public ViewHelperImpl setScaleType(ImageView.ScaleType type) {
         ((ImageView)v).setScaleType(type);
         return this;
+    }
+    public GradientDrawableHelper beginGradientDrawableHelper() {
+        GradientDrawable gd = (GradientDrawable) v.getBackground();
+        return new GradientDrawableHelper(v.getContext(), gd);
+    }
+
+    public static class GradientDrawableHelper {
+
+        GradientDrawable gd;
+        Context context;
+
+        public GradientDrawableHelper(Context context, GradientDrawable gd) {
+            this.context = context;
+            this.gd = gd;
+        }
+        public GradientDrawableHelper setColor(int color){
+            gd.setColor(color);
+            return this;
+        }
+        @TargetApi(21)
+        public GradientDrawableHelper setColor(ColorStateList colorStateList){
+            gd.setColor(colorStateList);
+            return this;
+        }
+        public GradientDrawableHelper setAlpha(int alpha){
+            gd.setAlpha(alpha);
+            return this;
+        }
+        public GradientDrawableHelper setCornerRadius(float radius){
+            gd.setCornerRadius(radius);
+            return this;
+        }
+        public GradientDrawableHelper setStroke(int width, @ColorInt int color){
+            gd.setStroke(width, color);
+            return this;
+        }
+        public GradientDrawableHelper setStroke2(int width, @ColorRes int color){
+            gd.setStroke(width, ViewCompatUtil.getColor(context, color));
+            return this;
+        }
+        public GradientDrawableHelper setStroke(int width, @ColorRes int color,
+                                                float dashWidth, float dashGap){
+            gd.setStroke(width, ViewCompatUtil.getColor(context, color), dashWidth, dashGap);
+            return this;
+        }
+        @TargetApi(21)
+        public GradientDrawableHelper setStroke(int width, ColorStateList colorStateList){
+            gd.setStroke(width, colorStateList);
+            return this;
+        }
+        @TargetApi(21)
+        public GradientDrawableHelper setStroke(int width, ColorStateList colorStateList,
+                                                float dashWidth, float dashGap) {
+            gd.setStroke(width, colorStateList, dashWidth, dashGap);
+            return this;
+        }
+
+        public GradientDrawableHelper setShape(int shape) {
+            gd.setShape(shape);
+            return this;
+        }
+        public GradientDrawableHelper setCornerRadii(float[] radii) {
+            gd.setCornerRadii(radii);
+            return this;
+        }
+        public GradientDrawableHelper setSize(int width, int height) {
+            gd.setSize(width, height);
+            return this;
+        }
+        @TargetApi(21)
+        public GradientDrawableHelper setTintMode(PorterDuff.Mode tintMode) {
+            gd.setTintMode(tintMode);
+            return this;
+        }
+        @TargetApi(21)
+        public GradientDrawableHelper setTintList(ColorStateList tint) {
+            gd.setTintList(tint);
+            return this;
+        }
     }
 }

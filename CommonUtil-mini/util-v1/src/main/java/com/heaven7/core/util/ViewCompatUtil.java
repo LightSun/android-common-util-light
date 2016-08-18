@@ -17,8 +17,10 @@
 package com.heaven7.core.util;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.ColorRes;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 
@@ -32,6 +34,15 @@ public class ViewCompatUtil {
 		else
 			v.setBackgroundDrawable(d);
 	}
+
+	public static int getColor(Context context, @ColorRes int colorRes){
+       if(Build.VERSION.SDK_INT >= 23){
+		   return context.getColor(colorRes);
+	   }else{
+		   return context.getResources().getColor(colorRes);
+	   }
+	}
+
 
 	public static void setAlpha(View v, float value) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
