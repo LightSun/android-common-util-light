@@ -31,6 +31,8 @@ import android.widget.Adapter;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 
+import com.heaven7.core.util.viewhelper.action.IViewGetter;
+
 /**
  * for better use same view's method. cached it automatic for reuse.
  * @author heaven7
@@ -517,4 +519,10 @@ public class ViewHelper {
 	public ViewHelperImpl viewRoot(){
 		return mImpl.view(getRootView());
 	}
+
+	public <T extends View> ViewHelper performViewGetter(int viewId, IViewGetter<T> getter){
+		getter.onGotView((T) getView(viewId), this);
+		return this;
+	}
+
 }
