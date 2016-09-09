@@ -2,6 +2,7 @@ package com.heaven7.core.util.viewhelper.action;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.TextView;
 
 import com.heaven7.core.util.ViewHelper;
 
@@ -11,16 +12,29 @@ import com.heaven7.core.util.ViewHelper;
  */
 public abstract class AbstractBackgroundGetter<T extends Drawable> implements IViewGetter<View>{
 
+
+    @Override
+    public void onGotView(View view, ViewHelper vp) {
+         onGotBackground((T) view.getBackground(), view ,vp);
+    }
+
     /**
      * called when  got the view background
      * @param t the background from view
      * @param view the view to get background
      * @param vp the ViewHelper
      */
-    public abstract void onGotBackground(T  t, View view , ViewHelper vp);
+    protected void onGotBackground(T  t, View view , ViewHelper vp){
+        onGotTextViewBackground(t, (TextView) view, vp);
+    }
 
-    @Override
-    public void onGotView(View view, ViewHelper vp) {
-         onGotBackground((T) view.getBackground(), view ,vp);
+    /**
+     * called when  got the TextView background
+     * @param t the background from TextView
+     * @param view the TextView to get background
+     * @param vp the ViewHelper
+     */
+    protected void onGotTextViewBackground(T  t, TextView view , ViewHelper vp){
+
     }
 }

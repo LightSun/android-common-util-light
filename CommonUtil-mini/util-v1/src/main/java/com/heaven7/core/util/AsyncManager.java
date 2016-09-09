@@ -5,12 +5,14 @@ import android.os.Looper;
 import android.os.Message;
 
 /**
- * the async manager
+ * the async manager.
  * Created by heaven7 on 2016/8/12.
  */
 public abstract class AsyncManager{
 
+    /** work in main thread */
     protected final MainHanlder mMainHandler;
+    /** work in sub thread  */
     protected WorkHandler mWorkHandler;
 
     private Looper mLooper;
