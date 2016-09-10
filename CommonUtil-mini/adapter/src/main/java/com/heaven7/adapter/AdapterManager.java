@@ -115,7 +115,34 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
             mPostCallbacks.clear();
         }
     }
-    //============================================
+    //================================================
+
+    /**
+     * perform item change
+     * @param index the index
+     * @param changer the item changer
+     * @since 1.5.8
+     */
+    public void performItemChange(int index, ItemChanger<T> changer){
+        if(changer.onItemChange(getItemAt(index))){
+            notifyItemChanged(index);
+        }
+    }
+    /**
+     * perform item change
+     * @param data the data
+     * @param changer the item changer
+     * @since 1.5.8
+     */
+    public void performItemChange(T data, ItemChanger<T> changer){
+        final int index = mDatas.indexOf(data);
+        if(index != -1){
+            if (changer.onItemChange(data)) {
+                notifyItemChanged(index);
+            }
+        }
+    }
+    //=================================================
 
     public void addItem(int index, T item) {
         mDatas.add(index, item);
@@ -455,6 +482,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         }
     }
 
+
     /**
      * ths supporter of header and footer, call any method will automatic call
      * {@link QuickRecycleViewAdapter#notifyDataSetChanged()}.
@@ -567,6 +595,19 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.CLASS)
     @interface RemoveObservableMethod{
+    }
+
+    /**
+     * the item changer
+     * @param <T>
+     */
+    public interface ItemChanger<T>{
+        /**
+         * called when the item need change.
+         * @param t the item data which may be changed
+         * @return true if change data success , if success notify will called.
+         */
+        boolean onItemChange(T t);
     }
 
 }
