@@ -16,10 +16,15 @@
  */
 package com.heaven7.adapter;
 
+import android.database.Observable;
 import android.view.View;
 
 import com.heaven7.core.util.ViewHelper;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,26 +40,41 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     private final SelectHelper<T> mSelectHelper;
     private List<T> mDatas;
     private ArrayList<IPostRunnableCallback<T>> mPostCallbacks;
+    private AdapterDataRemovedObservable<T> mRemovedObservable;
 
     /**
-     * @param selectMode  see {@link ISelectable#SELECT_MODE_MULTI} or {@link ISelectable#SELECT_MODE_MULTI}
+     * @param selectMode see {@link ISelectable#SELECT_MODE_MULTI} or {@link ISelectable#SELECT_MODE_MULTI}
      */
-    /*public*/ AdapterManager(List<T> data,int selectMode,IAdapterManagerCallback2 callback2) {
+    /*public*/ AdapterManager(List<T> data, int selectMode, IAdapterManagerCallback2 callback2) {
         this.mDatas = data == null ? new ArrayList<T>() : new ArrayList<T>(data);
-        mSelectHelper = new SelectHelper<T>(selectMode,this);
+        mSelectHelper = new SelectHelper<T>(selectMode, this);
         mSelectHelper.initSelectPositions(data);
         this.mCallback2 = callback2;
     }
 
-    protected int getHeaderSize(){
-        return  getHeaderFooterManager()!=null ? getHeaderFooterManager().getHeaderSize() :0;
+    protected int getHeaderSize() {
+        return getHeaderFooterManager() != null ? getHeaderFooterManager().getHeaderSize() : 0;
     }
 
+    //======================== data remove listener ===============
+    public void registerAdapterDataRemoveObserver(IAdapterDataRemovedObserver<T> observer) {
+        if (mRemovedObservable == null) {
+            mRemovedObservable = new AdapterDataRemovedObservable<>();
+        }
+        mRemovedObservable.registerObserver(observer);
+    }
+
+    public void unregisterAdapterDataRemoveObserver(IAdapterDataRemovedObserver<T> observer) {
+        if (mRemovedObservable != null) {
+            mRemovedObservable.unregisterObserver(observer);
+        }
+    }
     //=====================  post callback  ================
 
     /***
      * the callbacks of IPostRunnableCallback.
-     * @since 1.7.5
+     *
+     * @since 1.7.5(pre)
      */
     ArrayList<IPostRunnableCallback<T>> getPostRunnableCallbacks() {
         return mPostCallbacks;
@@ -62,148 +82,196 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     /**
      * add a IPostRunnableCallback to run the last of bind adapter data.
+     *
      * @param callback the post callback
      * @since 1.7.5
      */
     public void addPostRunnableCallback(IPostRunnableCallback<T> callback) {
-        if(mPostCallbacks == null){
+        if (mPostCallbacks == null) {
             mPostCallbacks = new ArrayList<>(4);
         }
         this.mPostCallbacks.add(callback);
     }
+
     /**
      * remove a IPostRunnableCallback to run the last of bind adapter data.
+     *
      * @param callback the post callback
      * @since 1.7.5
      */
-    public void removePostRunnableCallback(IPostRunnableCallback<T> callback){
-        if(mPostCallbacks!=null){
+    public void removePostRunnableCallback(IPostRunnableCallback<T> callback) {
+        if (mPostCallbacks != null) {
             mPostCallbacks.remove(callback);
         }
     }
+
     /**
      * clear the array of  IPostRunnableCallback
+     *
      * @since 1.7.5
      */
-    public void clearPostRunnableCallbacks(){
-        if(mPostCallbacks!=null){
+    public void clearPostRunnableCallbacks() {
+        if (mPostCallbacks != null) {
             mPostCallbacks.clear();
         }
     }
     //============================================
 
-    public void addItem(int index, T item){
+    public void addItem(int index, T item) {
         mDatas.add(index, item);
-        if( isRecyclable()){
+        if (isRecyclable()) {
             notifyItemInserted(index + getHeaderSize());
         } else {
             notifyDataSetChanged();
         }
     }
 
-    public void addItem(T item){
+    public void addItem(T item) {
         mDatas.add(item);
-        if( isRecyclable()){
+        if (isRecyclable()) {
             notifyItemInserted(mDatas.size() - 1 + getHeaderSize());
         } else {
             notifyDataSetChanged();
         }
     }
 
-    public void addItems(T...items){
-        if( items == null || items.length ==0)
+    public void addItems(T... items) {
+        if (items == null || items.length == 0)
             return;
         addItems(Arrays.asList(items));
     }
-    public void addItems(int startIndex, Collection<T> items){
+
+    public void addItems(int startIndex, Collection<T> items) {
         final int preSize = mDatas.size();
-        if(startIndex < 0 || startIndex > preSize){
+        if (startIndex < 0 || startIndex > preSize) {
             throw new IllegalArgumentException();
         }
         mDatas.addAll(startIndex, items);
-        if(isRecyclable()){
+        if (isRecyclable()) {
             notifyItemRangeInserted(startIndex + getHeaderSize(), items.size());
         } else {
             notifyDataSetChanged();
         }
     }
-    public void addItems(Collection<T> items){
+
+    public void addItems(Collection<T> items) {
         final int preSize = mDatas.size();
         mDatas.addAll(items);
-        if(isRecyclable()){
+        if (isRecyclable()) {
             notifyItemRangeInserted(preSize + getHeaderSize(), items.size());
         } else {
             notifyDataSetChanged();
         }
     }
-
-    public void setItem(T oldItem, T newItem){
+    @RemoveObservableMethod
+    public void setItem(T oldItem, T newItem) {
         setItem(mDatas.indexOf(oldItem), newItem);
     }
 
+    @RemoveObservableMethod
     public void setItem(int index, T newItem) {
-        mDatas.set(index, newItem);
-        if(isRecyclable()){
+        if(index < 0 || index > getItemSize()-1){
+            return;
+        }
+        final T t = mDatas.remove(index);
+        notifyItemRemovedInternal(t);
+        notifyItemRemoved(index);
+        //for observable , i chaned this implement.
+        addItem(index, newItem);
+
+       /* final T t = mDatas.set(index, newItem);
+        notifyItemRemovedInternal(t);
+        if (isRecyclable()) {
             notifyItemChanged(index + getHeaderSize());
+        } else {
+            notifyDataSetChanged();
+        }*/
+    }
+
+    @RemoveObservableMethod
+    public void removeItem(T item) {
+        removeItem(mDatas.indexOf(item));
+    }
+    @RemoveObservableMethod
+    public void removeItem(int index) {
+        if (index == -1 || index > getItemSize() - 1) {
+            return;
+        }
+        final T removedItem = mDatas.remove(index);
+        notifyItemRemovedInternal(removedItem);
+        if (isRecyclable()) {
+            notifyItemRemoved(index + getHeaderSize());
         } else {
             notifyDataSetChanged();
         }
     }
-
-    public void removeItem(T item){
-       removeItem(mDatas.indexOf(item));
-    }
-
-    public void removeItem(int index){
-        mDatas.remove(index);
-        if(isRecyclable()){
-            notifyItemRemoved(index + getHeaderSize());
-        }else {
-            notifyDataSetChanged();
-        }
-    }
-    public void removeItems(List<T> ts){
-        if(ts == null || ts.size() == 0)
+    @RemoveObservableMethod
+    public void removeItems(List<T> ts) {
+        if (ts == null || ts.size() == 0)
             return;
         List<T> mDatas = this.mDatas;
-        for(int i=0,size = ts.size() ;i<size ; i++){
+        for (int i = 0, size = ts.size(); i < size; i++) {
             mDatas.remove(ts.get(i));
         }
+        notifyItemRangeRemovedInternal(ts);
         notifyDataSetChanged();
     }
-    public void removeItemsByPosition(List<Integer> positions){
-        if(positions == null || positions.size()==0)
+
+    @RemoveObservableMethod
+    public void removeItemsByPosition(List<Integer> positions) {
+        if (positions == null || positions.size() == 0)
             return;
+        final AdapterDataRemovedObservable<T> mRemovedObservable = this.mRemovedObservable;
+        final boolean hasObserver = mRemovedObservable != null && mRemovedObservable.hasObservers();
         List<T> mDatas = this.mDatas;
-        int pos ;
-        for(int i=0,size = positions.size() ;i<size ; i++){
+        int pos;
+        T t;
+        for (int i = 0, size = positions.size(); i < size; i++) {
             pos = positions.get(i);
-            mDatas.remove(pos);
+            t = mDatas.remove(pos);
+            if(hasObserver){
+                mRemovedObservable.addItem(t);
+            }
+        }
+        if(hasObserver){
+            mRemovedObservable.notifyItemRangeRemoved();
         }
         notifyDataSetChanged();
     }
 
+    @RemoveObservableMethod
     public void replaceAllItems(List<T> items) {
+        final boolean hasObserver = observeAllItems();
         mDatas.clear();
         mDatas.addAll(items);
         mSelectHelper.initSelectPositions(items);
+
+        if(hasObserver){
+            mRemovedObservable.notifyItemRangeRemoved();
+        }
         notifyDataSetChanged();
     }
 
+    @RemoveObservableMethod
     public void clearItems() {
+        final boolean hasObserver = observeAllItems();
         mDatas.clear();
+        if(hasObserver){
+            mRemovedObservable.notifyItemRangeRemoved();
+        }
         notifyDataSetChanged();
     }
 
-    public List<T> getItems(){
+    public List<T> getItems() {
         return mDatas;
     }
-    public boolean containsItem(T item){
+
+    public boolean containsItem(T item) {
         return mDatas.contains(item);
     }
 
     @Override
-    public final void notifyDataSetChanged(){
+    public final void notifyDataSetChanged() {
         mCallback2.beforeNotifyDataChanged();
         mCallback2.notifyDataSetChanged();
         mCallback2.afterNotifyDataChanged();
@@ -212,7 +280,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     // =========== begin recycleview ==============//
 
     private void checkIfSupport() {
-        if(!isRecyclable()){
+        if (!isRecyclable()) {
             throw new UnsupportedOperationException("only recycle view support");
         }
     }
@@ -222,19 +290,21 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         position += getHeaderSize();
         mCallback2.notifyItemInserted(position);
     }
+
     @Override
     public final void notifyItemChanged(int position) {
         checkIfSupport();
         position += getHeaderSize();
         mCallback2.notifyItemChanged(position);
     }
+
     public final void notifyItemRemoved(int position) {
         checkIfSupport();
         position += getHeaderSize();
         mCallback2.notifyItemRemoved(position);
     }
 
-    public final void notifyItemMoved(int fromPosition, int toPosition){
+    public final void notifyItemMoved(int fromPosition, int toPosition) {
         checkIfSupport();
         fromPosition += getHeaderSize();
         toPosition += getHeaderSize();
@@ -247,7 +317,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         mCallback2.notifyItemRangeChanged(positionStart, itemCount);
     }
 
-    public final void notifyItemRangeInserted(int positionStart, int itemCount){
+    public final void notifyItemRangeInserted(int positionStart, int itemCount) {
         checkIfSupport();
         positionStart += getHeaderSize();
         mCallback2.notifyItemRangeInserted(positionStart, itemCount);
@@ -260,7 +330,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     }
 
     @Override
-    public boolean isRecyclable(){
+    public boolean isRecyclable() {
         return mCallback2.isRecyclable();
     }
 
@@ -272,19 +342,117 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     //================== ========================//
 
-    public IHeaderFooterManager getHeaderFooterManager(){
+    public IHeaderFooterManager getHeaderFooterManager() {
         throw new UnsupportedOperationException();
     }
 
     public int getItemSize() {
         return mDatas.size();
     }
-    public T getItemAt(int index){
+
+    public T getItemAt(int index) {
         return mDatas.get(index);
     }
 
-    public SelectHelper<T> getSelectHelper(){
+    public SelectHelper<T> getSelectHelper() {
         return mSelectHelper;
+    }
+
+    /**
+     * observe the current all items by the AdapterDataRemovedObservable.
+     * @return true if has observer.
+     * @since 1.5.7
+     */
+    private boolean observeAllItems() {
+        AdapterDataRemovedObservable<T> mRemovedObservable = AdapterManager.this.mRemovedObservable;
+        boolean hasObserver = false;
+        if( mRemovedObservable != null && mRemovedObservable.hasObservers()){
+            hasObserver = true;
+            mRemovedObservable.addItems(mDatas);
+        }
+        return hasObserver;
+    }
+
+    private void notifyItemRemovedInternal(T removedItem) {
+        if (mRemovedObservable != null && mRemovedObservable.hasObservers()) {
+            mRemovedObservable.notifyItemRemoved(removedItem);
+        }
+    }
+    private void notifyItemRangeRemovedInternal(List<T> removedItems) {
+        if (mRemovedObservable != null && mRemovedObservable.hasObservers()) {
+            mRemovedObservable.notifyItemRangeRemoved(removedItems);
+        }
+    }
+
+    /**
+     * the adapter data observer.
+     * <p>notify item by ourselves. or else can't fix some problem of count down timer</p>
+     * @since 1.5.7
+     */
+    public interface IAdapterDataRemovedObserver<T> {
+
+        /**
+         * called when one or more item is removed.
+         *
+         * @param items the items
+         */
+        void onItemRangeRemoved(List<T> items);
+    }
+
+    /**
+     * the internal data removed observable
+     * @param <T> the data type
+     * @since 1.5.7
+     */
+    static class AdapterDataRemovedObservable<T> extends Observable<IAdapterDataRemovedObserver<T>> {
+
+        private final ArrayList<T> removedItems = new ArrayList<>();
+
+        public void addItem(T t) {
+            removedItems.add(t);
+        }
+
+        public void addItems(List<T> items) {
+            removedItems.addAll(items);
+        }
+
+        public void clear() {
+            removedItems.clear();
+        }
+
+        public boolean hasObservers() {
+            return !mObservers.isEmpty();
+        }
+
+        /**
+         * notify item removed. after this the pool of removed items will clear.
+         *
+         * @param items the items data
+         */
+        public void notifyItemRangeRemoved(List<T> items) {
+            addItems(items);
+            notifyItemRangeRemoved();
+        }
+
+        /**
+         * notify item removed. after this the pool of removed items will clear.
+         *
+         * @param t the item data
+         */
+        public void notifyItemRemoved(T t) {
+            addItem(t);
+            notifyItemRangeRemoved();
+        }
+
+        /**
+         * notify item removed. after this the pool of removed items will clear.
+         */
+        public void notifyItemRangeRemoved() {
+            for (int i = mObservers.size() - 1; i >= 0; i--) {
+                mObservers.get(i).onItemRangeRemoved(removedItems);
+            }
+            removedItems.clear();
+        }
     }
 
     /**
@@ -292,19 +460,26 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
      * {@link QuickRecycleViewAdapter#notifyDataSetChanged()}.
      * in recyclerView .this is only can be used by LinearLayoutManager
      */
-    public interface IHeaderFooterManager{
+    public interface IHeaderFooterManager {
 
         void addHeaderView(View v);
+
         void removeHeaderView(View v);
+
         void addFooterView(View v);
+
         void removeFooterView(View v);
+
         int getHeaderSize();
+
         int getFooterSize();
+
         boolean isFooter(int position);
+
         boolean isHeader(int position);
     }
 
-    public interface IAdapterManagerCallback<T extends ISelectable>{
+    public interface IAdapterManagerCallback<T extends ISelectable> {
 
         AdapterManager<T> getAdapterManager();
     }
@@ -312,63 +487,86 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     /**
      * a callback will run after quickAdapter.onBindData(...) and in Runnable .
      * this is useful when you need post a runnable at last of bind adapter data in every position.
+     *
      * @param <T> the entity
      */
-    public interface IPostRunnableCallback<T extends ISelectable>{
+    public interface IPostRunnableCallback<T extends ISelectable> {
 
         /**
          * called in every position's bind data.
-         * @param position the position
-         * @param item the data
-         * @param itemLayoutId  the layout id
-         * @param helper the view helper
+         *
+         * @param position     the position
+         * @param item         the data
+         * @param itemLayoutId the layout id
+         * @param helper       the view helper
          */
         void onPostCallback(int position, T item, int itemLayoutId, ViewHelper helper);
     }
 
-    interface IAdapterManagerCallback2{
-         void notifyItemInserted(int position);
+    interface IAdapterManagerCallback2 {
+        void notifyItemInserted(int position);
 
-         void notifyItemChanged(int position);
+        void notifyItemChanged(int position);
 
-         void notifyItemRemoved(int position);
+        void notifyItemRemoved(int position);
 
-         void notifyItemMoved(int fromPosition, int toPosition);
+        void notifyItemMoved(int fromPosition, int toPosition);
 
-         void notifyItemRangeChanged(int positionStart, int itemCount);
+        void notifyItemRangeChanged(int positionStart, int itemCount);
 
-         void notifyItemRangeInserted(int positionStart, int itemCount);
+        void notifyItemRangeInserted(int positionStart, int itemCount);
 
-         void notifyItemRangeRemoved(int positionStart, int itemCount);
+        void notifyItemRangeRemoved(int positionStart, int itemCount);
 
         // =========== end recycleview ==============//
 
         void notifyDataSetChanged();
 
-         boolean isRecyclable();
+        boolean isRecyclable();
 
-        /** this called before {@link #notifyDataSetChanged()} */
-         void beforeNotifyDataChanged();
-        /** this called after {@link #notifyDataSetChanged()} */
-         void afterNotifyDataChanged();
+        /**
+         * this called before {@link #notifyDataSetChanged()}
+         */
+        void beforeNotifyDataChanged();
+
+        /**
+         * this called after {@link #notifyDataSetChanged()}
+         */
+        void afterNotifyDataChanged();
     }
 
-    static abstract class SimpleAdapterManagerCallback2 implements IAdapterManagerCallback2{
 
-        public void notifyItemInserted(int position) {}
+    static abstract class SimpleAdapterManagerCallback2 implements IAdapterManagerCallback2 {
 
-        public void notifyItemChanged(int position) {}
+        public void notifyItemInserted(int position) {
+        }
 
-        public void notifyItemRemoved(int position) {}
+        public void notifyItemChanged(int position) {
+        }
 
-        public void notifyItemMoved(int fromPosition, int toPosition){}
+        public void notifyItemRemoved(int position) {
+        }
 
-        public void notifyItemRangeChanged(int positionStart, int itemCount){}
+        public void notifyItemMoved(int fromPosition, int toPosition) {
+        }
 
-        public void notifyItemRangeInserted(int positionStart, int itemCount){}
+        public void notifyItemRangeChanged(int positionStart, int itemCount) {
+        }
 
-        public void notifyItemRangeRemoved(int positionStart, int itemCount){}
+        public void notifyItemRangeInserted(int positionStart, int itemCount) {
+        }
 
+        public void notifyItemRangeRemoved(int positionStart, int itemCount) {
+        }
+
+    }
+
+    /**
+     * indicate the method is observable for {@link AdapterDataRemovedObservable}
+     */
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.CLASS)
+    @interface RemoveObservableMethod{
     }
 
 }
