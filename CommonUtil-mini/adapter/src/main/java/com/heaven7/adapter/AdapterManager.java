@@ -200,12 +200,16 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         if(index < 0 || index > getItemSize()-1){
             return;
         }
-        final T t = mDatas.remove(index);
-        notifyItemRemovedInternal(t);
-        notifyItemRemoved(index);
-        //for observable , i chaned this implement.
-        addItem(index, newItem);
-
+        if(isRecyclable()){
+            final T t = mDatas.remove(index);
+            notifyItemRemovedInternal(t);
+            notifyItemRemoved(index);
+            //for observable , i chaned this implement.
+            addItem(index, newItem);
+        }else{
+            mDatas.set(index, newItem);
+            notifyDataSetChanged();
+        }
        /* final T t = mDatas.set(index, newItem);
         notifyItemRemovedInternal(t);
         if (isRecyclable()) {
