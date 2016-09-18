@@ -125,7 +125,11 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
      */
     public void performItemChange(int index, ItemChanger<T> changer){
         if(changer.onItemChange(getItemAt(index))){
-            notifyItemChanged(index);
+            if(isRecyclable()){
+                notifyItemChanged(index);
+            }else{
+                notifyDataSetChanged();
+            }
         }
     }
     /**
@@ -138,7 +142,11 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         final int index = mDatas.indexOf(data);
         if(index != -1){
             if (changer.onItemChange(data)) {
-                notifyItemChanged(index);
+                if(isRecyclable()){
+                    notifyItemChanged(index);
+                }else{
+                    notifyDataSetChanged();
+                }
             }
         }
     }
@@ -396,12 +404,11 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
      */
     private boolean observeAllItems() {
         AdapterDataRemovedObservable<T> mRemovedObservable = AdapterManager.this.mRemovedObservable;
-        boolean hasObserver = false;
         if( mRemovedObservable != null && mRemovedObservable.hasObservers()){
-            hasObserver = true;
             mRemovedObservable.addItems(mDatas);
+            return true;
         }
-        return hasObserver;
+        return false;
     }
 
     private void notifyItemRemovedInternal(T removedItem) {
