@@ -10,7 +10,6 @@
       <module fileurl="file://$PROJECT_DIR$/ipc-server/ipc-server.iml" filepath="$PROJECT_DIR$/ipc-server/ipc-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/memory/memory.iml" filepath="$PROJECT_DIR$/memory/memory.iml" />
       <module fileurl="file://$PROJECT_DIR$/savestate/savestate.iml" filepath="$PROJECT_DIR$/savestate/savestate.iml" />
-      <module fileurl="file://$PROJECT_DIR$/savestate/savestste.iml" filepath="$PROJECT_DIR$/savestate/savestste.iml" />
       <module fileurl="file://$PROJECT_DIR$/util-extra/util-extra.iml" filepath="$PROJECT_DIR$/util-extra/util-extra.iml" />
       <module fileurl="file://$PROJECT_DIR$/util-v1/util-v1.iml" filepath="$PROJECT_DIR$/util-v1/util-v1.iml" />
     </modules>

@@ -69,7 +69,9 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         if(mPostCallbacks == null){
             mPostCallbacks = new ArrayList<>(4);
         }
-        this.mPostCallbacks.add(callback);
+        if(!mPostCallbacks.contains(callback)) {
+            this.mPostCallbacks.add(callback);
+        }
     }
     /**
      * remove a IPostRunnableCallback to run the last of bind adapter data.

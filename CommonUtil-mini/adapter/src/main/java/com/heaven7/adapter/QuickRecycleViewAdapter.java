@@ -142,11 +142,11 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
 
     @Override
     public boolean isHeader(int position) {
-        return mHeaderFooterHelper.isInHeader(position);
+        return mHeaderFooterHelper!=null && mHeaderFooterHelper.isInHeader(position)  ;
     }
     @Override
     public boolean isFooter(int position) {
-        return mHeaderFooterHelper.isInFooter(position, mAdapterManager.getItemSize());
+        return mHeaderFooterHelper!=null && mHeaderFooterHelper.isInFooter(position, mAdapterManager.getItemSize());
     }
     // =================== end header footer view ======================= //
 
