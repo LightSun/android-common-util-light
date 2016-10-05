@@ -4,7 +4,7 @@ import android.hardware.Camera;
 import android.util.Log;
 
 @Deprecated
-public class OpenCameraInterface {
+/*public*/ class OpenCameraInterface {
 
     private static final String TAG = OpenCameraInterface.class.getName();
 

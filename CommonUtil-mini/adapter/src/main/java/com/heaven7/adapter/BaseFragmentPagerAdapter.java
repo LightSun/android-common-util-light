@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * i extend it.
  * thanks to xiaofan
+ * @author heaven7
  */
 public class BaseFragmentPagerAdapter extends PagerAdapter {
 
@@ -336,6 +337,11 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
         return mFragmentDatas.get(position).title;
     }
 
+	public Fragment getItem(int position){
+		FragmentData data = fragmentDatas.get(position);
+		ItemData item = mCache.get(data);
+		return item!=null ? item.fragment : null;
+	}
     /**
      * contains: title, fragmentClass and fragment args(arguments)
      */

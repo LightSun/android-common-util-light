@@ -12,10 +12,12 @@ import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.BulletSpan;
+import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.RelativeSizeSpan;
@@ -397,4 +399,47 @@ public class StyledText extends SpannableStringBuilder {
             canvas.restore();
         }
     }
+
+    public static class TextClickSpan extends ClickableSpan  {
+        private final IOnClickTextListener mListener;
+        private final int mColor;
+        private final String mText;
+
+        public TextClickSpan(IOnClickTextListener listener, int color) {
+            this(listener, null, color);
+        }
+        public TextClickSpan(IOnClickTextListener listener, String text , int color) {
+            this.mListener = listener;
+            this.mColor = color;
+            this.mText = text;
+        }
+
+        @Override
+        public void onClick(View widget) {
+            if (mListener != null) {
+                mListener.onClick(widget,mText);
+            }
+        }
+
+        @Override
+        public void updateDrawState(TextPaint ds) {
+            super.updateDrawState(ds);
+            ds.setColor(mColor);
+            ds.setUnderlineText(false);
+            ds.clearShadowLayer();
+        }
+
+        /**
+         * the listener of click TextClickSpan.
+         */
+        public interface IOnClickTextListener{
+            /**
+             * called when the span is clicked.
+             * @param view the view
+             * @param text the text , maybe null if unknown
+             */
+            void onClick(View view, String text);
+        }
+    }
+
 }
