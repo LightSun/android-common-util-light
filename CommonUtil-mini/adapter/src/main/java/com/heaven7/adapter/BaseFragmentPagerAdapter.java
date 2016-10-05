@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * i extend it.
  * thanks to xiaofan
+ *
  * @author heaven7
  */
 public class BaseFragmentPagerAdapter extends PagerAdapter {
@@ -47,6 +48,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
     public IPageChangeListener getOnPagerChangeListener() {
         return mListener;
     }
+
     public void setPageChangeListener(IPageChangeListener mListener) {
         this.mListener = mListener;
     }
@@ -55,7 +57,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
      * Sorts the given list in ascending natural order. The algorithm is
      * stable which means equal elements don't get reordered.
      *
-     * @since 1.5.6
+     * @since 1.6.2
      */
     public void sort() {
         sort(null);
@@ -65,7 +67,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
      * sort the fragment with the target comparator,
      *
      * @param comparator the Comparator, null means Sorts the given list in ascending natural order.
-     * @since 1.5.6
+     * @since 1.6.2
      */
     public void sort(Comparator<FragmentData> comparator) {
         saveOldOrder();
@@ -89,6 +91,10 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
             int oldPos = mTempList.indexOf(data);
             if (oldPos != i) {
                 changed = true;
+                final ItemData itemData = mCache.get(data);
+                if (itemData != null) {
+                    itemData.position = i;
+                }
                 final Fragment.SavedState state = mSavedState.get(oldPos);
                 if (state != null) {
                     temp.put(i, state);
@@ -118,13 +124,13 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
      * add a FragmentData
      *
      * @param data the fragment data
-     * @since 1.5.6
+     * @since 1.6.2
      */
     public void addFragmentData(FragmentData data) {
         if (!mFragmentDatas.contains(data)) {
             mFragmentDatas.add(data);
             if (mListener != null) {
-                mListener.afterAdd(this, data, mFragmentDatas.size() - 1);
+                mListener.onAdd(this, data, mFragmentDatas.size() - 1);
             }
             notifyDataSetChanged();
         }
@@ -133,9 +139,9 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
     /**
      * add a FragmentData by target position.
      *
-     * @param data the fragment data
+     * @param data     the fragment data
      * @param position the position to insert/add
-     * @since 1.5.6
+     * @since 1.6.2
      */
     public void addFragmentData(FragmentData data, int position) {
         if (position < 0 || position > mFragmentDatas.size()) {
@@ -144,7 +150,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
         if (!mFragmentDatas.contains(data)) {
             mFragmentDatas.add(position, data);
             if (mListener != null) {
-                mListener.afterAdd(this, data, position);
+                mListener.onAdd(this, data, position);
                 for (int i = position + 1, size = mFragmentDatas.size(); i < size; i++) {
                     mListener.onPositionChanged(this, mFragmentDatas.get(i), i - 1, i);
                 }
@@ -157,7 +163,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
      * add  FragmentData
      *
      * @param datas the fragment datas
-     * @since 1.5.6
+     * @since 1.6.2
      */
     public void addFragmentData(List<FragmentData> datas) {
         if (datas == null) {
@@ -169,7 +175,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
             if (!mFragmentDatas.contains(data)) {
                 mFragmentDatas.add(data);
                 if (l != null) {
-                    l.afterAdd(this, data, mFragmentDatas.size() - 1);
+                    l.onAdd(this, data, mFragmentDatas.size() - 1);
                 }
             }
         }
@@ -180,14 +186,14 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
      * remove a FragmentData
      *
      * @param data the fragment data
-     * @since 1.5.6
+     * @since 1.6.2
      */
     public void removeFragmentData(FragmentData data) {
         final int index = mFragmentDatas.indexOf(data);
         if (index != -1) {
             mFragmentDatas.remove(index);
             if (mListener != null) {
-                mListener.afterRemove(this, data);
+                mListener.onRemove(this, data);
             }
             notifyDataSetChanged();
         }
@@ -197,7 +203,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
      * remove list of  FragmentData
      *
      * @param datas the fragment datas
-     * @since 1.5.6
+     * @since 1.6.2
      */
     public void removeFragmentData(List<FragmentData> datas) {
         if (datas == null) {
@@ -208,7 +214,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
         for (FragmentData data : datas) {
             mFragmentDatas.remove(data);
             if (l != null) {
-                l.afterRemove(this, data);
+                l.onRemove(this, data);
             }
         }
         notifyDataSetChanged();
@@ -216,10 +222,11 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
 
     /**
      * get the current fragment data.
+     *
      * @return the current ftagment data
-     * @since 1.5.6
+     * @since 1.6.2
      */
-    public List<FragmentData> getFragmentDatas(){
+    public List<FragmentData> getFragmentDatas() {
         return mFragmentDatas;
     }
 
@@ -337,11 +344,30 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
         return mFragmentDatas.get(position).title;
     }
 
-	public Fragment getItem(int position){
-		FragmentData data = fragmentDatas.get(position);
-		ItemData item = mCache.get(data);
-		return item!=null ? item.fragment : null;
-	}
+    /**
+     * return the fragment of target position. if target Fragment not create , return null.
+     * use {@link #getFragment(int)} instead.
+     *
+     * @param position the position
+     * @return fragment
+     */
+    @Deprecated
+    public Fragment getItem(int position) {
+        return getFragment(position);
+    }
+
+    /**
+     * return the fragment of target position. if target Fragment not create , return null.
+     *
+     * @param position the position
+     * @return fragment
+     */
+    public Fragment getFragment(int position) {
+        FragmentData data = mFragmentDatas.get(position);
+        ItemData item = mCache.get(data);
+        return item != null ? item.fragment : null;
+    }
+
     /**
      * contains: title, fragmentClass and fragment args(arguments)
      */
@@ -396,7 +422,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
          * @param adapter the adapter
          * @param data    the fragment data
          */
-        void afterRemove(BaseFragmentPagerAdapter adapter, FragmentData data);
+        void onRemove(BaseFragmentPagerAdapter adapter, FragmentData data);
 
         /**
          * called after add a FragmentData.
@@ -405,7 +431,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
          * @param data    the fragment data
          * @param pos     old position
          */
-        void afterAdd(BaseFragmentPagerAdapter adapter, FragmentData data, int pos);
+        void onAdd(BaseFragmentPagerAdapter adapter, FragmentData data, int pos);
 
         /**
          * called on position changed
