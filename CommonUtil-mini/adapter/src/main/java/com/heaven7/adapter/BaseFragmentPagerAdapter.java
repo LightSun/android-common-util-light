@@ -305,9 +305,10 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
         ItemData item = mCache.get(data);
         if (item != null) {
             item.position = position;
-            if (item.fragment.getView().getParent() == null)
+            if (item.fragment.getView() != null && item.fragment.getView().getParent() == null) {
                 container.addView(item.fragment.getView());
-            return item;
+                return item;
+            }
         }
 
         Fragment fragment = Fragment.instantiate(container.getContext(),
