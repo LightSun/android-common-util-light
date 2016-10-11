@@ -46,10 +46,17 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
         this.mFragmentDatas = fragmentDatas;
     }
 
+    /**
+     * get the page change listener
+     * @return  the page change listener
+     */
     public IPageChangeListener getOnPagerChangeListener() {
         return mListener;
     }
-
+    /**
+     * set the page change listener
+     * @param mListener the page listener often used with titles, such as subscribe item.
+     */
     public void setPageChangeListener(IPageChangeListener mListener) {
         this.mListener = mListener;
     }
@@ -93,10 +100,6 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
             int oldPos = mTempList.indexOf(data);
             if (oldPos != i) {
                 changed = true;
-                final ItemData itemData = mCache.get(data);
-                if (itemData != null) {
-                    itemData.position = i;
-                }
                 final Fragment.SavedState state = mSavedState.get(oldPos);
                 if (state != null) {
                     temp.put(i, state);
@@ -221,6 +224,13 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
                 }
                 index ++ ;
             }
+            //check position change
+            if ( l != null) {
+                final int deltaSize = datas.size();
+                for (int i = position + deltaSize, size = mFragmentDatas.size(); i < size; i++) {
+                    l.onPositionChanged(this, mFragmentDatas.get(i), i - deltaSize, i);
+                }
+            }
             notifyDataSetChanged();
         }else{
             mFragmentDatas.addAll(position, datas);
@@ -231,12 +241,14 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
         if (position < 0 || position > mFragmentDatas.size()) {
             throw new IllegalArgumentException();
         }
+        final List<FragmentData> mFragmentDatas = this.mFragmentDatas;
         mFragmentDatas.add(position, data);
         if(notify) {
-            if (mListener != null) {
-                mListener.onAdd(this, data, position);
+            final IPageChangeListener l = this.getOnPagerChangeListener();
+            if (l != null) {
+                l.onAdd(this, data, position);
                 for (int i = position + 1, size = mFragmentDatas.size(); i < size; i++) {
-                    mListener.onPositionChanged(this, mFragmentDatas.get(i), i - 1, i);
+                    l.onPositionChanged(this, mFragmentDatas.get(i), i - 1, i);
                 }
             }
             notifyDataSetChanged();
@@ -246,6 +258,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
     private void removeFragmentDataImpl(FragmentData data , boolean notify) {
         final int index = mFragmentDatas.indexOf(data);
         if (index != -1) {
+            mSavedState.remove(index);
             mFragmentDatas.remove(index);
             if(notify) {
                 if (mListener != null) {
@@ -261,21 +274,28 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
             throw new NullPointerException();
         }
         final List<FragmentData> mFragmentDatas = this.mFragmentDatas;
-        if(notify) {
+        final SparseArray<Fragment.SavedState> mSavedState = this.mSavedState;
+
+        if( notify){
             final IPageChangeListener l = this.getOnPagerChangeListener();
             for (FragmentData data : datas) {
                 int index = mFragmentDatas.indexOf(data);
                 if (index == -1)
                     continue;
+                mSavedState.remove(index);
                 mFragmentDatas.remove(index);
-                if (l != null) {
+                if ( l != null) {
                     l.onRemove(this, data, index);
                 }
             }
             notifyDataSetChanged();
         }else{
             for (FragmentData data : datas) {
-                mFragmentDatas.remove(data);
+                int index = mFragmentDatas.indexOf(data);
+                if (index == -1)
+                    continue;
+                mSavedState.remove(index);
+                mFragmentDatas.remove(index);
             }
         }
     }
@@ -442,13 +462,28 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
      * contains: title, fragmentClass and fragment args(arguments)
      */
     public static class FragmentData implements Comparable<FragmentData> {
+        /**
+         * the title to show
+         */
         public String title;
+        /**
+         * the fragment class
+         */
         public Class<?> fragmentClass;
+        /**
+         * the arguments of create fragment
+         */
         public Bundle bundle;
         /**
          * this is only used in {@link BaseFragmentPagerAdapter#sort(Comparator)}
          */
         public int priority;
+
+        /**
+         * the extra data
+         */
+        public Object extra;
+
 
         public FragmentData(String title, Class<?> fragmentClass, Bundle bundle) {
             super();
@@ -528,6 +563,19 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
         void onPositionChanged(BaseFragmentPagerAdapter adapter, FragmentData data, int oldPos, int newPos);
     }
 
+    public static class SimplePageChangeListener implements IPageChangeListener{
+
+        @Override
+        public void onRemove(BaseFragmentPagerAdapter adapter, FragmentData data, int pos) {
+        }
+        @Override
+        public void onAdd(BaseFragmentPagerAdapter adapter, FragmentData data, int pos) {
+        }
+        @Override
+        public void onPositionChanged(BaseFragmentPagerAdapter adapter, FragmentData data, int oldPos, int newPos) {
+        }
+    }
+
     private class Transaction extends PagerAdapterTransaction{
 
         @Override
@@ -585,6 +633,8 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
             final IPageChangeListener l = mListener;
             //add /remove /pos_change
             if( l != null) {
+                final SparseArray<Fragment.SavedState> temp = new SparseArray<>();
+                final SparseArray<Fragment.SavedState> savedState = mSavedState;
                 final BaseFragmentPagerAdapter adapter = BaseFragmentPagerAdapter.this;
                 for (int size = newList.size(), i = size - 1; i >=0 ; i--) {
                     final FragmentData data = newList.get(i);
@@ -592,6 +642,10 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
                     if (oldIndex == -1) {
                         l.onAdd(adapter, data, i);
                     }else if(i != oldIndex){
+                        final Fragment.SavedState state = savedState.get(oldIndex);
+                        if (state != null) {
+                            temp.put(i, state);
+                        }
                         l.onPositionChanged(adapter, data, oldIndex, i);
                     }
                 }
@@ -599,9 +653,11 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
                     final FragmentData data = oldList.get(i);
                     final int newIndex = newList.indexOf(data);
                     if (newIndex == -1) {
+                        //savedState.remove(i); // no need now
                         l.onRemove(adapter, data, i);
                     }
                 }
+                mSavedState = temp;
             }
             notifyDataSetChanged();
             mBegined = false;
