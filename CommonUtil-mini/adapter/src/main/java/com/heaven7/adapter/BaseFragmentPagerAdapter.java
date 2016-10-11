@@ -586,7 +586,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
             //add /remove /pos_change
             if( l != null) {
                 final BaseFragmentPagerAdapter adapter = BaseFragmentPagerAdapter.this;
-                for (int size = newList.size(), i = size - 1; i < size; i--) {
+                for (int size = newList.size(), i = size - 1; i >=0 ; i--) {
                     final FragmentData data = newList.get(i);
                     final int oldIndex = oldList.indexOf(data);
                     if (oldIndex == -1) {
@@ -595,7 +595,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
                         l.onPositionChanged(adapter, data, oldIndex, i);
                     }
                 }
-                for (int size = oldList.size(), i = size - 1; i < size; i--) {
+                for (int size = oldList.size(), i = size - 1; i >=0 ; i--) {
                     final FragmentData data = oldList.get(i);
                     final int newIndex = newList.indexOf(data);
                     if (newIndex == -1) {
