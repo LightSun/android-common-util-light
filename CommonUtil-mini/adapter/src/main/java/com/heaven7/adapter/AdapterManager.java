@@ -282,6 +282,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     @RemoveObservableMethod
     public void replaceAllItems(List<T> items) {
+        mSelectHelper.clearAllSelected();
         final boolean hasObserver = observeAllItems();
         mDatas.clear();
         mDatas.addAll(items);
