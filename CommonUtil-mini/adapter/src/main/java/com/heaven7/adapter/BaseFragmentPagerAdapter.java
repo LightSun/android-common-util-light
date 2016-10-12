@@ -209,6 +209,15 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
         return mFragmentDatas;
     }
 
+    /**
+     * get the fragment data at target index
+     * @param index the target index
+     * @return the FragmentData
+     */
+    public FragmentData getFragmentDataAt(int index) {
+        return mFragmentDatas.get(index);
+    }
+
     private void addFragmentDataImpl(int position, List<FragmentData> datas, boolean notify) {
         if (datas == null || position < 0 || position > mFragmentDatas.size()) {
             throw new IllegalArgumentException();
