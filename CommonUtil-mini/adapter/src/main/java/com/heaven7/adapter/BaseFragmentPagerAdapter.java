@@ -520,6 +520,17 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
         public int hashCode() {
             return title.hashCode();
         }
+
+        @Override
+        public String toString() {
+            return "FragmentData{" +
+                    "title='" + title + '\'' +
+                    ", fragmentClass=" + fragmentClass +
+                    ", bundle=" + bundle +
+                    ", priority=" + priority +
+                    ", extra=" + extra +
+                    '}';
+        }
     }
 
     /**
