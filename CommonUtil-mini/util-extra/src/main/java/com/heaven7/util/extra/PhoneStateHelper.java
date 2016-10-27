@@ -12,18 +12,18 @@ public class PhoneStateHelper {
     private final TelephonyManager mTm;
     private PhoneStateListener mListener;
 
-    public PhoneStateHelper(Context context, PhoneStateListener l) {
+    public PhoneStateHelper(Context context) {
         mTm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
     }
 
-    public void registerPhoneStateListener(PhoneStateListener l, int events){
+    public void registerPhoneStateListener(PhoneStateListener l, int events) {
         mTm.listen(l, events);
         mListener = l;
     }
 
-    public void unregister(){
-        if(mListener!=null){
-            mTm.listen(mListener ,PhoneStateListener.LISTEN_NONE);
+    public void unregister() {
+        if (mListener != null) {
+            mTm.listen(mListener, PhoneStateListener.LISTEN_NONE);
             mListener = null;
         }
     }

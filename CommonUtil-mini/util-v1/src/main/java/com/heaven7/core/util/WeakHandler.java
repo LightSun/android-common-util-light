@@ -21,6 +21,11 @@ public abstract class WeakHandler<T> extends Handler {
         this.mWeakRef = new WeakReference<T>(t);
     }
 
+    public WeakHandler(Looper looper,T t, Callback callback) {
+        super(looper, callback);
+        this.mWeakRef = new WeakReference<T>(t);
+    }
+
     public T get(){
         return mWeakRef.get();
     }
