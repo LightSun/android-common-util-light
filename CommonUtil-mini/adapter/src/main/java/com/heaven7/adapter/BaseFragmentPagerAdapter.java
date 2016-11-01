@@ -206,7 +206,7 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
      * @since 1.6.2
      */
     public List<FragmentData> getFragmentDatas() {
-        return mFragmentDatas;
+        return Collections.unmodifiableList(mFragmentDatas);
     }
 
     /**

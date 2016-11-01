@@ -49,10 +49,10 @@ public class ViewHelper {
 	 * @author heaven7
 	 */
 	public interface IImageLoader{
-		
+
 		  void load(String url, ImageView iv);
 	}
-	
+
 	public ViewHelper(View root) {
 		this.mRootView = root;
 		mInflater = LayoutInflater.from(root.getContext());
@@ -123,7 +123,7 @@ public class ViewHelper {
 	}
 	/**
 	 * Will set the image of an ImageView from a resource id.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param imageResId
@@ -135,7 +135,7 @@ public class ViewHelper {
 	}
 	/**
 	 * Will set background color of a view.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param color
@@ -148,7 +148,7 @@ public class ViewHelper {
 
 	/**
 	 * Will set background of a view.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param backgroundRes
@@ -163,7 +163,7 @@ public class ViewHelper {
 	}
 	/**
 	 * Will set text color of a TextView.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param textColor
@@ -186,7 +186,7 @@ public class ViewHelper {
 	}
 	/**
 	 * Will set text color of a TextView.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param textColorRes
@@ -196,10 +196,10 @@ public class ViewHelper {
 	public ViewHelper setTextColorRes(int viewId, int textColorRes) {
 		return view(viewId).setTextColorRes(textColorRes).reverse(this);
 	}
-	
+
 	/**
 	 * Will set the image of an ImageView from a drawable.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param drawable
@@ -212,12 +212,12 @@ public class ViewHelper {
 
 	/**
 	 * Will download an image from a URL and put it in an ImageView.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param imageUrl
 	 *            The image URL.
-	 * @param loader 
+	 * @param loader
 	 *             which to load image actually.
 	 * @return The ViewHelper for chaining.
 	 */
@@ -263,11 +263,11 @@ public class ViewHelper {
 	public ViewHelper setAlpha(int viewId, float value) {
 		return view(viewId).setAlpha(value).reverse(this);
 	}
-	
+
 
 	/**
 	 * Set a view visibility to VISIBLE (true) or GONE (false).
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param visible
@@ -281,10 +281,10 @@ public class ViewHelper {
 		return view(viewId).setVisibility(visibility).reverse(this);
 	}
 
-	
+
 	/**
-	 * Add links into a TextView. default is 
-	 * 
+	 * Add links into a TextView. default is
+	 *
 	 * @param viewId
 	 *            The id of the TextView to linkify.
 	 * @return The ViewHelper for chaining.
@@ -325,10 +325,10 @@ public class ViewHelper {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Sets the progress of a ProgressBar.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param progress
@@ -341,7 +341,7 @@ public class ViewHelper {
 
 	/**
 	 * Sets the progress and max of a ProgressBar.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param progress
@@ -356,7 +356,7 @@ public class ViewHelper {
 
 	/**
 	 * Sets the range of a ProgressBar to 0...max.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param max
@@ -369,7 +369,7 @@ public class ViewHelper {
 
 	/**
 	 * Sets the rating (the number of stars filled) of a RatingBar.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param rating
@@ -382,7 +382,7 @@ public class ViewHelper {
 
 	/**
 	 * Sets the rating (the number of stars filled) and max of a RatingBar.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param rating
@@ -397,7 +397,7 @@ public class ViewHelper {
 
 	/**
 	 * Sets the tag of the view.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param tag
@@ -410,7 +410,7 @@ public class ViewHelper {
 
 	/**
 	 * Sets the tag of the view.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param key
@@ -425,7 +425,7 @@ public class ViewHelper {
 
 	/**
 	 * Sets the checked status of a checkable.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param checked
@@ -435,7 +435,7 @@ public class ViewHelper {
 	public ViewHelper setChecked(int viewId, boolean checked) {
 		return view(viewId).setChecked(checked).reverse(this);
 	}
-	
+
 	/** set OnCheckedChangeListener to CompoundButton or it's children.
 	 * @param viewId the id of view
 	 * @param l the OnCheckedChangeListener
@@ -446,7 +446,7 @@ public class ViewHelper {
 
 	/**
 	 * Sets the adapter of a adapter view.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param adapter
@@ -460,7 +460,7 @@ public class ViewHelper {
 
 	/**
 	 * Sets the on click listener of the view.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param listener
@@ -474,7 +474,7 @@ public class ViewHelper {
 
 	/**
 	 * Sets the on touch listener of the view.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param listener
@@ -488,7 +488,7 @@ public class ViewHelper {
 
 	/**
 	 * Sets the on long click listener of the view.
-	 * 
+	 *
 	 * @param viewId
 	 *            The view id.
 	 * @param listener
