@@ -1,4 +1,4 @@
-apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.github.dcendents.android-maven' //gradle 2.14.1不适用。 2.6可以
 apply plugin: 'com.jfrog.bintray'
 
 // load properties

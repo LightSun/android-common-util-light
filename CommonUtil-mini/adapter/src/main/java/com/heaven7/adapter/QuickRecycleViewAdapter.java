@@ -30,6 +30,7 @@ import com.heaven7.core.util.ViewHelper;
 import java.util.List;
 
 /**
+ * the quick adapter of {@link RecyclerView}. help we fast build a adapter.
  * Created by heaven7 on 2015/8/26.
  * @param <T>  the data
  */
