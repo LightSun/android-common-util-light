@@ -202,11 +202,11 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
     /**
      * get the current fragment data.
      *
-     * @return the current ftagment data
+     * @return the current fragment data
      * @since 1.6.2
      */
     public List<FragmentData> getFragmentDatas() {
-        return Collections.unmodifiableList(mFragmentDatas);
+        return mFragmentDatas;
     }
 
     /**
@@ -511,7 +511,8 @@ public class BaseFragmentPagerAdapter extends PagerAdapter {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (o == null || !(o instanceof FragmentData))
+                return false;
             FragmentData that = (FragmentData) o;
             return title.equals(that.title);
         }
