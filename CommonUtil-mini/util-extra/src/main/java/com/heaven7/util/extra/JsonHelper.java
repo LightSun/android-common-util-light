@@ -14,6 +14,13 @@ public final class JsonHelper {
     private final JSONObjectHelper mHelper = new JSONObjectHelper();
 
     /**
+     *
+     */
+    public interface JsonSerializer{
+        JSONObjectHelper toJsonHelper();
+    }
+
+    /**
      * create a JSONObjectHelper
      */
     public static JSONObjectHelper newJSONObjectHelper(){
@@ -78,7 +85,7 @@ public final class JsonHelper {
             try {
                 mJsonArray.put(index, value);
             } catch (JSONException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
             return this;
         }
@@ -113,7 +120,7 @@ public final class JsonHelper {
                     jobj.put(key, value);
                 }
             } catch (JSONException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
             return this;
         }
@@ -127,6 +134,5 @@ public final class JsonHelper {
             return jobj.toString();
         }
     }
-
 
 }
