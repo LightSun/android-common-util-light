@@ -3,6 +3,7 @@
 buildscript {
     repositories {
         jcenter()
+       // maven { url "https://jitpack.io" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.5.0'
@@ -19,6 +20,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        //maven { url "https://jitpack.io" }
     }
     //解决生成javadoc失败导致的上传不了bintray,  so  Disable javadoc check for Bintray upload
     tasks.withType(Javadoc) {

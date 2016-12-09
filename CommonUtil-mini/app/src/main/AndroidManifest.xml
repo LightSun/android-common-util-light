@@ -22,8 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".sample.FragmentComponentTestActivity"></activity>
-        <activity android:name=".sample.IpcTestActivity"></activity>
+        <activity android:name=".sample.FragmentComponentTestActivity" />
+        <activity android:name=".sample.IpcTestActivity" />
+        <activity android:name=".sample.RecyclerViewNestedTest" />
+        <activity android:name=".sample.LoaderMvpTest" />
 
     </application>
 

@@ -35,7 +35,8 @@ public class ResizeHeightPostCallback<T extends ISelectable> implements AdapterM
             return;
         }
         mSizeMap.put(position,rv.getLayoutManager().getDecoratedMeasuredHeight(helper.getRootView()));
-        rv.getLayoutParams().height = calculateHeight(rv.getLayoutManager(),mSizeMap);
+        //fix a bug in 1.8.3
+        rv.getLayoutParams().height = rv.getPaddingTop() + rv.getPaddingBottom() + calculateHeight(rv.getLayoutManager(),mSizeMap);
         rv.requestLayout();
     }
 
