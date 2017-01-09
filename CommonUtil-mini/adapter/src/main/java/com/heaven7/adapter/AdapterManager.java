@@ -260,6 +260,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     /**
      * remove the item which is indicate by the target ViewHelper.
      * @param helper the target ViewHelper. which comes from {@link QuickRecycleViewAdapter#onBindData(Context, int, ISelectable, int, ViewHelper)}
+     * @since 1.8.5
      */
     @RemoveObservableMethod
     public void removeItemForRecyclerView(ViewHelper helper){

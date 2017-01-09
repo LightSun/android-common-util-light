@@ -54,13 +54,6 @@ public class SelectorTest extends BaseActivity {
                                // getAdapterManager().removeItem(pos); //ok
                                 getAdapterManager().removeItemForRecyclerView(helper); //ok
                             }
-                        })
-                        .setOnLongClickListener(android.R.id.text1, new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View v) {
-                                //getAdapterManager().addItem(5, new );
-                                return true;
-                            }
                         });
             }
         };
