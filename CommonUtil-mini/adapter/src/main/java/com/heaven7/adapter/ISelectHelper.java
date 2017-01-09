@@ -14,6 +14,7 @@ public interface ISelectHelper {
     /**
      * init the all select position.
      * @param positions the all select positions to init.
+     * @param notify true to notify
      */
     void initSelectPosition(List<Integer> positions, boolean notify);
     /**
