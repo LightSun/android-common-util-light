@@ -1,5 +1,7 @@
 package com.heaven7.adapter;
 
+import java.util.List;
+
 /**
  * the select helper interface.
  * Created by heaven7 on 2017/1/9.
@@ -9,6 +11,11 @@ public interface ISelectHelper {
 
     int NO_POSITION = -1;
 
+    /**
+     * init the all select position.
+     * @param positions the all select positions to init.
+     */
+    void initSelectPosition(List<Integer> positions, boolean notify);
     /**
      * select the target position of item.
      * @param position the position.
@@ -37,6 +44,13 @@ public interface ISelectHelper {
      */
     void clearSelectedState();
 
+    /**
+     * get the select position list.
+     * @return the list which contains the all select position.
+     */
+    int[] getSelectPosition();
+
+
 
     /**
      * @since 1.8.5
@@ -53,13 +67,6 @@ public interface ISelectHelper {
         void notifyItemSelected(int[] positions);
 
         void notifyItemUnselected(int[] positions);
-
-        /**
-         * get the selected item by target position
-         * @param position the position
-         * @return the item
-         */
-        //Object getSelectedItemAtPosition(int position);
     }
 
 }

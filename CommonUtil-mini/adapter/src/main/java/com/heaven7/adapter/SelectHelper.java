@@ -1,7 +1,14 @@
 package com.heaven7.adapter;
 
-import android.util.Log;
+import android.support.annotation.IntDef;
 
+import com.heaven7.adapter.selector.MultiSelectHelper;
+import com.heaven7.adapter.selector.SingleSelectHelper;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,279 +19,309 @@ import java.util.List;
 public class SelectHelper<T extends ISelectable> {
 
     private static final String TAG = "SelectHelper";
-    private final int mSelectMode;
+    private final
+    @ModeType
+    int mSelectMode;
 
-    private List<Integer> mSelectedPositions;
-    private List<Integer> mTempPositions;
-    private int mSelectedPosition = -1;
+    private final Callback<T> mCallback;
+    private final ISelectHelper mImpl;
 
     private List<T> mSelectDatas;
-    private Callback<T> mCallback;
 
-    private SelectHelper(int selectMode) {
-        if(selectMode == ISelectable.SELECT_MODE_MULTI)
-            this.mSelectedPositions = new ArrayList<>();
-        if(selectMode!= ISelectable.SELECT_MODE_SINGLE &&
-                selectMode != ISelectable.SELECT_MODE_MULTI){
-            throw new IllegalArgumentException("invalid select mode = " +selectMode);
+    @IntDef({
+            ISelectable.SELECT_MODE_MULTI,
+            ISelectable.SELECT_MODE_SINGLE,
+    })
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.FIELD, ElementType.PARAMETER})
+    @interface ModeType {
+    }
+
+    private class NotifierImpl implements ISelectHelper.SelectorNotifier {
+        /**
+         * should notify the all data changed.
+         */
+        boolean mShouldNotifyAll;
+
+        @Override
+        public void begin() {
+        }
+
+        @Override
+        public void end() {
+            if (mShouldNotifyAll) {
+                mShouldNotifyAll = false;
+                mCallback.notifyDataSetChanged();
+            }
+        }
+
+        @Override
+        public void notifyItemSelected(int[] positions) {
+            notifyImpl(positions, true);
+        }
+
+        @Override
+        public void notifyItemUnselected(int[] positions) {
+            notifyImpl(positions, false);
+        }
+
+        private void notifyImpl(int[] positions, boolean selected) {
+            if (positions == null || positions.length == 0) {
+                return;
+            }
+            final Callback<T> mCallback = SelectHelper.this.mCallback;
+            if (mCallback.isRecyclable()) {
+                for (int pos : positions) {
+                    mCallback.getSelectedItemAtPosition(pos).setSelected(selected);
+                    mCallback.notifyItemChanged(pos);
+                }
+            } else {
+                for (int pos : positions) {
+                    mCallback.getSelectedItemAtPosition(pos).setSelected(selected);
+                }
+                if (!mShouldNotifyAll) {
+                    mShouldNotifyAll = true;
+                }
+            }
+        }
+    }
+
+    /**
+     * @param callback   the callabck
+     * @param selectMode the select mode
+     * @since 1.7.5
+     */
+    public SelectHelper(@ModeType int selectMode, Callback<T> callback) {
+        NotifierImpl mNotifier = new NotifierImpl();
+        mImpl = selectMode == ISelectable.SELECT_MODE_MULTI ? new MultiSelectHelper(mNotifier)
+                : new SingleSelectHelper(mNotifier);
+        if (selectMode != ISelectable.SELECT_MODE_SINGLE &&
+                selectMode != ISelectable.SELECT_MODE_MULTI) {
+            throw new IllegalArgumentException("invalid select mode = " + selectMode);
         }
         this.mSelectMode = selectMode;
-    }
-    /** @since 1.7.5
-     * @param callback the callabck
-     * @param selectMode the select mode
-     * */
-    public SelectHelper(int selectMode,Callback<T> callback) {
-        this(selectMode);
         this.mCallback = callback;
     }
 
     /**
-     * select the target position with notify data.if currentPosition  == position.ignore it.
-     * <p>only support select mode = {@link ISelectable#SELECT_MODE_SINGLE} ,this will auto update</p>
+     * use  {@link #select(int)} instead.
+     *
      * @param position the position of adapter
      */
-    public void setSelected(int position){
-        if(mSelectMode == ISelectable.SELECT_MODE_MULTI)
-            return ;
-        if(mSelectedPosition == position){
-            return ;
-        }
-        if(position < 0)
-            throw new IllegalArgumentException();
-        final Callback<T> mCallback = this.mCallback;
-        if(mSelectedPosition!= ISelectable.INVALID_POSITION){
-            mCallback.getSelectedItemAtPosition(mSelectedPosition).setSelected(false);
-            if(mCallback.isRecyclable()){
-                mCallback.notifyItemChanged(mSelectedPosition);
-            }
-        }
-        mSelectedPosition = position;
-        mCallback.getSelectedItemAtPosition(position).setSelected(true);
-        if(mCallback.isRecyclable()){
-            mCallback.notifyItemChanged(position);
-        }else
-            mCallback.notifyDataSetChanged();
+    @Deprecated
+    public void setSelected(int position) {
+        if (mSelectMode == ISelectable.SELECT_MODE_MULTI)
+            return;
+        mImpl.select(position);
     }
-    /** {@link ISelectable#SELECT_MODE_MULTI} and {@link ISelectable#SELECT_MODE_SINGLE} both support
-     * @param position the position */
-    public void unselect(int position){
-        if(mSelectMode == ISelectable.SELECT_MODE_MULTI){
-            addUnselected(position);
-        }else{
-            setUnselected(position);
-        }
+
+    /**
+     * select the target position of the item.if currentPosition  == position.ignore it.
+     *
+     * @param position the target position
+     */
+    public void select(int position) {
+        mImpl.select(position);
     }
-    /** unselect the position of item ,
-     * only support select mode = {@link ISelectable#SELECT_MODE_SINGLE}
+
+    /**
+     * {@link ISelectable#SELECT_MODE_MULTI} and {@link ISelectable#SELECT_MODE_SINGLE} both support
+     *
      * @param position the position
-     * */
-    public void setUnselected(int position){
-        if(mSelectMode == ISelectable.SELECT_MODE_MULTI)
-            return ;
-        //  mSelectedPosition must == position
-        if(mSelectedPosition == ISelectable.INVALID_POSITION
-                || mSelectedPosition != position){
-            return ;
-        }
-        if(position < 0)
-            throw new IllegalArgumentException();
-
-        final Callback<T> mCallback = this.mCallback;
-        mCallback.getSelectedItemAtPosition(position).setSelected(false);
-        mSelectedPosition = ISelectable.INVALID_POSITION;
-        if(mCallback.isRecyclable()){
-            mCallback.notifyItemChanged(position);
-        }else{
-            mCallback.notifyDataSetChanged();
-        }
-    }
-    /** only support select mode = {@link ISelectable#SELECT_MODE_MULTI}
-     * @param position the position **/
-    public void addUnselected(int position){
-        if(mSelectMode == ISelectable.SELECT_MODE_SINGLE)
-            return ;
-        if(mSelectedPositions == null)
-            throw new IllegalStateException("select mode must be multi");
-        if(!mSelectedPositions.contains(position)){
-            return ; //not selected
-        }
-        mSelectedPositions.remove(Integer.valueOf(position));
-
-        final Callback<T> mCallback = this.mCallback;
-        mCallback.getSelectedItemAtPosition(position).setSelected(false);
-        if(mCallback.isRecyclable()){
-            mCallback.notifyItemChanged(position);
-        }else
-            mCallback.notifyDataSetChanged();
+     */
+    public void unselect(int position) {
+        mImpl.unselect(position);
     }
 
-    /** only support select mode = {@link ISelectable#SELECT_MODE_MULTI}
-     * @param selectPosition the select position **/
-    public void addSelected(int selectPosition){
-        if(mSelectMode == ISelectable.SELECT_MODE_SINGLE)
-            return ;
-        if(mSelectedPositions == null)
-            throw new IllegalStateException("select mode must be multi");
-        if(mSelectedPositions.contains(selectPosition)){
-            Log.i(TAG, "the selectPosition = " + selectPosition + " is already selected!");
-            return ;
-        }
-        mSelectedPositions.add(selectPosition);
-
-        final Callback<T> mCallback = this.mCallback;
-        mCallback.getSelectedItemAtPosition(selectPosition).setSelected(true);
-        if(mCallback.isRecyclable()){
-            mCallback.notifyItemChanged(selectPosition);
-        }else
-            mCallback.notifyDataSetChanged();
-    }
-    /** clear the select state but not notify data changed. */
-    public void clearSelectedPositions(){
-        if(mSelectMode == ISelectable.SELECT_MODE_MULTI){
-            mSelectedPositions.clear();
-        }else {
-            mSelectedPosition = ISelectable.INVALID_POSITION;
-        }
+    /**
+     * <p>Use {@link #unselect(int)} instead.</p>
+     *
+     * @param position the position
+     **/
+    @Deprecated
+    public void setUnselected(int position) {
+        if (mSelectMode == ISelectable.SELECT_MODE_MULTI)
+            return;
+        mImpl.unselect(position);
     }
 
-    /** clear the all selected state  and notify data change. */
-    public void clearAllSelected(){
-        final Callback<T> mCallback = this.mCallback;
-        final boolean recyclable = mCallback.isRecyclable();
-        if(mSelectMode == ISelectable.SELECT_MODE_MULTI) {
-            int pos;
-            final List<Integer> mSelectedPositions =this.mSelectedPositions;
-            for (int i = 0, size = mSelectedPositions.size(); i < size; i++) {
-                pos = mSelectedPositions.get(i);
-                mCallback.getSelectedItemAtPosition(pos).setSelected(false);
-                if(recyclable){
-                    mCallback.notifyItemChanged(pos);
-                }
-            }
-            mSelectedPositions.clear();
-            if(!recyclable) {
-                mCallback.notifyDataSetChanged();
-            }
-        }else{
-            if(mSelectedPosition!= ISelectable.INVALID_POSITION){
-                int preSelectPos = mSelectedPosition;
-                mSelectedPosition = ISelectable.INVALID_POSITION;
-                mCallback.getSelectedItemAtPosition(preSelectPos).setSelected(false);
-                if(recyclable){
-                    mCallback.notifyItemChanged(preSelectPos);
-                }else{
-                    mCallback.notifyDataSetChanged();
-                }
-            }
-        }
+    /**
+     * <p>Use {@link #unselect(int)} instead.</p>
+     *
+     * @param position the position
+     **/
+    @Deprecated
+    public void addUnselected(int position) {
+        if (mSelectMode == ISelectable.SELECT_MODE_SINGLE)
+            return;
+        mImpl.unselect(position);
+    }
+
+    /**
+     * <p>Use {@link #select(int)} instead.</p>
+     *
+     * @param selectPosition the select position
+     **/
+    @Deprecated
+    public void addSelected(int selectPosition) {
+        if (mSelectMode == ISelectable.SELECT_MODE_SINGLE)
+            return;
+        mImpl.select(selectPosition);
+    }
+
+    /**
+     * clear the select state but not notify data changed.
+     */
+    public void clearSelectedPosition() {
+        mImpl.clearSelectedPosition();
+    }
+
+    /**
+     * clear the all select state and notify data changed.
+     */
+    public void clearSelectedState() {
+        mImpl.clearSelectedState();
+    }
+
+    /**
+     * <p>Use {@link #clearSelectedPosition()} instead.</p>
+     * clear the select state but not notify data changed.
+     */
+    @Deprecated
+    public void clearSelectedPositions() {
+        mImpl.clearSelectedPosition();
+    }
+
+    /**
+     * <p>Use {@link #clearSelectedState()} instead.</p>
+     * clear the all selected state  and notify data change.
+     */
+    @Deprecated
+    public void clearAllSelected() {
+        mImpl.clearSelectedState();
     }
 
     /**
      * use {@link #toggleSelected(int)} instead.
      * toggle the all selected state and notify data change.
-     * @param position the position */
+     *
+     * @param position the position
+     */
     @Deprecated
-    public void toogleSelected(int position){
-       toggleSelected(position);
+    public void toogleSelected(int position) {
+        toggleSelected(position);
     }
 
-    /** toggle the all selected state and notify data change.
-     * @param position the position */
-    public void toggleSelected(int position){
-        if(position < 0){
-            throw new IllegalArgumentException(" position can't be negative !");
-        }
-        if(mSelectMode == ISelectable.SELECT_MODE_MULTI) {
-            if(mSelectedPositions.contains(position)){
-                addUnselected(position);
-            }else{
-                addSelected(position);
-            }
-        }else{
-            if( mSelectedPosition == position){
-                setUnselected(position);
-            }else{
-                setSelected(position);
-            }
-        }
+    /**
+     * toggle the all selected state and notify data change.
+     *
+     * @param position the position
+     */
+    public void toggleSelected(int position) {
+        mImpl.toggleSelect(position);
     }
 
-    public  T getSelectedItem(){
-        if(mSelectedPosition == ISelectable.INVALID_POSITION)
+    public T getSelectedItem() {
+        final int[] poss = getSelectPosition();
+        if (poss == null || poss.length == 0) {
             return null;
-        return mCallback.getSelectedItemAtPosition(mSelectedPosition);
-    }
-
-    public int getSelectedPosition(){
-        return mSelectedPosition ;
-    }
-
-    public List<Integer> getSelectedPositions(){
-        if(mTempPositions == null) {
-             mTempPositions = new ArrayList<>() ;
         }
-        mTempPositions.clear();
-        mTempPositions.addAll(mSelectedPositions);
-        return mTempPositions;
+        return mCallback.getSelectedItemAtPosition(poss[0]);
     }
 
-    public  List<T> getSelectedItems(){
-        if(mSelectedPositions == null || mSelectedPositions.size() == 0 )
+    /**
+     * use {@link #getSelectPosition()} instead.
+     *
+     * @return the select position.
+     */
+    @Deprecated
+    public int getSelectedPosition() {
+        final int[] poss = getSelectPosition();
+        if (poss == null || poss.length == 0) {
+            return ISelectable.INVALID_POSITION;
+        }
+        return poss[0];
+    }
+
+    /**
+     * get the all select position as array.
+     *
+     * @return the all select position .
+     */
+    public int[] getSelectPosition() {
+        return mImpl.getSelectPosition();
+    }
+
+    /**
+     * use {@link #getSelectPosition()} instead.
+     *
+     * @return the all select position.
+     */
+    @Deprecated
+    public List<Integer> getSelectedPositions() {
+        final int[] poss = mImpl.getSelectPosition();
+        if (poss == null) {
             return null;
-        if(mSelectDatas == null){
+        }
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0, size = poss.length; i < size; i++) {
+            list.add(poss[i]);
+        }
+        return list;
+    }
+
+    public List<T> getSelectedItems() {
+        final int[] ints = getSelectPosition();
+        if (ints == null || ints.length == 0)
+            return null;
+        if (mSelectDatas == null) {
             mSelectDatas = new ArrayList<>();
         }
         final List<T> mSelectDatas = this.mSelectDatas;
-        final List<Integer> mSelectedPositions = this.mSelectedPositions;
-
-        mSelectDatas.clear();
         final Callback<T> mCallback = this.mCallback;
-        for(int i=0,size= mSelectedPositions.size() ; i<size ;i++){
-            mSelectDatas.add(mCallback.getSelectedItemAtPosition(mSelectedPositions.get(i)));
+        mSelectDatas.clear();
+
+        for (int i = 0, size = ints.length; i < size; i++) {
+            mSelectDatas.add(mCallback.getSelectedItemAtPosition(ints[i]));
         }
         return mSelectDatas;
     }
 
-    /*public*/ void initSelectPositions(List<T> list){
-        if(list==null || list.size() ==0){
+    public void initSelectPositions(List<T> list) {
+        if (list == null || list.size() == 0) {
             return;
         }
-        for(int i=0 ,size =list.size() ;i<size ; i++){
-            if(list.get(i).isSelected()){
-                initSelectPosition(i);
+        final List<Integer> poss = new ArrayList<>();
+        for (int i = 0, size = list.size(); i < size; i++) {
+            if (list.get(i).isSelected()) {
+                poss.add(i);
             }
         }
-    }
-
-    /** this will only called once. */
-    private void initSelectPosition(int position) {
-        if (mSelectMode == ISelectable.SELECT_MODE_SINGLE) {
-            if (mSelectedPosition == ISelectable.INVALID_POSITION) {
-                mSelectedPosition = position;
-            }
-        } else if (mSelectMode == ISelectable.SELECT_MODE_MULTI) {
-            if(!mSelectedPositions.contains(position))
-                mSelectedPositions.add(position);
-        } else {
-            //can't reach here
-            throw new RuntimeException();
-        }
+        mImpl.initSelectPosition(poss, false);
     }
 
     /**
-     * @since 1.7.5
      * @param <T> the data
+     * @since 1.7.5
      */
-    public interface Callback<T>{
-        /** indicate it use BaseAdapter/BaseExpandableListAdapter or QuickRecycleViewAdapter
-         * @return is recyclable */
-         boolean isRecyclable();
-        /** update the datas of adapter */
+    public interface Callback<T> {
+        /**
+         * indicate it use BaseAdapter/BaseExpandableListAdapter or QuickRecycleViewAdapter
+         *
+         * @return is recyclable
+         */
+        boolean isRecyclable();
+
+        /**
+         * update the datas of adapter
+         */
         void notifyDataSetChanged();
 
-        /** only used for  RecycleViewAdapter
-         * @param itemPosition the position of item */
+        /**
+         * only used for  RecycleViewAdapter
+         *
+         * @param itemPosition the position of item
+         */
         void notifyItemChanged(int itemPosition);
 
         T getSelectedItemAtPosition(int position);

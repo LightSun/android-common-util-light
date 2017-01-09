@@ -1,6 +1,9 @@
 package com.heaven7.adapter.selector;
 
+import java.util.List;
+
 /**
+ * single mode of select helper
  * Created by heaven7 on 2017/1/9.
  */
 public class SingleSelectHelper extends AbstractSelectHelper {
@@ -11,6 +14,17 @@ public class SingleSelectHelper extends AbstractSelectHelper {
 
     public SingleSelectHelper(SelectorNotifier callback) {
         super(callback);
+    }
+
+    @Override
+    public void initSelectPosition(List<Integer> positions, boolean notify) {
+        mSelectPosition = NO_POSITION;
+        if (positions != null && positions.size() > 0) {
+            mSelectPosition = positions.get(positions.size() - 1);
+            if (notify) {
+                notifySelectorState(null, new int[]{mSelectPosition});
+            }
+        }
     }
 
     @Override
@@ -65,5 +79,13 @@ public class SingleSelectHelper extends AbstractSelectHelper {
             mSelectPosition = NO_POSITION;
             notifySelectorState(new int[]{prePos}, null);
         }
+    }
+
+    @Override
+    public int[] getSelectPosition() {
+        if (mSelectPosition == NO_POSITION) {
+            return null;
+        }
+        return new int[]{mSelectPosition};
     }
 }
