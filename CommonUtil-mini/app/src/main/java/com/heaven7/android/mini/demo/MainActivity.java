@@ -4,6 +4,7 @@ import com.heaven7.android.mini.demo.sample.FragmentComponentTestActivity;
 import com.heaven7.android.mini.demo.sample.IpcTestActivity;
 import com.heaven7.android.mini.demo.sample.LoaderMvpTest;
 import com.heaven7.android.mini.demo.sample.RecyclerViewNestedTest;
+import com.heaven7.android.mini.demo.sample.SelectorTest;
 
 import java.util.List;
 
@@ -19,5 +20,6 @@ public class MainActivity extends AbsMainActivity {
         list.add(new ActivityInfo(IpcTestActivity.class, "IpcTestActivity"));
         list.add(new ActivityInfo(RecyclerViewNestedTest.class, "RecyclerViewNestedTest"));
         list.add(new ActivityInfo(LoaderMvpTest.class, "LoaderMvpTest"));
+        list.add(new ActivityInfo(SelectorTest.class, "SelectorTest"));
     }
 }

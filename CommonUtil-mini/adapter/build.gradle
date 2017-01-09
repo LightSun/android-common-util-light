@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 23
-        versionCode 183
-        versionName "1.8.3"
+        versionCode 185
+        versionName "1.8.5"
     }
     buildTypes {
         release {
@@ -24,6 +24,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.heaven7.core.util:util-v1:1.1.2'
+
 }
 
 apply from: "bintrayUpload.gradle"

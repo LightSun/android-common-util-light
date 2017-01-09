@@ -6,7 +6,7 @@ import android.view.View;
 /**
  * Created by heaven7 on 2016/12/5.
  */
-public class ViewPresenter implements IPresenter {
+public class ViewPresenter extends PresenterLoader.Callback {
 
     private View mView;
 

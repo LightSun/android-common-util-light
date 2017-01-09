@@ -26,6 +26,7 @@
         <activity android:name=".sample.IpcTestActivity" />
         <activity android:name=".sample.RecyclerViewNestedTest" />
         <activity android:name=".sample.LoaderMvpTest" />
+        <activity android:name=".sample.SelectorTest" />
 
     </application>
 

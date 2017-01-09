@@ -16,8 +16,11 @@
  */
 package com.heaven7.adapter;
 
+import android.content.Context;
 import android.database.Observable;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewParent;
 
 import com.heaven7.core.util.ViewHelper;
 
@@ -157,7 +160,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     public void addItem(int index, T item) {
         mDatas.add(index, item);
         if (isRecyclable()) {
-            notifyItemInserted(index + getHeaderSize());
+            notifyItemInserted(index);
         } else {
             notifyDataSetChanged();
         }
@@ -166,7 +169,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     public void addItem(T item) {
         mDatas.add(item);
         if (isRecyclable()) {
-            notifyItemInserted(mDatas.size() - 1 + getHeaderSize());
+            notifyItemInserted(mDatas.size() - 1);
         } else {
             notifyDataSetChanged();
         }
@@ -185,7 +188,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         }
         mDatas.addAll(startIndex, items);
         if (isRecyclable()) {
-            notifyItemRangeInserted(startIndex + getHeaderSize(), items.size());
+            notifyItemRangeInserted(startIndex, items.size());
         } else {
             notifyDataSetChanged();
         }
@@ -195,7 +198,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         final int preSize = mDatas.size();
         mDatas.addAll(items);
         if (isRecyclable()) {
-            notifyItemRangeInserted(preSize + getHeaderSize(), items.size());
+            notifyItemRangeInserted(preSize, items.size());
         } else {
             notifyDataSetChanged();
         }
@@ -214,7 +217,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
             final T t = mDatas.remove(index);
             notifyItemRemovedInternal(t);
             notifyItemRemoved(index);
-            //for observable , i chaned this implement.
+            //for observable , i changed this implement.
             addItem(index, newItem);
         }else{
             mDatas.set(index, newItem);
@@ -233,19 +236,43 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     public void removeItem(T item) {
         removeItem(mDatas.indexOf(item));
     }
+
+    /**
+     * remove the index of the target item. you should careful about the index (is the right index of the adapter ?
+     * you can get the actual index by calling {@link RecyclerView.ViewHolder#getAdapterPosition()}
+     *  and you can get view holder by calling {@link android.support.v7.widget.RecyclerView#getChildViewHolder(View)}).
+     * @param actualIndex the real index of adapter. you can get the actual index by calling {@link RecyclerView.ViewHolder#getAdapterPosition()}
+     */
     @RemoveObservableMethod
-    public void removeItem(int index) {
-        if (index == -1 || index > getItemSize() - 1) {
+    public void removeItem(int actualIndex) {
+        if (actualIndex == -1 || actualIndex > getItemSize() - 1) {
             return;
         }
-        final T removedItem = mDatas.remove(index);
+        final T removedItem = mDatas.remove(actualIndex);
         notifyItemRemovedInternal(removedItem);
         if (isRecyclable()) {
-            notifyItemRemoved(index + getHeaderSize());
+            notifyItemRemoved(actualIndex);
         } else {
             notifyDataSetChanged();
         }
     }
+
+    /**
+     * remove the item which is indicate by the target ViewHelper.
+     * @param helper the target ViewHelper. which comes from {@link QuickRecycleViewAdapter#onBindData(Context, int, ISelectable, int, ViewHelper)}
+     */
+    @RemoveObservableMethod
+    public void removeItemForRecyclerView(ViewHelper helper){
+        final View view = helper.getRootView();
+        final ViewParent parent = view.getParent();
+        if(parent != null && parent instanceof RecyclerView){
+            final int position = ((RecyclerView) parent).getChildAdapterPosition(view);
+            removeItem(position);
+        }else{
+            throw new IllegalArgumentException("the ViewHelper is incorrect. you must check !");
+        }
+    }
+
     @RemoveObservableMethod
     public void removeItems(List<T> ts) {
         if (ts == null || ts.size() == 0)
@@ -340,12 +367,21 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         mCallback2.notifyItemChanged(position);
     }
 
+    /**
+     * notify item removed, had handle the header size.
+     * @param position the  position
+     */
     public final void notifyItemRemoved(int position) {
         checkIfSupport();
         position += getHeaderSize();
         mCallback2.notifyItemRemoved(position);
     }
 
+    /**
+     * notify item moved, had handle the header size.
+     * @param fromPosition the from position
+     * @param toPosition the end position.
+     */
     public final void notifyItemMoved(int fromPosition, int toPosition) {
         checkIfSupport();
         fromPosition += getHeaderSize();
@@ -353,18 +389,32 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         mCallback2.notifyItemMoved(fromPosition, toPosition);
     }
 
+    /**
+     * notify item range changed, had handle the header size.
+     * @param positionStart the from position
+     * @param itemCount the item count
+     */
     public final void notifyItemRangeChanged(int positionStart, int itemCount) {
         checkIfSupport();
         positionStart += getHeaderSize();
         mCallback2.notifyItemRangeChanged(positionStart, itemCount);
     }
-
+    /**
+     * notify item range insert , had handle the header size.
+     * @param positionStart the from position
+     * @param itemCount the item count
+     */
     public final void notifyItemRangeInserted(int positionStart, int itemCount) {
         checkIfSupport();
         positionStart += getHeaderSize();
         mCallback2.notifyItemRangeInserted(positionStart, itemCount);
     }
 
+    /**
+     * notify item range moved, had handle the header size.
+     * @param positionStart the from position
+     * @param itemCount the item count
+     */
     public final void notifyItemRangeRemoved(int positionStart, int itemCount) {
         checkIfSupport();
         positionStart += getHeaderSize();
