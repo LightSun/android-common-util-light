@@ -9,7 +9,7 @@ import java.util.List;
  * a class help we handle the select state. support single-select or multi-select.
  * Created by heaven7 on 2015/9/3.
  */
-public class SelectHelper<T extends ISelectable> {
+public class SelectHelper_backup<T extends ISelectable>{
 
     private static final String TAG = "SelectHelper";
     private final int mSelectMode;
@@ -21,7 +21,7 @@ public class SelectHelper<T extends ISelectable> {
     private List<T> mSelectDatas;
     private Callback<T> mCallback;
 
-    private SelectHelper(int selectMode) {
+    private SelectHelper_backup(int selectMode) {
         if(selectMode == ISelectable.SELECT_MODE_MULTI)
             this.mSelectedPositions = new ArrayList<>();
         if(selectMode!= ISelectable.SELECT_MODE_SINGLE &&
@@ -34,7 +34,7 @@ public class SelectHelper<T extends ISelectable> {
      * @param callback the callabck
      * @param selectMode the select mode
      * */
-    public SelectHelper(int selectMode,Callback<T> callback) {
+    public SelectHelper_backup(int selectMode, Callback<T> callback) {
         this(selectMode);
         this.mCallback = callback;
     }

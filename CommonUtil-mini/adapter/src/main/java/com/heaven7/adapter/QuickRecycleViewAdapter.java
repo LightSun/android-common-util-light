@@ -61,7 +61,7 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
      *
      * @param layoutId   the layout id you want to inflate, or 0 if you want multi item.
      * @param mDatas     the datas
-     * @param selectMode select mode
+     * @param selectMode select mode . {@link ISelectable#SELECT_MODE_SINGLE} or {@link ISelectable#SELECT_MODE_MULTI}
      */
     public QuickRecycleViewAdapter(int layoutId, List<T> mDatas, int selectMode) {
         this(layoutId, mDatas, selectMode, true);

@@ -3,10 +3,13 @@ package com.heaven7.android.mini.demo.sample;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.heaven7.adapter.AdapterManager;
+import com.heaven7.adapter.ISelectable;
 import com.heaven7.adapter.QuickRecycleViewAdapter;
 import com.heaven7.android.mini.demo.BaseActivity;
 import com.heaven7.android.mini.demo.R;
@@ -36,41 +39,105 @@ public class SelectorTest extends BaseActivity {
     @Override
     protected void initData(Bundle savedInstanceState) {
 
-        QuickRecycleViewAdapter<RecyclerViewNestedTest.ChildData> adapter = new QuickRecycleViewAdapter<RecyclerViewNestedTest.ChildData>(
-                android.R.layout.simple_list_item_1, createTest()) {
-            @Override
-            protected void onBindData(Context context, final int position, RecyclerViewNestedTest.ChildData item,
-                                      int itemLayoutId, final ViewHelper helper) {
-                Logger.w("SelectorTest", "onBindData", "position = " + position + " ," + item.text);
-                helper.setTextColor(android.R.id.text1, item.isSelected() ? Color.RED : Color.BLACK)
-                        .setText(android.R.id.text1, item.text)
-                        .setRootOnClickListener(new View.OnClickListener() {
-                            @Override  //v must be the root view
-                            public void onClick(View v) {
-                                //这里不能直接用position.否则多次删除会有问题.
-                                final int pos = mRv.getChildAdapterPosition(v);
-                                final int layoutPos = mRv.getChildViewHolder(v).getLayoutPosition();
-                                Logger.w("SelectorTest", "onClick", "getAdapterPosition() = " + pos + " ,layoutPos = " + layoutPos);
-                               // getAdapterManager().removeItem(pos); //ok
-                                getAdapterManager().removeItemForRecyclerView(helper); //ok
-                            }
-                        });
-            }
-        };
+        QuickRecycleViewAdapter<RecyclerViewNestedTest.ChildData> adapter = createTestSelectAdapter();
 
         mRv.setLayoutManager(new LinearLayoutManager(this));
         mRv.setAdapter(adapter);
     }
 
-    private List<RecyclerViewNestedTest.ChildData> createTest() {
+    private QuickRecycleViewAdapter<RecyclerViewNestedTest.ChildData> createTestSelectAdapter() {
+        return new TestSelectAdapter(ISelectable.SELECT_MODE_MULTI);
+    }
+
+    @NonNull
+    private QuickRecycleViewAdapter<RecyclerViewNestedTest.ChildData> createTestDeleteAdapter() {
+        return new TestDeleteAdapter();
+    }
+
+    private List<RecyclerViewNestedTest.ChildData> createTest(int count) {
         List<RecyclerViewNestedTest.ChildData> list = new ArrayList<>();
-        int count = 50;
         for (int i = 0; i < count; i++) {
             final RecyclerViewNestedTest.ChildData data = new RecyclerViewNestedTest.ChildData("SelectorTest___" + i);
             list.add(data);
         }
         last = count - 1;
         return list;
+    }
+
+    /**
+     * 选择状态问题，暂时没有发现.
+     */
+    class TestSelectAdapter extends QuickRecycleViewAdapter<RecyclerViewNestedTest.ChildData> {
+
+        public TestSelectAdapter() {
+            this(ISelectable.SELECT_MODE_SINGLE);
+        }
+        public TestSelectAdapter(int selectMode) {
+            super(android.R.layout.simple_list_item_1, createTest(5), selectMode);
+        }
+
+        @Override
+        protected void onBindData(Context context, final int position, RecyclerViewNestedTest.ChildData item,
+                                  int itemLayoutId, final ViewHelper helper) {
+            Logger.w("SelectorTest", "onBindData", "position = " + position + " ," + item.text);
+            //点击 切换select状态， 长按replaceAllItems
+            helper .view(android.R.id.text1)
+                    .setTextColor(item.isSelected() ? Color.RED : Color.BLACK)
+                    .setText( item.text)
+                    .setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getAdapterManager().getSelectHelper().addSelected(position);
+                            getAdapterManager().replaceAllItems(createTest(5));
+                        }
+                    }).setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    getAdapterManager().removeItemForRecyclerView(helper);
+                    return true;
+                }
+            });
+        }
+    }
+    class TestDeleteAdapter extends QuickRecycleViewAdapter<RecyclerViewNestedTest.ChildData> {
+
+        public TestDeleteAdapter() {
+            this(ISelectable.SELECT_MODE_SINGLE);
+        }
+        public TestDeleteAdapter(int selectMode) {
+            super(android.R.layout.simple_list_item_1, createTest(50), selectMode);
+        }
+
+        @Override
+        protected void onBindData(Context context, final int position, RecyclerViewNestedTest.ChildData item,
+                                  int itemLayoutId, final ViewHelper helper) {
+            Logger.w("SelectorTest", "onBindData", "position = " + position + " ," + item.text);
+            helper.setTextColor(android.R.id.text1, item.isSelected() ? Color.RED : Color.BLACK)
+                    .setText(android.R.id.text1, item.text)
+                    .setRootOnClickListener(new TestDeleteOnClickListener(getAdapterManager(), helper));
+        }
+    }
+
+    /**
+     * 测试删除问题。, bug已修复.
+     */
+    private class TestDeleteOnClickListener implements View.OnClickListener {
+        final ViewHelper helper;
+        final AdapterManager am;
+
+        public TestDeleteOnClickListener(AdapterManager am, ViewHelper helper) {
+            this.am = am;
+            this.helper = helper;
+        }
+        @Override
+        public void onClick(View v) {
+            //这里不能直接用position.否则多次删除会有问题-bug.
+            final int pos = mRv.getChildAdapterPosition(v);
+            final int layoutPos = mRv.getChildViewHolder(v).getLayoutPosition();
+            Logger.w("SelectorTest", "onClick", "getAdapterPosition() = " + pos + " ,layoutPos = " + layoutPos);
+            // getAdapterManager().removeItem(pos); //ok
+            am.removeItemForRecyclerView(helper); //ok
+        }
     }
 
 
