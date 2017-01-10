@@ -82,6 +82,10 @@ public class SubscribeManager<T> {
         return false;
     }
 
+    /**
+     * get the subscribed items
+     * @return the subscribed items
+     */
     public List<T> getSubscribedItems() {
         return mSubscribedItems;
     }
