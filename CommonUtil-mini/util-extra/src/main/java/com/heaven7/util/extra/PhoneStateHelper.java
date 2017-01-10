@@ -5,6 +5,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
 /**
+ * phone state listen helper.
  * Created by heaven7 on 2016/7/15.
  */
 public class PhoneStateHelper {
