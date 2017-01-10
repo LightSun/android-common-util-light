@@ -16,7 +16,6 @@
  */
 package com.heaven7.adapter;
 
-import android.content.Context;
 import android.database.Observable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -258,19 +257,18 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     }
 
     /**
-     * remove the item which is indicate by the target ViewHelper.
-     * @param helper the target ViewHelper. which comes from {@link QuickRecycleViewAdapter#onBindData(Context, int, ISelectable, int, ViewHelper)}
+     * remove the item which is indicate by the target item view.
+     * @param itemView the item view which is child of RecyclerView.
      * @since 1.8.5
      */
     @RemoveObservableMethod
-    public void removeItemForRecyclerView(ViewHelper helper){
-        final View view = helper.getRootView();
-        final ViewParent parent = view.getParent();
+    public void removeItemForRecyclerView(View itemView){
+        final ViewParent parent = itemView.getParent();
         if(parent != null && parent instanceof RecyclerView){
-            final int position = ((RecyclerView) parent).getChildAdapterPosition(view);
+            final int position = ((RecyclerView) parent).getChildAdapterPosition(itemView);
             removeItem(position);
         }else{
-            throw new IllegalArgumentException("the ViewHelper is incorrect. you must check !");
+            throw new IllegalArgumentException("the item view is incorrect. you must check !");
         }
     }
 
@@ -310,7 +308,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     @RemoveObservableMethod
     public void replaceAllItems(List<T> items) {
-        mSelectHelper.clearAllSelected();
+        mSelectHelper.clearSelectedState();
         final boolean hasObserver = observeAllItems();
         mDatas.clear();
         mDatas.addAll(items);

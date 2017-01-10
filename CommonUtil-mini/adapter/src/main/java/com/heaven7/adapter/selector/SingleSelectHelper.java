@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class SingleSelectHelper extends AbstractSelectHelper {
 
-    private static final String TAG = SingleSelectHelper.class.getSimpleName();
+    //private static final String TAG = SingleSelectHelper.class.getSimpleName();
 
     private int mSelectPosition = NO_POSITION;
 
@@ -22,34 +22,37 @@ public class SingleSelectHelper extends AbstractSelectHelper {
         if (positions != null && positions.size() > 0) {
             mSelectPosition = positions.get(positions.size() - 1);
             if (notify) {
-                notifySelectorState(null, new int[]{mSelectPosition});
+                notifySelectorStateChanged(null, new int[]{mSelectPosition});
             }
         }
     }
 
     @Override
-    public void select(int position) {
+    public boolean select(int position) {
         checkPosition(position);
         if (mSelectPosition == position) {
-            return;
+            return false;
         }
         final int prePos = mSelectPosition;
         this.mSelectPosition = position;
         int[] unselects = prePos != NO_POSITION ? new int[]{prePos} : null;
-        notifySelectorState(unselects, new int[]{position});
+        notifySelectorStateChanged(unselects, new int[]{position});
+        return true;
     }
 
     @Override
-    public void unselect(int position) {
+    public boolean unselect(int position) {
         checkPosition(position);
         if (mSelectPosition != NO_POSITION && mSelectPosition == position) {
             mSelectPosition = NO_POSITION;
-            notifySelectorState(new int[]{position}, null);
+            notifySelectorStateChanged(new int[]{position}, null);
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void toggleSelect(int position) {
+    public boolean toggleSelect(int position) {
         checkPosition(position);
         int[] unselects = null;
         int[] selects = null;
@@ -64,7 +67,8 @@ public class SingleSelectHelper extends AbstractSelectHelper {
             }
             selects = new int[]{position};
         }
-        notifySelectorState(unselects, selects);
+        notifySelectorStateChanged(unselects, selects);
+        return true;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class SingleSelectHelper extends AbstractSelectHelper {
         if (mSelectPosition != NO_POSITION) {
             final int prePos = mSelectPosition;
             mSelectPosition = NO_POSITION;
-            notifySelectorState(new int[]{prePos}, null);
+            notifySelectorStateChanged(new int[]{prePos}, null);
         }
     }
 

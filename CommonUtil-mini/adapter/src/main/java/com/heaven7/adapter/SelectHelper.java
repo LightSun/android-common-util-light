@@ -1,14 +1,20 @@
 package com.heaven7.adapter;
 
+import android.content.Context;
 import android.support.annotation.IntDef;
+import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 
 import com.heaven7.adapter.selector.MultiSelectHelper;
 import com.heaven7.adapter.selector.SingleSelectHelper;
+import com.heaven7.core.util.Logger;
+import com.heaven7.core.util.ViewHelper;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +25,14 @@ import java.util.List;
 public class SelectHelper<T extends ISelectable> {
 
     private static final String TAG = "SelectHelper";
+    private static final boolean DEBUG = false;
     private final
     @ModeType
     int mSelectMode;
 
     private final Callback<T> mCallback;
     private final ISelectHelper mImpl;
+    private SparseArray<WeakReference<RecyclerView.ViewHolder>> mHolderMap;
 
     private List<T> mSelectDatas;
 
@@ -39,49 +47,37 @@ public class SelectHelper<T extends ISelectable> {
 
     private class NotifierImpl implements ISelectHelper.SelectorNotifier {
         /**
-         * should notify the all data changed.
+         * notify impl. and return a flag to indicate whether notify all items or not.
+         *
+         * @param positions the positions
+         * @param selected  true is the selected state ,false is unselected state,
+         * @return true if should notify all.
          */
-        boolean mShouldNotifyAll;
-
-        @Override
-        public void begin() {
-        }
-
-        @Override
-        public void end() {
-            if (mShouldNotifyAll) {
-                mShouldNotifyAll = false;
-                mCallback.notifyDataSetChanged();
-            }
-        }
-
-        @Override
-        public void notifyItemSelected(int[] positions) {
-            notifyImpl(positions, true);
-        }
-
-        @Override
-        public void notifyItemUnselected(int[] positions) {
-            notifyImpl(positions, false);
-        }
-
-        private void notifyImpl(int[] positions, boolean selected) {
+        private boolean notifyImpl(int[] positions, boolean selected) {
             if (positions == null || positions.length == 0) {
-                return;
+                return false;
             }
+            //adjust the position to the right position.
+            adjustPosition(positions);
             final Callback<T> mCallback = SelectHelper.this.mCallback;
             if (mCallback.isRecyclable()) {
                 for (int pos : positions) {
                     mCallback.getSelectedItemAtPosition(pos).setSelected(selected);
                     mCallback.notifyItemChanged(pos);
                 }
+                return false;
             } else {
                 for (int pos : positions) {
                     mCallback.getSelectedItemAtPosition(pos).setSelected(selected);
                 }
-                if (!mShouldNotifyAll) {
-                    mShouldNotifyAll = true;
-                }
+                return true;
+            }
+        }
+
+        @Override
+        public void notifySelectorStateChanged(int[] unselectPostions, int[] selectPostions) {
+            if (notifyImpl(unselectPostions, false) || notifyImpl(selectPostions, true)) {
+                mCallback.notifyDataSetChanged();
             }
         }
     }
@@ -104,6 +100,18 @@ public class SelectHelper<T extends ISelectable> {
     }
 
     /**
+     * this must be called before {@link QuickRecycleViewAdapter#onBindData(Context, int, ISelectable, int, ViewHelper)}.
+     *
+     * @param holder the holder.
+     */
+    /*public*/ void onBindViewHolder(RecyclerView.ViewHolder holder) {
+        if (mHolderMap == null) {
+            mHolderMap = new SparseArray<WeakReference<RecyclerView.ViewHolder>>();
+        }
+        mHolderMap.put(holder.getAdapterPosition(), new WeakReference<RecyclerView.ViewHolder>(holder));
+    }
+
+    /**
      * use  {@link #select(int)} instead.
      *
      * @param position the position of adapter
@@ -120,17 +128,19 @@ public class SelectHelper<T extends ISelectable> {
      *
      * @param position the target position
      */
-    public void select(int position) {
-        mImpl.select(position);
+    public boolean select(int position) {
+        return mImpl.select(position);
     }
 
     /**
+     * unselect the target position.
      * {@link ISelectable#SELECT_MODE_MULTI} and {@link ISelectable#SELECT_MODE_SINGLE} both support
      *
      * @param position the position
+     * @return true if unselect  success.
      */
-    public void unselect(int position) {
-        mImpl.unselect(position);
+    public boolean unselect(int position) {
+        return mImpl.unselect(position);
     }
 
     /**
@@ -202,23 +212,24 @@ public class SelectHelper<T extends ISelectable> {
     }
 
     /**
-     * use {@link #toggleSelected(int)} instead.
+     * use {@link #toggleSelect(int)} instead.
      * toggle the all selected state and notify data change.
      *
      * @param position the position
      */
     @Deprecated
     public void toogleSelected(int position) {
-        toggleSelected(position);
+        toggleSelect(position);
     }
 
     /**
      * toggle the all selected state and notify data change.
      *
      * @param position the position
+     * @return true if toggle this select success.
      */
-    public void toggleSelected(int position) {
-        mImpl.toggleSelect(position);
+    public boolean toggleSelect(int position) {
+        return mImpl.toggleSelect(position);
     }
 
     public T getSelectedItem() {
@@ -249,7 +260,9 @@ public class SelectHelper<T extends ISelectable> {
      * @return the all select position .
      */
     public int[] getSelectPosition() {
-        return mImpl.getSelectPosition();
+        final int[] ints = mImpl.getSelectPosition();
+        adjustPosition(ints);
+        return ints;
     }
 
     /**
@@ -259,7 +272,7 @@ public class SelectHelper<T extends ISelectable> {
      */
     @Deprecated
     public List<Integer> getSelectedPositions() {
-        final int[] poss = mImpl.getSelectPosition();
+        final int[] poss = getSelectPosition();
         if (poss == null) {
             return null;
         }
@@ -291,6 +304,11 @@ public class SelectHelper<T extends ISelectable> {
         if (list == null || list.size() == 0) {
             return;
         }
+        //clear record.
+        if (mHolderMap != null) {
+            mHolderMap.clear();
+        }
+        //init select positions
         final List<Integer> poss = new ArrayList<>();
         for (int i = 0, size = list.size(); i < size; i++) {
             if (list.get(i).isSelected()) {
@@ -298,6 +316,34 @@ public class SelectHelper<T extends ISelectable> {
             }
         }
         mImpl.initSelectPosition(poss, false);
+    }
+
+    protected void adjustPosition(int[] poss) {
+        if (mHolderMap == null || mHolderMap.size() == 0 || poss == null || poss.length == 0) {
+            //no need. eg: ListView
+            return;
+        }
+        final SparseArray<WeakReference<RecyclerView.ViewHolder>> mHolderMap = this.mHolderMap;
+        WeakReference<RecyclerView.ViewHolder> ref;
+        int expectPos;
+        for (int size = poss.length, i = size - 1; i >= 0; i--) {
+            expectPos = poss[i];
+            ref = mHolderMap.get(expectPos);
+            if (ref != null) {
+                RecyclerView.ViewHolder holder = ref.get();
+                if (holder != null) {
+                    //adjust to the right position
+                    poss[i] = holder.getAdapterPosition();
+                    if (DEBUG) {
+                        Logger.i(TAG, "adjustPosition", "adjust the position success : expectPos = " + expectPos
+                                + " ,right pos = " + holder.getAdapterPosition());
+                    }
+                } else {
+                    //trim
+                    mHolderMap.remove(expectPos);
+                }
+            }
+        }
     }
 
     /**

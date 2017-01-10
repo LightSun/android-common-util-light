@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * the select helper interface.
  * Created by heaven7 on 2017/1/9.
+ *
  * @since 1.8.5
  */
 public interface ISelectHelper {
@@ -12,28 +13,33 @@ public interface ISelectHelper {
     int NO_POSITION = -1;
 
     /**
-     * init the all select position.
+     * init the all select position. often called in method create adapter.
+     *
      * @param positions the all select positions to init.
-     * @param notify true to notify
+     * @param notify    true to notify
      */
     void initSelectPosition(List<Integer> positions, boolean notify);
+
     /**
      * select the target position of item.
+     *
      * @param position the position.
      */
-    void select(int position);
+    boolean select(int position);
 
     /**
      * unselect(cancel select) the target position of item.
+     *
      * @param position the position.
      */
-    void unselect(int position);
+    boolean unselect(int position);
 
     /**
      * toggle the select state of the target item
+     *
      * @param position the position which indicate the target item.
      */
-    void toggleSelect(int position);
+    boolean toggleSelect(int position);
 
     /**
      * clear the select position/positions of this select helper, but not notify date changed.
@@ -46,11 +52,18 @@ public interface ISelectHelper {
     void clearSelectedState();
 
     /**
-     * get the select position list.
+     * get the select position list.(the real positions)
+     *
      * @return the list which contains the all select position.
      */
     int[] getSelectPosition();
 
+    /**
+     * notify the selector state changed. this is often called by child.
+     * @param unselectPostions the unselected state of positions. can be null.
+     * @param selectPostions the selected state of positions.can be null.
+     */
+    void notifySelectorStateChanged(int[] unselectPostions, int[] selectPostions);
 
 
     /**
@@ -58,16 +71,7 @@ public interface ISelectHelper {
      */
     interface SelectorNotifier {
 
-        void begin();
-
-        void end();
-        /**
-         *  only used for  RecycleViewAdapter
-         * @param positions the position of item
-         */
-        void notifyItemSelected(int[] positions);
-
-        void notifyItemUnselected(int[] positions);
+        void notifySelectorStateChanged(int[] unselectPostions, int[] selectPostions);
     }
 
 }

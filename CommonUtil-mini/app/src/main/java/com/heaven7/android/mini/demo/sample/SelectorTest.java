@@ -64,46 +64,55 @@ public class SelectorTest extends BaseActivity {
         return list;
     }
 
+    private RecyclerViewNestedTest.ChildData newData() {
+        return new RecyclerViewNestedTest.ChildData("SelectorTest___" +
+                (++last));
+    }
+
     /**
-     * 选择状态问题，暂时没有发现.
+     * 选择状态问题，测试删除，添加对选择状态的影响.
      */
     class TestSelectAdapter extends QuickRecycleViewAdapter<RecyclerViewNestedTest.ChildData> {
 
         public TestSelectAdapter() {
             this(ISelectable.SELECT_MODE_SINGLE);
         }
+
         public TestSelectAdapter(int selectMode) {
             super(android.R.layout.simple_list_item_1, createTest(5), selectMode);
         }
 
-        @Override
+        @Override //tested in 1.8.5
         protected void onBindData(Context context, final int position, RecyclerViewNestedTest.ChildData item,
                                   int itemLayoutId, final ViewHelper helper) {
             Logger.w("SelectorTest", "onBindData", "position = " + position + " ," + item.text);
             //点击 切换select状态， 长按replaceAllItems
-            helper .view(android.R.id.text1)
+            helper.view(android.R.id.text1)
                     .setTextColor(item.isSelected() ? Color.RED : Color.BLACK)
-                    .setText( item.text)
+                    .setText(item.text)
                     .setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            getAdapterManager().getSelectHelper().addSelected(position);
+                            getAdapterManager().getSelectHelper().select(position);
                             getAdapterManager().replaceAllItems(createTest(5));
                         }
                     }).setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    getAdapterManager().removeItemForRecyclerView(helper);
+                    // getAdapterManager().removeItemForRecyclerView(helper.getRootView()); //ok
+                    getAdapterManager().addItem(1, newData()); // OK
                     return true;
                 }
             });
         }
     }
+
     class TestDeleteAdapter extends QuickRecycleViewAdapter<RecyclerViewNestedTest.ChildData> {
 
         public TestDeleteAdapter() {
             this(ISelectable.SELECT_MODE_SINGLE);
         }
+
         public TestDeleteAdapter(int selectMode) {
             super(android.R.layout.simple_list_item_1, createTest(50), selectMode);
         }
@@ -129,6 +138,7 @@ public class SelectorTest extends BaseActivity {
             this.am = am;
             this.helper = helper;
         }
+
         @Override
         public void onClick(View v) {
             //这里不能直接用position.否则多次删除会有问题-bug.
@@ -136,7 +146,7 @@ public class SelectorTest extends BaseActivity {
             final int layoutPos = mRv.getChildViewHolder(v).getLayoutPosition();
             Logger.w("SelectorTest", "onClick", "getAdapterPosition() = " + pos + " ,layoutPos = " + layoutPos);
             // getAdapterManager().removeItem(pos); //ok
-            am.removeItemForRecyclerView(helper); //ok
+            am.removeItemForRecyclerView(helper.getRootView()); //ok
         }
     }
 

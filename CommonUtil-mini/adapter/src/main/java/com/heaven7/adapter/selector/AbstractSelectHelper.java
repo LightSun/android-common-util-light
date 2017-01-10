@@ -20,14 +20,12 @@ public abstract class AbstractSelectHelper implements ISelectHelper {
      * @param unselectPostions the positions to cancel.
      * @param selectPostions the positions to join/add .
      */
-    protected void notifySelectorState(int[] unselectPostions, int[] selectPostions){
-        notifier.begin();
-        notifier.notifyItemUnselected(unselectPostions);
-        notifier.notifyItemSelected(selectPostions);
-        notifier.end();
+    @Override
+    public void notifySelectorStateChanged(int[] unselectPostions, int[] selectPostions){
+        notifier.notifySelectorStateChanged(unselectPostions, selectPostions);
     }
 
-    /*protected*/ static void checkPosition(int position){
+    protected void checkPosition(int position){
          if(position < 0){
              throw new IllegalArgumentException("position must > 0");
          }

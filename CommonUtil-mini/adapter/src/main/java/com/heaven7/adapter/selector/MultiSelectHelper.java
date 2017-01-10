@@ -10,48 +10,72 @@ import java.util.List;
 public class MultiSelectHelper extends AbstractSelectHelper {
 
     private final List<Integer> mSelectPositions;
+    /**
+     * the max count of select state.
+     */
+    private final int mMaxCount;
 
     public MultiSelectHelper(SelectorNotifier notifier) {
+        this(notifier, Integer.MAX_VALUE);
+    }
+
+    public MultiSelectHelper(SelectorNotifier notifier, int maxSelectedCount) {
         super(notifier);
-        mSelectPositions = new ArrayList<>();
+        this.mSelectPositions = new ArrayList<>();
+        this.mMaxCount = maxSelectedCount;
     }
 
     @Override
     public void initSelectPosition(List<Integer> positions, boolean notify) {
         mSelectPositions.clear();
         if (positions != null && positions.size() > 0) {
+            if (positions.size() > mMaxCount) {
+                positions = positions.subList(0, mMaxCount);
+            }
             mSelectPositions.addAll(positions);
             if (notify) {
-                notifySelectorState(null, toIntArray(positions));
+                notifySelectorStateChanged(null, toIntArray(positions));
             }
         }
     }
 
     @Override
-    public void select(int position) {
+    public boolean select(int position) {
         if (!mSelectPositions.contains(position)) {
-            mSelectPositions.add(position);
-            notifySelectorState(null, new int[]{position});
+            if (mSelectPositions.size() < mMaxCount) {
+                mSelectPositions.add(position);
+                notifySelectorStateChanged(null, new int[]{position});
+                return true;
+            }
         }
+        return false;
     }
 
     @Override
-    public void unselect(int position) {
+    public boolean unselect(int position) {
         if (mSelectPositions.contains(position)) {
             mSelectPositions.remove(position);
-            notifySelectorState(new int[]{position}, null);
+            notifySelectorStateChanged(new int[]{position}, null);
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void toggleSelect(int position) {
+    public boolean toggleSelect(int position) {
+        boolean result = false;
         if (mSelectPositions.contains(position)) {
             mSelectPositions.remove(position);
-            notifySelectorState(new int[]{position}, null);
+            notifySelectorStateChanged(new int[]{position}, null);
+            result = true;
         } else {
-            mSelectPositions.add(position);
-            notifySelectorState(null, new int[]{position});
+            if (mSelectPositions.size() < mMaxCount) {
+                mSelectPositions.add(position);
+                notifySelectorStateChanged(null, new int[]{position});
+                result = true;
+            }
         }
+        return result;
     }
 
     @Override
@@ -61,9 +85,9 @@ public class MultiSelectHelper extends AbstractSelectHelper {
 
     @Override
     public void clearSelectedState() {
-        final int[] positions = getSelectPosition();
+        final int[] positions = toIntArray(mSelectPositions);
         clearSelectedPosition();
-        notifySelectorState(positions, null);
+        notifySelectorStateChanged(positions, null);
     }
 
     @Override

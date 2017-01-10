@@ -291,19 +291,22 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
     @NonNull
     protected RecyclerView.ViewHolder onCreateViewHolderImpl(HeaderFooterHelper hfHelper,
                                                              ViewGroup parent, int viewType) {
-        if (this.mHeaderFooterHelper == null || this.mHeaderFooterHelper.isLayoutIdInRecord(viewType)) {
+        if (hfHelper == null || hfHelper.isLayoutIdInRecord(viewType)) {
             return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(
                     viewType, parent, false), viewType);
         } else {
-            return new ViewHolder(this.mHeaderFooterHelper.findView(viewType, mAdapterManager.getItemSize()));
+            return new ViewHolder(hfHelper.findView(viewType, mAdapterManager.getItemSize()));
         }
     }
 
     @Override
     public final void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-       // Logger.w("QuickRecycleViewAdapter", "onBindViewHolder", "position_1 = " + position);
+        // Logger.w("QuickRecycleViewAdapter", "onBindViewHolder", "position_1 = " + position);
         position = holder.getAdapterPosition();
-       // Logger.w("QuickRecycleViewAdapter", "onBindViewHolder", "position_2 = " + position);
+        if (position == RecyclerView.NO_POSITION) {
+            return;
+        }
+        // Logger.w("QuickRecycleViewAdapter", "onBindViewHolder", "position_2 = " + position);
         if (mHeaderFooterHelper != null) {
             if (mHeaderFooterHelper.isInHeader(position)
                     || mHeaderFooterHelper.isInFooter(position, mAdapterManager.getItemSize())) {
@@ -322,6 +325,9 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
             throw new RuntimeException("all quick adapter's viewHolder must implement" +
                     " the interface IRecyclerViewHolder");
         }
+        //notify bind ViewHolder
+        mAdapterManager.getSelectHelper().onBindViewHolder(holder);
+
         //not in header or footer populate it
         final T item = getItem(position);
         final int layoutId = ((IRecyclerViewHolder) holder).getLayoutId();
