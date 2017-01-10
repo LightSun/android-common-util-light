@@ -240,6 +240,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
      * remove the index of the target item. you should careful about the index (is the right index of the adapter ?
      * you can get the actual index by calling {@link RecyclerView.ViewHolder#getAdapterPosition()}
      *  and you can get view holder by calling {@link android.support.v7.widget.RecyclerView#getChildViewHolder(View)}).
+     *  but if you can't confirm about the position , please use {@link #removeItemForRecyclerView(View)} intead.
      * @param actualIndex the real index of adapter. you can get the actual index by calling {@link RecyclerView.ViewHolder#getAdapterPosition()}
      */
     @RemoveObservableMethod
@@ -257,7 +258,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     }
 
     /**
-     * remove the item which is indicate by the target item view.
+     * remove the item which is indicated by the target item view.
      * @param itemView the item view which is child of RecyclerView.
      * @since 1.8.5
      */

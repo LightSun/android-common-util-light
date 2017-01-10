@@ -24,6 +24,7 @@ public interface ISelectHelper {
      * select the target position of item.
      *
      * @param position the position.
+     * @return true if operate success.
      */
     boolean select(int position);
 
@@ -31,6 +32,7 @@ public interface ISelectHelper {
      * unselect(cancel select) the target position of item.
      *
      * @param position the position.
+     * @return true if operate success.
      */
     boolean unselect(int position);
 
@@ -38,6 +40,7 @@ public interface ISelectHelper {
      * toggle the select state of the target item
      *
      * @param position the position which indicate the target item.
+     * @return true if operate success.
      */
     boolean toggleSelect(int position);
 
@@ -52,7 +55,7 @@ public interface ISelectHelper {
     void clearSelectedState();
 
     /**
-     * get the select position list.(the real positions)
+     * get the select position list.
      *
      * @return the list which contains the all select position.
      */
@@ -67,10 +70,16 @@ public interface ISelectHelper {
 
 
     /**
+     * the selector notifier.
      * @since 1.8.5
      */
     interface SelectorNotifier {
 
+        /**
+         * Notify the selector state change. This is called when the select state changed.
+         * @param unselectPostions the selected position to cancel.
+         * @param selectPostions the selected position to add/join.
+         */
         void notifySelectorStateChanged(int[] unselectPostions, int[] selectPostions);
     }
 

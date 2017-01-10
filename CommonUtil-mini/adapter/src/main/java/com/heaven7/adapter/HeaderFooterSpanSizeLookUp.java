@@ -3,7 +3,7 @@ package com.heaven7.adapter;
 import android.support.v7.widget.GridLayoutManager;
 
 /**
- * for resolve one line in GridLayoutMainager
+ * for resolve one line in GridLayoutManager
  * Created by heaven7 on 2016/8/10.
  */
 public class HeaderFooterSpanSizeLookUp extends GridLayoutManager.SpanSizeLookup
