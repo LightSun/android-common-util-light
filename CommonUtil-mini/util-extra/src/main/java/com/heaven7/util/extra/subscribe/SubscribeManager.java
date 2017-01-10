@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * the subscribe manager help we subscribe  items.
  *
- * @param <T>
+ * @param <T> the type.
  */
 public class SubscribeManager<T> {
 

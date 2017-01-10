@@ -1,2 +1,2 @@
-fix adapter ：
+[已解决] fix adapter ：
      SelectHelper. 单选的，就要clearALL才不会越界，多选要clearselecpos才会不抛出越界.
