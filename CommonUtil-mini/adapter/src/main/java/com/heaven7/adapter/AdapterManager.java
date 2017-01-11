@@ -40,7 +40,8 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     private final IAdapterManagerCallback2 mCallback2;
     private final SelectHelper<T> mSelectHelper;
-    private List<T> mDatas;
+    private final List<T> mDatas;
+
     private ArrayList<IPostRunnableCallback<T>> mPostCallbacks;
     private AdapterDataRemovedObservable<T> mRemovedObservable;
 
@@ -692,7 +693,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     /**
      * the item changer
      *
-     * @param <T>
+     * @param <T> the data type.
      */
     public interface ItemChanger<T> {
         /**
