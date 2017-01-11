@@ -306,6 +306,10 @@ public class SelectHelper<T extends ISelectable> {
         mImpl.initSelectPosition(poss, false);
     }
 
+    /**
+     * clear the view holder records.
+     * @since 1.8.6
+     */
     /*public*/ void clearViewHolders() {
         if (mHolderMap != null) {
             mHolderMap.clear();
@@ -316,6 +320,7 @@ public class SelectHelper<T extends ISelectable> {
      * this must be called before {@link QuickRecycleViewAdapter#onBindData(Context, int, ISelectable, int, ViewHelper)}.
      *
      * @param holder the holder.
+     * @since 1.8.5
      */
     /*public*/ void onBindViewHolder(RecyclerView.ViewHolder holder) {
         if (mHolderMap == null) {
@@ -331,6 +336,7 @@ public class SelectHelper<T extends ISelectable> {
      *RecyclerView.ViewHolder, int)} .
      * @return the adapter position of RecyclerView which is the key of ViewHolder map.
      * see {@link RecyclerView.ViewHolder#getAdapterPosition()}
+     * @since 1.8.6
      */
     /*public*/ int getAdapterPosition(int initPosition) {
         if (mHolderMap != null) {
@@ -350,6 +356,7 @@ public class SelectHelper<T extends ISelectable> {
      * {@link RecyclerView.Adapter#notifyDataSetChanged()}, that means some items' position should be changed.
      * so this just do it.
      * @param poss the positions to be adjust.
+     * @since 1.8.5
      */
     protected void adjustPosition(int[] poss) {
         if (mHolderMap == null || mHolderMap.size() == 0 || poss == null || poss.length == 0) {

@@ -65,6 +65,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
      *RecyclerView.ViewHolder, int)} .
      * @return the adapter position of RecyclerView which is the key of ViewHolder map.
      * see {@link RecyclerView.ViewHolder#getAdapterPosition()}
+     * @since 1.8.6
      */
     public int getAdapterPosition(int initPosition) {
         return getSelectHelper().getAdapterPosition(initPosition);

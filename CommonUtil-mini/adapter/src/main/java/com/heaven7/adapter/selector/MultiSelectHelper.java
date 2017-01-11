@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * multi mode of select helper
  * Created by heaven7 on 2017/1/9.
+ * @since 1.8.5
  */
 public class MultiSelectHelper extends AbstractSelectHelper {
 
