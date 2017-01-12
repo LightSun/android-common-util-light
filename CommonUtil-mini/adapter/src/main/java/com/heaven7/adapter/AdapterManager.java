@@ -40,7 +40,8 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     private final IAdapterManagerCallback2 mCallback2;
     private final SelectHelper<T> mSelectHelper;
-    private List<T> mDatas;
+    private final List<T> mDatas;
+
     private ArrayList<IPostRunnableCallback<T>> mPostCallbacks;
     private AdapterDataRemovedObservable<T> mRemovedObservable;
 
@@ -56,6 +57,19 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     protected int getHeaderSize() {
         return getHeaderFooterManager() != null ? getHeaderFooterManager().getHeaderSize() : 0;
+    }
+
+    /**
+     * get the adapter position of RecyclerView. this is only used for {@link RecyclerView}.
+     *
+     * @param initPosition the init position . which is initialized in {@link QuickRecycleViewAdapter#onBindViewHolder(
+     *RecyclerView.ViewHolder, int)} .
+     * @return the adapter position of RecyclerView which is the key of ViewHolder map.
+     * see {@link RecyclerView.ViewHolder#getAdapterPosition()}
+     * @since 1.8.6
+     */
+    public int getAdapterPosition(int initPosition) {
+        return getSelectHelper().getAdapterPosition(initPosition);
     }
 
     //======================== data remove listener ===============
@@ -92,7 +106,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         if (mPostCallbacks == null) {
             mPostCallbacks = new ArrayList<>(4);
         }
-        if(!mPostCallbacks.contains(callback)) {
+        if (!mPostCallbacks.contains(callback)) {
             this.mPostCallbacks.add(callback);
         }
     }
@@ -123,38 +137,41 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     /**
      * perform item change
-     * @param index the index
+     *
+     * @param index   the index
      * @param changer the item changer
      * @since 1.5.8
      */
-    public void performItemChange(int index, ItemChanger<T> changer){
-        if(changer.onItemChange(getItemAt(index))){
-            if(isRecyclable()){
+    public void performItemChange(int index, ItemChanger<T> changer) {
+        if (changer.onItemChange(getItemAt(index))) {
+            if (isRecyclable()) {
                 notifyItemChanged(index);
-            }else{
+            } else {
                 notifyDataSetChanged();
             }
         }
     }
+
     /**
      * perform item change
-     * @param data the data
+     *
+     * @param data    the data
      * @param changer the item changer
      * @since 1.5.8
      */
-    public void performItemChange(T data, ItemChanger<T> changer){
+    public void performItemChange(T data, ItemChanger<T> changer) {
         final int index = mDatas.indexOf(data);
-        if(index != -1){
+        if (index != -1) {
             if (changer.onItemChange(data)) {
-                if(isRecyclable()){
+                if (isRecyclable()) {
                     notifyItemChanged(index);
-                }else{
+                } else {
                     notifyDataSetChanged();
                 }
             }
         }
     }
-    //=================================================
+    //================== manage item ===============================
 
     public void addItem(int index, T item) {
         mDatas.add(index, item);
@@ -202,6 +219,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
             notifyDataSetChanged();
         }
     }
+
     @RemoveObservableMethod
     public void setItem(T oldItem, T newItem) {
         setItem(mDatas.indexOf(oldItem), newItem);
@@ -209,16 +227,16 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     @RemoveObservableMethod
     public void setItem(int index, T newItem) {
-        if(index < 0 || index > getItemSize()-1){
+        if (index < 0 || index > getItemSize() - 1) {
             return;
         }
-        if(isRecyclable()){
+        if (isRecyclable()) {
             final T t = mDatas.remove(index);
             notifyItemRemovedInternal(t);
             notifyItemRemoved(index);
             //for observable , i changed this implement.
             addItem(index, newItem);
-        }else{
+        } else {
             mDatas.set(index, newItem);
             notifyDataSetChanged();
         }
@@ -239,8 +257,9 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     /**
      * remove the index of the target item. you should careful about the index (is the right index of the adapter ?
      * you can get the actual index by calling {@link RecyclerView.ViewHolder#getAdapterPosition()}
-     *  and you can get view holder by calling {@link android.support.v7.widget.RecyclerView#getChildViewHolder(View)}).
-     *  but if you can't confirm about the position , please use {@link #removeItemForRecyclerView(View)} intead.
+     * and you can get view holder by calling {@link android.support.v7.widget.RecyclerView#getChildViewHolder(View)}).
+     * but if you can't confirm about the position , please use {@link #removeItemForRecyclerView(View)} intead.
+     *
      * @param actualIndex the real index of adapter. you can get the actual index by calling {@link RecyclerView.ViewHolder#getAdapterPosition()}
      */
     @RemoveObservableMethod
@@ -259,16 +278,17 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     /**
      * remove the item which is indicated by the target item view.
+     *
      * @param itemView the item view which is child of RecyclerView.
      * @since 1.8.5
      */
     @RemoveObservableMethod
-    public void removeItemForRecyclerView(View itemView){
+    public void removeItemForRecyclerView(View itemView) {
         final ViewParent parent = itemView.getParent();
-        if(parent != null && parent instanceof RecyclerView){
+        if (parent != null && parent instanceof RecyclerView) {
             final int position = ((RecyclerView) parent).getChildAdapterPosition(itemView);
             removeItem(position);
-        }else{
+        } else {
             throw new IllegalArgumentException("the item view is incorrect. you must check !");
         }
     }
@@ -297,11 +317,11 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         for (int i = 0, size = positions.size(); i < size; i++) {
             pos = positions.get(i);
             t = mDatas.remove(pos);
-            if(hasObserver){
+            if (hasObserver) {
                 mRemovedObservable.addItem(t);
             }
         }
-        if(hasObserver){
+        if (hasObserver) {
             mRemovedObservable.notifyItemRangeRemoved();
         }
         notifyDataSetChanged();
@@ -315,7 +335,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         mDatas.addAll(items);
         mSelectHelper.initSelectPositions(items);
 
-        if(hasObserver){
+        if (hasObserver) {
             mRemovedObservable.notifyItemRangeRemoved();
         }
         notifyDataSetChanged();
@@ -325,7 +345,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     public void clearItems() {
         final boolean hasObserver = observeAllItems();
         mDatas.clear();
-        if(hasObserver){
+        if (hasObserver) {
             mRemovedObservable.notifyItemRangeRemoved();
         }
         notifyDataSetChanged();
@@ -346,7 +366,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
         mCallback2.afterNotifyDataChanged();
     }
 
-    // =========== begin recycleview ==============//
+    // =========== begin recycleview notify ==============//
 
     private void checkIfSupport() {
         if (!isRecyclable()) {
@@ -369,6 +389,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     /**
      * notify item removed, had handle the header size.
+     *
      * @param position the  position
      */
     public final void notifyItemRemoved(int position) {
@@ -379,8 +400,9 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     /**
      * notify item moved, had handle the header size.
+     *
      * @param fromPosition the from position
-     * @param toPosition the end position.
+     * @param toPosition   the end position.
      */
     public final void notifyItemMoved(int fromPosition, int toPosition) {
         checkIfSupport();
@@ -391,18 +413,21 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     /**
      * notify item range changed, had handle the header size.
+     *
      * @param positionStart the from position
-     * @param itemCount the item count
+     * @param itemCount     the item count
      */
     public final void notifyItemRangeChanged(int positionStart, int itemCount) {
         checkIfSupport();
         positionStart += getHeaderSize();
         mCallback2.notifyItemRangeChanged(positionStart, itemCount);
     }
+
     /**
      * notify item range insert , had handle the header size.
+     *
      * @param positionStart the from position
-     * @param itemCount the item count
+     * @param itemCount     the item count
      */
     public final void notifyItemRangeInserted(int positionStart, int itemCount) {
         checkIfSupport();
@@ -412,8 +437,9 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     /**
      * notify item range moved, had handle the header size.
+     *
      * @param positionStart the from position
-     * @param itemCount the item count
+     * @param itemCount     the item count
      */
     public final void notifyItemRangeRemoved(int positionStart, int itemCount) {
         checkIfSupport();
@@ -425,7 +451,6 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     public boolean isRecyclable() {
         return mCallback2.isRecyclable();
     }
-
 
     @Override
     public T getSelectedItemAtPosition(int position) {
@@ -452,12 +477,13 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     /**
      * observe the current all items by the AdapterDataRemovedObservable.
+     *
      * @return true if has observer.
      * @since 1.5.7
      */
     private boolean observeAllItems() {
         AdapterDataRemovedObservable<T> mRemovedObservable = AdapterManager.this.mRemovedObservable;
-        if( mRemovedObservable != null && mRemovedObservable.hasObservers()){
+        if (mRemovedObservable != null && mRemovedObservable.hasObservers()) {
             mRemovedObservable.addItems(mDatas);
             return true;
         }
@@ -469,6 +495,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
             mRemovedObservable.notifyItemRemoved(removedItem);
         }
     }
+
     private void notifyItemRangeRemovedInternal(List<T> removedItems) {
         if (mRemovedObservable != null && mRemovedObservable.hasObservers()) {
             mRemovedObservable.notifyItemRangeRemoved(removedItems);
@@ -478,6 +505,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
     /**
      * the adapter data observer.
      * <p>notify item by ourselves. or else can't fix some problem of count down timer</p>
+     *
      * @since 1.5.7
      */
     public interface IAdapterDataRemovedObserver<T> {
@@ -492,6 +520,7 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
 
     /**
      * the internal data removed observable
+     *
      * @param <T> the data type
      * @since 1.5.7
      */
@@ -658,16 +687,18 @@ public class AdapterManager<T extends ISelectable> implements SelectHelper.Callb
      */
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.CLASS)
-    @interface RemoveObservableMethod{
+    @interface RemoveObservableMethod {
     }
 
     /**
      * the item changer
-     * @param <T>
+     *
+     * @param <T> the data type.
      */
-    public interface ItemChanger<T>{
+    public interface ItemChanger<T> {
         /**
          * called when the item need change.
+         *
          * @param t the item data which may be changed
          * @return true if change data success , if success notify will called.
          */

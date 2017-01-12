@@ -53,7 +53,7 @@ public class SelectHelper<T extends ISelectable> {
          * @param selected  true is the selected state ,false is unselected state,
          * @return true if should notify all.
          */
-        private boolean notifyImpl(int[] positions, boolean selected) {
+        boolean notifyImpl(int[] positions, boolean selected) {
             if (positions == null || positions.length == 0) {
                 return false;
             }
@@ -97,18 +97,6 @@ public class SelectHelper<T extends ISelectable> {
         }
         this.mSelectMode = selectMode;
         this.mCallback = callback;
-    }
-
-    /**
-     * this must be called before {@link QuickRecycleViewAdapter#onBindData(Context, int, ISelectable, int, ViewHelper)}.
-     *
-     * @param holder the holder.
-     */
-    /*public*/ void onBindViewHolder(RecyclerView.ViewHolder holder) {
-        if (mHolderMap == null) {
-            mHolderMap = new SparseArray<WeakReference<RecyclerView.ViewHolder>>();
-        }
-        mHolderMap.put(holder.getAdapterPosition(), new WeakReference<RecyclerView.ViewHolder>(holder));
     }
 
     /**
@@ -318,6 +306,58 @@ public class SelectHelper<T extends ISelectable> {
         mImpl.initSelectPosition(poss, false);
     }
 
+    /**
+     * clear the view holder records.
+     * @since 1.8.6
+     */
+    /*public*/ void clearViewHolders() {
+        if (mHolderMap != null) {
+            mHolderMap.clear();
+        }
+    }
+
+    /**
+     * this must be called before {@link QuickRecycleViewAdapter#onBindData(Context, int, ISelectable, int, ViewHelper)}.
+     *
+     * @param holder the holder.
+     * @since 1.8.5
+     */
+    /*public*/ void onBindViewHolder(RecyclerView.ViewHolder holder) {
+        if (mHolderMap == null) {
+            mHolderMap = new SparseArray<WeakReference<RecyclerView.ViewHolder>>();
+        }
+        mHolderMap.put(holder.getAdapterPosition(), new WeakReference<RecyclerView.ViewHolder>(holder));
+    }
+
+    /**
+     * get the adapter position of RecyclerView. this is only used for {@link RecyclerView}.
+     *
+     * @param initPosition the init position . which is initialized in {@link QuickRecycleViewAdapter#onBindViewHolder(
+     *RecyclerView.ViewHolder, int)} .
+     * @return the adapter position of RecyclerView which is the key of ViewHolder map.
+     * see {@link RecyclerView.ViewHolder#getAdapterPosition()}
+     * @since 1.8.6
+     */
+    /*public*/ int getAdapterPosition(int initPosition) {
+        if (mHolderMap != null) {
+            WeakReference<RecyclerView.ViewHolder> ref = mHolderMap.get(initPosition);
+            if (ref != null) {
+                RecyclerView.ViewHolder holder = ref.get();
+                if (holder != null) {
+                    return holder.getAdapterPosition();
+                }
+            }
+        }
+        return ISelectable.INVALID_POSITION;
+    }
+
+    /**
+     * adjust the positions. if the adapter of RecyclerView deleted some items util call
+     * {@link RecyclerView.Adapter#notifyDataSetChanged()}, that means some items' position should be changed.
+     * so this just do it.
+     * @param poss the positions to be adjust.
+     * @since 1.8.5
+     */
     protected void adjustPosition(int[] poss) {
         if (mHolderMap == null || mHolderMap.size() == 0 || poss == null || poss.length == 0) {
             //no need. eg: ListView

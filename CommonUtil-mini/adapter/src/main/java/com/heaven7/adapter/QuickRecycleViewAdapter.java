@@ -93,7 +93,7 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
      */
     @Override
     public void beforeNotifyDataChanged() {
-
+        getSelectHelper().clearViewHolders();
     }
 
     /**
@@ -326,7 +326,7 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
                     " the interface IRecyclerViewHolder");
         }
         //notify bind ViewHolder
-        mAdapterManager.getSelectHelper().onBindViewHolder(holder);
+        getSelectHelper().onBindViewHolder(holder);
 
         //not in header or footer populate it
         final T item = getItem(position);
