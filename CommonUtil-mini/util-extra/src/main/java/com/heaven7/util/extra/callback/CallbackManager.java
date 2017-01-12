@@ -21,13 +21,13 @@ public abstract class CallbackManager<T> {
      * @param maxCapacity the capacity.
      */
     public CallbackManager(int maxCapacity) {
+        this.mMaxcapacity = maxCapacity;
         this.mList = new CopyOnWriteArray<T>() {
             @Override
             protected void trim(ArrayList<T> list) {
                 onTrim(list, mMaxcapacity);
             }
         };
-        this.mMaxcapacity = maxCapacity;
     }
 
     /**
