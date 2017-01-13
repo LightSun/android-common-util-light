@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * multi mode of select helper
  * Created by heaven7 on 2017/1/9.
+ *
  * @since 1.8.5
  */
 public class MultiSelectHelper extends AbstractSelectHelper {
@@ -54,8 +55,9 @@ public class MultiSelectHelper extends AbstractSelectHelper {
 
     @Override
     public boolean unselect(int position) {
-        if (mSelectPositions.contains(position)) {
-            mSelectPositions.remove(position);
+        final int index = mSelectPositions.indexOf(position);
+        if (index != -1) {
+            mSelectPositions.remove(index);
             notifySelectorStateChanged(new int[]{position}, null);
             return true;
         }
@@ -65,8 +67,9 @@ public class MultiSelectHelper extends AbstractSelectHelper {
     @Override
     public boolean toggleSelect(int position) {
         boolean result = false;
-        if (mSelectPositions.contains(position)) {
-            mSelectPositions.remove(position);
+        final int index = mSelectPositions.indexOf(position);
+        if (index != -1) {
+            mSelectPositions.remove(index);
             notifySelectorStateChanged(new int[]{position}, null);
             result = true;
         } else {
