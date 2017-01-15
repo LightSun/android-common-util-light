@@ -28,7 +28,7 @@ public abstract class WeakCallbackManager<T> extends CallbackManager<WeakReferen
     }
 
     @Override
-    protected void onTrim(ArrayList<WeakReference<T>> list, int maxCapacity) {
+    protected void onTrimImpl(ArrayList<WeakReference<T>> list, int maxCapacity) {
         ListIterator<WeakReference<T>> it = list.listIterator();
         for (; it.hasNext(); ) {
             final WeakReference<T> next = it.next();

@@ -1,6 +1,9 @@
 package com.heaven7.util.extra.callback;
 
+import com.heaven7.util.extra.collection.CollectionConstant;
 import com.heaven7.util.extra.collection.CopyOnWriteArray;
+import com.heaven7.util.extra.collection.ElementPredicate;
+import com.heaven7.util.extra.collection.ElementVisitor;
 
 import java.util.ArrayList;
 
@@ -17,7 +20,7 @@ public abstract class CallbackManager<T> {
     private final int mMaxcapacity;
 
     private final SameItemMatcher mSameItemMatcher = new SameItemMatcher();
-    private final CopyOnWriteArray.ElementVisitor<T> mDispatchVisitor = new CopyOnWriteArray.ElementVisitor<T>() {
+    private final ElementVisitor<T> mDispatchVisitor = new ElementVisitor<T>() {
         @Override
         public boolean visit(T t, Object param) {
             dispatchCallbackImpl(t, param);
@@ -35,8 +38,8 @@ public abstract class CallbackManager<T> {
         this.mMaxcapacity = maxCapacity;
         this.mList = new CopyOnWriteArray<T>() {
             @Override
-            protected void trim(ArrayList<T> list) {
-                onTrim(list, mMaxcapacity);
+            protected void onTrim(ArrayList<T> list) {
+                onTrimImpl(list, mMaxcapacity);
             }
         };
     }
@@ -70,7 +73,7 @@ public abstract class CallbackManager<T> {
             throw new NullPointerException();
         }
         mSameItemMatcher.setIdentity(identity);
-        final boolean success = mList.acceptVisit(CopyOnWriteArray.VISIT_RULE_UNTIL_SUCCESS,
+        final boolean success = mList.acceptVisit(CollectionConstant.VISIT_RULE_UNTIL_SUCCESS,
                 t1, mSameItemMatcher);
         if (success) {
             return mList.size() <= mMaxcapacity && mList.add(t1);
@@ -125,7 +128,7 @@ public abstract class CallbackManager<T> {
      * @param param the param to dispatch to .
      */
     public void dispatchCallback(Object param) {
-        mList.acceptVisit(CopyOnWriteArray.VISIT_RULE_ALL, param, mDispatchVisitor);
+        mList.acceptVisit(CollectionConstant.VISIT_RULE_ALL, param, mDispatchVisitor);
     }
 
     /**
@@ -145,12 +148,12 @@ public abstract class CallbackManager<T> {
     }
 
     /**
-     * trim the list if you need. called after iteration. eg: {@link #dispatchCallback(Object)}.
+     * onTrim the list if you need. called after iteration. eg: {@link #dispatchCallback(Object)}.
      *
-     * @param list        the current list of callbacks to trim.
+     * @param list        the current list of callbacks to onTrim.
      * @param maxCapacity the max capacity of the this. default is {@link Integer#MAX_VALUE}.
      */
-    protected void onTrim(ArrayList<T> list, int maxCapacity) {
+    protected void onTrimImpl(ArrayList<T> list, int maxCapacity) {
 
     }
 
@@ -163,12 +166,8 @@ public abstract class CallbackManager<T> {
     protected abstract void dispatchCallbackImpl(T t, Object param);
 
 
-    private class SameItemMatcher implements CopyOnWriteArray.ElementVisitor<T>,
-            CopyOnWriteArray.ElementPredicate<T> {
+    private class SameItemMatcher implements ElementVisitor<T>, ElementPredicate<T> {
         boolean identity;
-
-        public SameItemMatcher() {
-        }
 
         public void setIdentity(boolean identity) {
             this.identity = identity;

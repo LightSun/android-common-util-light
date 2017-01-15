@@ -1,11 +1,8 @@
 package com.heaven7.util.extra.collection;
 
-import android.support.annotation.IntDef;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import static com.heaven7.util.extra.collection.CollectionConstant.*;
 
 /**
  * Copy on write array. This array is not thread safe, and only one loop can
@@ -27,32 +24,6 @@ import java.util.List;
  */
 //comes from ViewTreeObserver.CopyOnWriteArray
 public class CopyOnWriteArray<T> {
-
-    /**
-     * the visit rule: until success.
-     * @since 1.1.0
-     */
-    public static final int VISIT_RULE_UNTIL_SUCCESS = 1;
-    /**
-     * the visit rule: until failed.
-     * @since 1.1.0
-     */
-    public static final int VISIT_RULE_UNTIL_FAILED = 2;
-    /**
-     * the visit rule: visit all.
-     * @since 1.1.0
-     */
-    public static final int VISIT_RULE_ALL = 3;
-
-    @Retention(RetentionPolicy.CLASS)
-    @IntDef({
-            VISIT_RULE_UNTIL_SUCCESS,
-            VISIT_RULE_UNTIL_FAILED,
-            VISIT_RULE_ALL,
-    })
-    @interface VisitRuleType {
-    }
-
 
     private ArrayList<T> mData = new ArrayList<T>();
     private ArrayList<T> mDataCopy;
@@ -117,15 +88,15 @@ public class CopyOnWriteArray<T> {
             mAccess.mSize = 0;
         }
         mDataCopy = null;
-        trim(mData);
+        onTrim(mData);
     }
 
     /**
-     * trim the list. this is called in {@link #end()}. you should care about the list.
+     * onTrim the list. this is called in {@link #end()}. you should care about the list.
      *
-     * @param list the real list to trim.
+     * @param list the real list to onTrim.
      */
-    protected void trim(ArrayList<T> list) {
+    protected void onTrim(ArrayList<T> list) {
 
     }
     //===============================================================
@@ -162,7 +133,7 @@ public class CopyOnWriteArray<T> {
     /**
      * accept the visitor visit.
      *
-     * @param rule    the visit rule, {@link #VISIT_RULE_UNTIL_SUCCESS} and etc.
+     * @param rule    the visit rule, {@link CollectionConstant#VISIT_RULE_UNTIL_SUCCESS} and etc.
      * @param visitor the element visitor
      * @param param   the param data when visit.
      * @return true if visit success base on the rule.
@@ -225,41 +196,5 @@ public class CopyOnWriteArray<T> {
         }
         return null;
     }
-
-    /**
-     * the element visitor of array or list.
-     *
-     * @param <T> the element type
-     * @since 1.1.0
-     */
-    public interface ElementVisitor<T> {
-        /**
-         * called when visit the target element.
-         *
-         * @param t     the element
-         * @param param the param data to carry
-         * @return true if visit success.
-         */
-        boolean visit(T t, Object param);
-    }
-
-    /**
-     * the predicate of element
-     *
-     * @param <T> the  item type
-     * @since 1.1.0
-     */
-    public interface ElementPredicate<T> {
-
-        /**
-         * called when we want to predicate the item with the param.
-         *
-         * @param t     the item
-         * @param param the other param
-         * @return true if predicate ok.
-         */
-        boolean test(T t, Object param);
-    }
-
 
 }
