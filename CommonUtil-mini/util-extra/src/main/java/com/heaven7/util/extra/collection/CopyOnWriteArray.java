@@ -252,7 +252,7 @@ public class CopyOnWriteArray<T> {
     public interface ElementPredicate<T> {
 
         /**
-         * called when we want to find
+         * called when we want to predicate the item with the param.
          *
          * @param t     the item
          * @param param the other param
