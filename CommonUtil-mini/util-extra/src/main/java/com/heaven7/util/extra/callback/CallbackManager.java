@@ -5,7 +5,7 @@ import com.heaven7.util.extra.collection.CopyOnWriteArray;
 import java.util.ArrayList;
 
 /**
- * simple manager for manage a array of items. support max
+ * simple manager for manage a array of items. support limit count.
  * Created by heaven7 on 2016/12/19.
  *
  * @param <T> the data type,  may be a listener type.
@@ -21,13 +21,13 @@ public abstract class CallbackManager<T> {
      * @param maxCapacity the capacity.
      */
     public CallbackManager(int maxCapacity) {
+        this.mMaxcapacity = maxCapacity;
         this.mList = new CopyOnWriteArray<T>() {
             @Override
             protected void trim(ArrayList<T> list) {
                 onTrim(list, mMaxcapacity);
             }
         };
-        this.mMaxcapacity = maxCapacity;
     }
 
     /**
@@ -106,7 +106,7 @@ public abstract class CallbackManager<T> {
     /**
      * trim the list if you need. called after iteration. eg: {@link #dispatchCallback(Object)}.
      *
-     * @param list the list to trim.
+     * @param list the current list of callbacks to trim.
      * @param maxCapacity the max capacity of the this. default is {@link Integer#MAX_VALUE}.
      */
     protected void onTrim(ArrayList<T> list, int maxCapacity) {

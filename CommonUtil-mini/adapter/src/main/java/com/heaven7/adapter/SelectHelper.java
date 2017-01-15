@@ -334,15 +334,15 @@ public class SelectHelper<T extends ISelectable> {
     /**
      * get the adapter position of RecyclerView. this is only used for {@link RecyclerView}.
      *
-     * @param initPosition the init position . which is initialized in {@link QuickRecycleViewAdapter#onBindViewHolder(
+     * @param lastBindPosition the last bind position . which is set in {@link QuickRecycleViewAdapter#onBindViewHolder(
      *RecyclerView.ViewHolder, int)} .
      * @return the adapter position of RecyclerView which is the key of ViewHolder map.
      * see {@link RecyclerView.ViewHolder#getAdapterPosition()}
      * @since 1.8.6
      */
-    /*public*/ int getAdapterPosition(int initPosition) {
+    /*public*/ int getAdapterPosition(int lastBindPosition) {
         if (mHolderMap != null) {
-            WeakReference<RecyclerView.ViewHolder> ref = mHolderMap.get(initPosition);
+            WeakReference<RecyclerView.ViewHolder> ref = mHolderMap.get(lastBindPosition);
             if (ref != null) {
                 RecyclerView.ViewHolder holder = ref.get();
                 if (holder != null) {

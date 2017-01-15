@@ -27,11 +27,11 @@ dependencies {
 
     compile project(':android-component')
     compile project(':ipc')
-   // compile project(':adapter')
+    compile project(':adapter')
    // compile project(':ipc-server')
 
    // compile 'com.heaven7.android.demolib:android-demo-lib:1.0.1'
-    compile 'com.heaven7.core.adapter:adapter:1.8.5'
+   // compile 'com.heaven7.core.adapter:adapter:1.8.5'
     compile 'com.heaven7.volley:volley_with_extra:1.0.1'
     compile 'com.jakewharton:butterknife:6.1.0'
 

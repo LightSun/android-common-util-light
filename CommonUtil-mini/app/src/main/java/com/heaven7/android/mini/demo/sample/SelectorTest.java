@@ -74,12 +74,14 @@ public class SelectorTest extends BaseActivity {
      */
     class TestSelectAdapter extends QuickRecycleViewAdapter<RecyclerViewNestedTest.ChildData> {
 
+        private boolean selectMode = true;
+
         public TestSelectAdapter() {
             this(ISelectable.SELECT_MODE_SINGLE);
         }
 
         public TestSelectAdapter(int selectMode) {
-            super(android.R.layout.simple_list_item_1, createTest(5), selectMode);
+            super(android.R.layout.simple_list_item_1, createTest(50), selectMode);
         }
 
         @Override //tested in 1.8.5
@@ -93,14 +95,20 @@ public class SelectorTest extends BaseActivity {
                     .setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            getAdapterManager().getSelectHelper().select(position);
-                            getAdapterManager().replaceAllItems(createTest(5));
+                            if (selectMode) {
+                                getSelectHelper().toggleSelect(position);
+                            } else {
+                                getAdapterManager().removeItemForRecyclerView(helper.getRootView());
+                            }
+                            // getAdapterManager().replaceAllItems(createTest(5));
                         }
                     }).setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     // getAdapterManager().removeItemForRecyclerView(helper.getRootView()); //ok
-                    getAdapterManager().addItem(1, newData()); // OK
+                    // getAdapterManager().addItem(1, newData()); // OK
+                    selectMode = !selectMode;
+                    showToast("已切换模式为: " + (selectMode ? "select mode" : "delete mode"));
                     return true;
                 }
             });
