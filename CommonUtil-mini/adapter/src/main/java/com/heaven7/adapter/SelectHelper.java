@@ -16,6 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -308,6 +309,7 @@ public class SelectHelper<T extends ISelectable> {
 
     /**
      * clear the view holder records.
+     *
      * @since 1.8.6
      */
     /*public*/ void clearViewHolders() {
@@ -355,14 +357,17 @@ public class SelectHelper<T extends ISelectable> {
      * adjust the positions. if the adapter of RecyclerView deleted some items util call
      * {@link RecyclerView.Adapter#notifyDataSetChanged()}, that means some items' position should be changed.
      * so this just do it.
+     *
      * @param poss the positions to be adjust.
      * @since 1.8.5
      */
-    protected void adjustPosition(int[] poss) {
+    protected int[] adjustPosition(int[] poss) {
         if (mHolderMap == null || mHolderMap.size() == 0 || poss == null || poss.length == 0) {
             //no need. eg: ListView
-            return;
+            return null;
         }
+        final int[] outArr = new int[poss.length];
+        Arrays.fill(outArr, -1);
         final SparseArray<WeakReference<RecyclerView.ViewHolder>> mHolderMap = this.mHolderMap;
         WeakReference<RecyclerView.ViewHolder> ref;
         int expectPos;
@@ -373,10 +378,11 @@ public class SelectHelper<T extends ISelectable> {
                 RecyclerView.ViewHolder holder = ref.get();
                 if (holder != null) {
                     //adjust to the right position
-                    poss[i] = holder.getAdapterPosition();
+                    final int position = holder.getAdapterPosition();
+                    outArr[i] = position == -1 ? poss[i] : position;
                     if (DEBUG) {
-                        Logger.i(TAG, "adjustPosition", "adjust the position success : expectPos = " + expectPos
-                                + " ,right pos = " + holder.getAdapterPosition());
+                        Logger.i(TAG, "adjustPosition", "adjust the position success : expectPos = "
+                                + expectPos + " ,right pos = " + position);
                     }
                 } else {
                     //trim
@@ -384,6 +390,7 @@ public class SelectHelper<T extends ISelectable> {
                 }
             }
         }
+        return outArr;
     }
 
     /**
