@@ -63,7 +63,6 @@ public class MultiSelectHelper extends AbstractSelectHelper {
         }
         return false;
     }
-
     @Override
     public boolean toggleSelect(int position) {
         boolean result = false;
