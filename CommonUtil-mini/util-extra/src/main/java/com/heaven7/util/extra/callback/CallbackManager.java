@@ -12,8 +12,18 @@ import java.util.ArrayList;
  */
 public abstract class CallbackManager<T> {
 
-    private final CopyOnWriteArray<T> mList;
+    protected final CopyOnWriteArray<T> mList;
     private final int mMaxcapacity;
+
+    private final SameItemMatcher mSameItemMatcher = new SameItemMatcher();
+    private final CopyOnWriteArray.ElementVisitor<T> mDispatchVisitor = new CopyOnWriteArray.ElementVisitor<T>() {
+        @Override
+        public boolean visit(T t, Object param) {
+            dispatchCallbackImpl(t, param);
+            return true;
+        }
+    };
+
 
     /**
      * create CallbackManager with target capacity.
@@ -50,13 +60,19 @@ public abstract class CallbackManager<T> {
     /**
      * register the  t to the pool.
      *
-     * @param t        the t to register.
+     * @param t1       the t to register.
      * @param identity if ensure it is identity.
      * @return true if register success.
      */
-    public boolean register(T t, boolean identity) {
-        if (!identity || !mList.contains(t)) {
-            return mList.size() <= mMaxcapacity && mList.add(t);
+    public boolean register(T t1, boolean identity) {
+        if (t1 == null) {
+            throw new NullPointerException();
+        }
+        mSameItemMatcher.setIdentity(identity);
+        final boolean success = mList.acceptVisit(CopyOnWriteArray.VISIT_RULE_UNTIL_SUCCESS,
+                t1, mSameItemMatcher);
+        if (success) {
+            return mList.size() <= mMaxcapacity && mList.add(t1);
         }
         return false;
     }
@@ -67,8 +83,23 @@ public abstract class CallbackManager<T> {
      * @param t the t to unregister
      * @return true if unregister success.
      */
+    public boolean unregister(T t, boolean identity) {
+        if (t == null) {
+            return false;
+        }
+        mSameItemMatcher.setIdentity(identity);
+        final T result = mList.find(t, mSameItemMatcher);
+        return result != null && mList.remove(result);
+    }
+
+    /**
+     * unregister the  t.
+     *
+     * @param t the t
+     * @return true if unregister success.
+     */
     public boolean unregister(T t) {
-        return mList.remove(t);
+        return unregister(t, false);
     }
 
     /**
@@ -79,7 +110,8 @@ public abstract class CallbackManager<T> {
     }
 
     /**
-     *  get the size of the callbacks.
+     * get the size of the callbacks.
+     *
      * @return the size of the callbacks.
      */
     public int size() {
@@ -92,21 +124,29 @@ public abstract class CallbackManager<T> {
      * @param param the param to dispatch to .
      */
     public void dispatchCallback(Object param) {
-        final CopyOnWriteArray.Access<T> access = mList.start();
-        try {
-            for (int i = 0; i < access.size(); i++) {
-                final T t = access.get(i);
-                dispatchCallbackImpl(t, param);
-            }
-        } finally {
-            mList.end();
+        mList.acceptVisit(CopyOnWriteArray.VISIT_RULE_ALL, param, mDispatchVisitor);
+    }
+
+    /**
+     * are the same items.
+     *
+     * @param t        the item .
+     * @param other    the other item
+     * @param identity if identity
+     * @return true if the t and the other is the same item
+     * @since 1.1.0
+     */
+    protected boolean areItemsTheSame(T t, Object other, boolean identity) {
+        if (identity) {
+            return t == other;
         }
+        return t.equals(other);
     }
 
     /**
      * trim the list if you need. called after iteration. eg: {@link #dispatchCallback(Object)}.
      *
-     * @param list the current list of callbacks to trim.
+     * @param list        the current list of callbacks to trim.
      * @param maxCapacity the max capacity of the this. default is {@link Integer#MAX_VALUE}.
      */
     protected void onTrim(ArrayList<T> list, int maxCapacity) {
@@ -121,6 +161,28 @@ public abstract class CallbackManager<T> {
      */
     protected abstract void dispatchCallbackImpl(T t, Object param);
 
+
+    private class SameItemMatcher implements CopyOnWriteArray.ElementVisitor<T>,
+            CopyOnWriteArray.ElementPredicate<T> {
+        boolean identity;
+
+        public SameItemMatcher() {
+        }
+
+        public void setIdentity(boolean identity) {
+            this.identity = identity;
+        }
+
+        @Override
+        public boolean visit(T t, Object param) {
+            return areItemsTheSame(t, param, identity);
+        }
+
+        @Override
+        public boolean test(T t, Object param) {
+            return areItemsTheSame(t, param, identity);
+        }
+    }
 
     /**
      * a simple implements of CallbackManager that use {@link Callback}.
