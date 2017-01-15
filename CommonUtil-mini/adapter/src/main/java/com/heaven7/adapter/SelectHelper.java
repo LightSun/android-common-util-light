@@ -21,6 +21,7 @@ import java.util.List;
 
 /**
  * a class help we handle the select state. support single-select or multi-select.
+ * but now have a bug when use SelectHelper in delete some items in RecyclerView(It will be fix in next version).
  * Created by heaven7 on 2015/9/3.
  */
 public class SelectHelper<T extends ISelectable> {
