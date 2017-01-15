@@ -9,6 +9,7 @@ import java.util.ArrayList;
  * Created by heaven7 on 2016/12/19.
  *
  * @param <T> the data type,  may be a listener type.
+ * @since 1.0.9
  */
 public abstract class CallbackManager<T> {
 
