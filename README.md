@@ -143,7 +143,7 @@ a light lib of android-common-utils for use.
 
 common adapter
 ``` java
-compile 'com.heaven7.core.adapter:adapter:1.8.6'
+compile 'com.heaven7.core.adapter:adapter:1.8.8'
 ```
 
 common util
@@ -153,7 +153,7 @@ compile 'com.heaven7.core.util:util-v1:1.1.2'
  
  util-extra
  ``` java
-compile 'com.heaven7.core.util:util-extra:1.0.9'
+compile 'com.heaven7.core.util:util-extra:1.1.1'
  ```
  
  the useful memory util 
