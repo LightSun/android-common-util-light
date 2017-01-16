@@ -73,7 +73,7 @@ public abstract class CallbackManager<T> {
             throw new NullPointerException();
         }
         mSameItemMatcher.setIdentity(identity);
-        final boolean success = mList.acceptVisit(CollectionConstant.VISIT_RULE_UNTIL_SUCCESS,
+        final boolean success = mList.visitableList().acceptVisit(CollectionConstant.VISIT_RULE_UNTIL_SUCCESS,
                 t1, mSameItemMatcher);
         if (success) {
             return mList.size() <= mMaxcapacity && mList.add(t1);
@@ -92,7 +92,7 @@ public abstract class CallbackManager<T> {
             throw new NullPointerException();
         }
         mSameItemMatcher.setIdentity(identity);
-        final T result = mList.find(t, mSameItemMatcher);
+        final T result = mList.visitableList().find(t, mSameItemMatcher);
         return result != null && mList.remove(result);
     }
 
@@ -128,13 +128,13 @@ public abstract class CallbackManager<T> {
      * @param param the param to dispatch to .
      */
     public void dispatchCallback(Object param) {
-        mList.acceptVisit(CollectionConstant.VISIT_RULE_ALL, param, mDispatchVisitor);
+        mList.visitableList().acceptVisit(CollectionConstant.VISIT_RULE_ALL, param, mDispatchVisitor);
     }
 
     /**
      * are the same items.
      *
-     * @param t1        the item .
+     * @param t1       the item .
      * @param other    the other item
      * @param identity if identity
      * @return true if the t1 and the other is the same item

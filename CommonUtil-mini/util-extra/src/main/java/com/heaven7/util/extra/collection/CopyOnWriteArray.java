@@ -1,7 +1,10 @@
 package com.heaven7.util.extra.collection;
 
+import android.support.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.heaven7.util.extra.collection.CollectionConstant.*;
 
 /**
@@ -20,6 +23,7 @@ import static com.heaven7.util.extra.collection.CollectionConstant.*;
  * access.end();
  * }
  * </pre>
+ *
  * @since 1.0.9
  */
 //comes from ViewTreeObserver.CopyOnWriteArray
@@ -128,73 +132,128 @@ public class CopyOnWriteArray<T> {
     public void clear() {
         getArray().clear();
     }
+
+    /**
+     * get a visitable List.but it's not thread safe.
+     * @return   a visitable List
+     */
+    public VisitableList<T> visitableList() {
+        return new VisitableListImpl<>(this);
+    }
+    public VisitableList<T> safeVisitableList() {
+        return new SynchronousVisitableList<T>(new VisitableListImpl<T>(this));
+    }
+
     //==============================================
 
-    /**
-     * accept the visitor visit.
-     *
-     * @param rule    the visit rule, {@link CollectionConstant#VISIT_RULE_UNTIL_SUCCESS} and etc.
-     * @param visitor the element visitor
-     * @param param   the param data when visit.
-     * @return true if visit success base on the rule.
-     * @since 1.1.0
-     */
-    public boolean acceptVisit(@VisitRuleType int rule, Object param, ElementVisitor<T> visitor) {
-        final CopyOnWriteArray.Access<T> access = start();
-        try {
-            final int size = access.size();
-            switch (rule) {
-                case VISIT_RULE_UNTIL_SUCCESS:
-                    for (int i = 0; i < size; i++) {
-                        if (visitor.visit(access.get(i), param)) {
-                            return true;
-                        }
-                    }
-                    break;
 
-                case VISIT_RULE_UNTIL_FAILED:
-                    for (int i = 0; i < size; i++) {
-                        if (!visitor.visit(access.get(i), param)) {
-                            return true;
-                        }
-                    }
-                    break;
+    private static class VisitableListImpl<T> extends AbstractVisitableList<T> {
+        private final CopyOnWriteArray<T> mArray;
 
-                case VISIT_RULE_ALL:
-                    for (int i = 0; i < size; i++) {
-                        visitor.visit(access.get(i), param);
-                    }
-                    return true;
-            }
-        } finally {
-            end();
+        public VisitableListImpl(CopyOnWriteArray<T> mArray) {
+            this.mArray = mArray;
         }
-        return false;
-    }
 
-    /**
-     * find a element by the target param and predicate.
-     *
-     * @param param     the param.
-     * @param predicate the element predicate
-     * @return the target element by find in array.
-     * @since 1.1.0
-     */
-    public T find(Object param, ElementPredicate<T> predicate) {
-        final CopyOnWriteArray.Access<T> access = start();
-        try {
-            final int size = access.size();
-            T t;
-            for (int i = 0; i < size; i++) {
-                t = access.get(i);
-                if (predicate.test(t, param)) {
-                    return t;
+        @Override
+        public <R> List<R> acceptVisitList(@VisitResultRuleType int rule, Object param,
+                                           ResultVisitor<T, R> visitor, @Nullable List<R> out) {
+            if (out == null) {
+                out = new ArrayList<>();
+            }
+            final CopyOnWriteArray.Access<T> access = mArray.start();
+            try {
+                final int size = access.size();
+                R result;
+                switch (rule) {
+                    case VISIT_RESULT_RULE_UNTIL_NOT_NULL:
+                        for (int i = 0; i < size; i++) {
+                            result = visitor.visit(access.get(i), param);
+                            if (result != null) {
+                                out.add(result);
+                                return out;
+                            }
+                        }
+                        break;
+
+                    case VISIT_RESULT_RULE_UNTIL_NULL:
+                        for (int i = 0; i < size; i++) {
+                            result = visitor.visit(access.get(i), param);
+                            if (result != null) {
+                                out.add(result);
+                            } else {
+                                return out;
+                            }
+                        }
+                        break;
+
+                    case VISIT_RULE_ALL:
+                        for (int i = 0; i < size; i++) {
+                            out.add(visitor.visit(access.get(i), param));
+                        }
+                        return out;
+
+                    default:
+                        throw new IllegalArgumentException("unsupport rule( " + rule + ")");
                 }
+            } finally {
+                mArray.end();
             }
-        } finally {
-            end();
+            return out;
         }
-        return null;
-    }
 
+        @Override
+        public boolean acceptVisit(@VisitRuleType int rule, Object param, ElementVisitor<T> visitor) {
+            final CopyOnWriteArray.Access<T> access = mArray.start();
+            try {
+                final int size = access.size();
+                switch (rule) {
+                    case VISIT_RULE_UNTIL_SUCCESS:
+                        for (int i = 0; i < size; i++) {
+                            if (visitor.visit(access.get(i), param)) {
+                                return true;
+                            }
+                        }
+                        break;
+
+                    case VISIT_RULE_UNTIL_FAILED:
+                        for (int i = 0; i < size; i++) {
+                            if (!visitor.visit(access.get(i), param)) {
+                                return true;
+                            }
+                        }
+                        break;
+
+                    case VISIT_RULE_ALL:
+                        for (int i = 0; i < size; i++) {
+                            visitor.visit(access.get(i), param);
+                        }
+                        return true;
+
+                    default:
+                        throw new IllegalArgumentException("unsupport rule( " + rule + ")");
+                }
+            } finally {
+                mArray.end();
+            }
+            return false;
+        }
+
+        @Override
+        public T find(Object param, ElementPredicate<T> predicate) {
+            final CopyOnWriteArray.Access<T> access = mArray.start();
+            try {
+                final int size = access.size();
+                T t;
+                for (int i = 0; i < size; i++) {
+                    t = access.get(i);
+                    if (predicate.test(t, param)) {
+                        return t;
+                    }
+                }
+            } finally {
+                mArray.end();
+            }
+            return null;
+        }
+    }
 }
