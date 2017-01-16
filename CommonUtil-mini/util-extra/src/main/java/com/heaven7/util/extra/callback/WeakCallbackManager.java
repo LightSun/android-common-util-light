@@ -20,13 +20,13 @@ public abstract class WeakCallbackManager<T> extends CallbackManager<WeakReferen
     }
 
     @Override
-    protected boolean areItemsTheSame(WeakReference<T> ref,
+    protected boolean areItemsTheSame(WeakReference<T> t1,
                                       WeakReference<T> other, boolean identity) {
         final T ot = other.get();
         if (identity) {
-            return ref.get() == ot;
+            return t1.get() == ot;
         }
-        return ref.get().equals(ot);
+        return t1.get().equals(ot);
     }
 
     @Override

@@ -134,17 +134,17 @@ public abstract class CallbackManager<T> {
     /**
      * are the same items.
      *
-     * @param t        the item .
+     * @param t1        the item .
      * @param other    the other item
      * @param identity if identity
-     * @return true if the t and the other is the same item
+     * @return true if the t1 and the other is the same item
      * @since 1.1.0
      */
-    protected boolean areItemsTheSame(T t, T other, boolean identity) {
+    protected boolean areItemsTheSame(T t1, T other, boolean identity) {
         if (identity) {
-            return t == other;
+            return t1 == other;
         }
-        return t.equals(other);
+        return t1.equals(other);
     }
 
     /**
