@@ -89,7 +89,7 @@ public abstract class CallbackManager<T> {
      */
     public boolean unregister(T t, boolean identity) {
         if (t == null) {
-            return false;
+            throw new NullPointerException();
         }
         mSameItemMatcher.setIdentity(identity);
         final T result = mList.find(t, mSameItemMatcher);
@@ -140,7 +140,7 @@ public abstract class CallbackManager<T> {
      * @return true if the t and the other is the same item
      * @since 1.1.0
      */
-    protected boolean areItemsTheSame(T t, Object other, boolean identity) {
+    protected boolean areItemsTheSame(T t, T other, boolean identity) {
         if (identity) {
             return t == other;
         }
@@ -175,12 +175,12 @@ public abstract class CallbackManager<T> {
 
         @Override
         public boolean visit(T t, Object param) {
-            return areItemsTheSame(t, param, identity);
+            return areItemsTheSame(t, (T) param, identity);
         }
 
         @Override
         public boolean test(T t, Object param) {
-            return areItemsTheSame(t, param, identity);
+            return areItemsTheSame(t, (T) param, identity);
         }
     }
 
