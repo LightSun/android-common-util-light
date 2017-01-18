@@ -9,7 +9,7 @@ import java.util.Collection;
  * the abstract implements of VisibleList.
  * Created by heaven7 on 2017/1/17.
  */
-public abstract class AbstractVisitableList<T> implements VisitableList<T> {
+public abstract class AbstractCollectionVisitable<T> implements CollectionVisitable<T> {
 
     @Override
     public <R> Collection<R> acceptVisit(@CollectionConstant.VisitResultRuleType int rule,

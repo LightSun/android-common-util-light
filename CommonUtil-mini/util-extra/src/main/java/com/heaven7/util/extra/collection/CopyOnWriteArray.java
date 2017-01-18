@@ -135,19 +135,20 @@ public class CopyOnWriteArray<T> {
 
     /**
      * get a visitable List.but it's not thread safe.
-     * @return   a visitable List
+     *
+     * @return a visitable List
      */
-    public VisitableList<T> visitableList() {
+    public CollectionVisitable<T> visitableList() {
         return new VisitableListImpl<>(this);
     }
-    public VisitableList<T> safeVisitableList() {
-        return new SynchronousVisitableList<T>(new VisitableListImpl<T>(this));
+    public CollectionVisitable<T> safeVisitableList() {
+        return new SynchronousVisitableList<T>(new VisitableListImpl<T>(this), this);
     }
 
     //==============================================
 
 
-    private static class VisitableListImpl<T> extends AbstractVisitableList<T> {
+    private static class VisitableListImpl<T> extends AbstractCollectionVisitable<T> {
         private final CopyOnWriteArray<T> mArray;
 
         public VisitableListImpl(CopyOnWriteArray<T> mArray) {

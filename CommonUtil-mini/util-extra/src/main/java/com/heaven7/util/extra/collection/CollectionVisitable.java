@@ -3,12 +3,16 @@ package com.heaven7.util.extra.collection;
 import android.support.annotation.Nullable;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
- * visitable collection
- * Created by heaven7 on 2017/1/17.
+ * visitable list
+ * Created by heaven7 on 2017/1/16.
+ *
+ * @since 1.1.3
  */
-public interface VisitableCollection<T> {
+public interface CollectionVisitable<T> {
+
     /**
      * accept the Result visitor visit.
      *
@@ -42,4 +46,8 @@ public interface VisitableCollection<T> {
      * @since 1.1.0
      */
     T find(Object param, ElementPredicate<T> predicate);
+
+
+    <R> List<R> acceptVisitList(@CollectionConstant.VisitResultRuleType int rule,
+                                Object param, ResultVisitor<T, R> visitor, @Nullable List<R> out);
 }
