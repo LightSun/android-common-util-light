@@ -64,6 +64,17 @@ public class PermissionHelper {
     /**
      * begin request the permission group
      *
+     * @param permission  the permissionto request and must in order
+     * @param requestCode the request codes , but must in order and  match the requestPermissions
+     * @param callback    the callback
+     */
+    public void startRequestPermission(String permission, int requestCode, ICallback callback) {
+        startRequestPermission(new String[]{permission}, new int[]{requestCode}, callback);
+    }
+
+    /**
+     * begin request the permission group
+     *
      * @param requestPermissions the permissions to request and must in order
      * @param requestCodes       the request codes , but must in order and  match the requestPermissions
      * @param callback           the callback
