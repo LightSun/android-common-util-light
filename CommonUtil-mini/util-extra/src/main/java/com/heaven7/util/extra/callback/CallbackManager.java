@@ -73,7 +73,7 @@ public abstract class CallbackManager<T> {
             throw new NullPointerException();
         }
         mSameItemMatcher.setIdentity(identity);
-        final boolean success = mList.acceptVisit(CollectionConstant.VISIT_RULE_UNTIL_SUCCESS,
+        final boolean success = mList.visitableList().acceptVisit(CollectionConstant.VISIT_RULE_UNTIL_SUCCESS,
                 t1, mSameItemMatcher);
         if (success) {
             return mList.size() <= mMaxcapacity && mList.add(t1);
@@ -89,10 +89,10 @@ public abstract class CallbackManager<T> {
      */
     public boolean unregister(T t, boolean identity) {
         if (t == null) {
-            return false;
+            throw new NullPointerException();
         }
         mSameItemMatcher.setIdentity(identity);
-        final T result = mList.find(t, mSameItemMatcher);
+        final T result = mList.visitableList().find(t, mSameItemMatcher);
         return result != null && mList.remove(result);
     }
 
@@ -128,23 +128,23 @@ public abstract class CallbackManager<T> {
      * @param param the param to dispatch to .
      */
     public void dispatchCallback(Object param) {
-        mList.acceptVisit(CollectionConstant.VISIT_RULE_ALL, param, mDispatchVisitor);
+        mList.visitableList().acceptVisit(CollectionConstant.VISIT_RULE_ALL, param, mDispatchVisitor);
     }
 
     /**
      * are the same items.
      *
-     * @param t        the item .
+     * @param t1       the item .
      * @param other    the other item
      * @param identity if identity
-     * @return true if the t and the other is the same item
+     * @return true if the t1 and the other is the same item
      * @since 1.1.0
      */
-    protected boolean areItemsTheSame(T t, Object other, boolean identity) {
+    protected boolean areItemsTheSame(T t1, T other, boolean identity) {
         if (identity) {
-            return t == other;
+            return t1 == other;
         }
-        return t.equals(other);
+        return t1.equals(other);
     }
 
     /**
@@ -175,12 +175,12 @@ public abstract class CallbackManager<T> {
 
         @Override
         public boolean visit(T t, Object param) {
-            return areItemsTheSame(t, param, identity);
+            return areItemsTheSame(t, (T) param, identity);
         }
 
         @Override
         public boolean test(T t, Object param) {
-            return areItemsTheSame(t, param, identity);
+            return areItemsTheSame(t, (T) param, identity);
         }
     }
 

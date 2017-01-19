@@ -29,6 +29,14 @@ public class CollectionConstant {
      * @since 1.1.0
      */
     public static final int VISIT_RULE_ALL = 3;
+    /**
+     * the visit result rule: until null
+     */
+    public static final int VISIT_RESULT_RULE_UNTIL_NULL     = 4;
+    /**
+     * the visit result rule: until not null.
+     */
+    public static final int VISIT_RESULT_RULE_UNTIL_NOT_NULL = 5;
 
     @Retention(RetentionPolicy.CLASS)
     @IntDef({
@@ -37,6 +45,16 @@ public class CollectionConstant {
             VISIT_RULE_ALL,
     })
     public @interface VisitRuleType {
+    }
+
+
+    @Retention(RetentionPolicy.CLASS)
+    @IntDef({
+            VISIT_RESULT_RULE_UNTIL_NULL,
+            VISIT_RESULT_RULE_UNTIL_NOT_NULL,
+            VISIT_RULE_ALL,
+    })
+    public @interface VisitResultRuleType {
     }
 
 }

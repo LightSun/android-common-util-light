@@ -6,6 +6,7 @@ import java.util.ListIterator;
 
 /**
  * the callback manager. note the {@link Callback} must be strong reference.or else may be recycled.
+ *
  * @since 1.0.9
  */
 public abstract class WeakCallbackManager<T> extends CallbackManager<WeakReference<T>> {
@@ -13,18 +14,19 @@ public abstract class WeakCallbackManager<T> extends CallbackManager<WeakReferen
     public boolean register2(T t) {
         return super.register(new WeakReference<T>(t));
     }
+
     public boolean unregister2(T t) {
         return super.unregister(new WeakReference<T>(t));
     }
 
     @Override
-    protected boolean areItemsTheSame(WeakReference<T> ref,
-                                      Object other, boolean identity) {
-        final T ot = ((WeakReference<T>) other).get();
+    protected boolean areItemsTheSame(WeakReference<T> t1,
+                                      WeakReference<T> other, boolean identity) {
+        final T ot = other.get();
         if (identity) {
-            return ref.get() == ot;
+            return t1.get() == ot;
         }
-        return ref.get().equals(ot);
+        return t1.get().equals(ot);
     }
 
     @Override
