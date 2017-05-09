@@ -28,14 +28,15 @@ dependencies {
     compile project(':android-component')
     compile project(':ipc')
     compile project(':adapter')
-   // compile project(':ipc-server')
+   //compile project(':ipc-server')
+     compile project(':util-v1')
 
    // compile 'com.heaven7.android.demolib:android-demo-lib:1.0.1'
    // compile 'com.heaven7.core.adapter:adapter:1.8.5'
     compile 'com.heaven7.volley:volley_with_extra:1.0.1'
     compile 'com.jakewharton:butterknife:6.1.0'
 
-    compile 'com.heaven7.core.util:util-v1:1.0.7'
-    compile 'com.heaven7.core.util:util-extra:1.0.9'
+   // compile 'com.heaven7.core.util:util-extra:1.0.9'
    // compile 'com.github.LightSun:Game-Base:1.0'
+    //compile 'com.heaven7.core.util:util-v1:1.1.2'
 }

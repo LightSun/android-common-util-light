@@ -14,8 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 
-import static android.support.v7.widget.StaggeredGridLayoutManager.TAG;
-
 /**
  * get image from pick or camera.
  *
@@ -24,10 +22,11 @@ import static android.support.v7.widget.StaggeredGridLayoutManager.TAG;
  */
 public class ImageHelper {
 
-    private static final int NONE = 0;
-    private static final int PHOTO_PATH = 1;    // 拍照
-    private static final int PHOTO_ZOOM = 2;     // 缩放
-    private static final int PHOTO_RESOULT = 3;  // 结果
+    private static final String TAG = "ImageHelper";
+    private static final int NONE          = 0;
+    private static final int PHOTO_PATH    = 1;     // 拍照
+    private static final int PHOTO_ZOOM    = 2;     // 缩放
+    private static final int PHOTO_RESOULT = 3;     // 结果
 
     private static final String IMAGE_UNSPECIFIED = "image/*";
 
