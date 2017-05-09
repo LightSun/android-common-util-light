@@ -121,8 +121,8 @@ public class PermissionHelper {
      */
     private void checkNext(PermissionParam permissionParam, boolean success) {
         if (!success) {
-            mCheckingIndex = 0;
             mCallback.onRequestPermissionResult(permissionParam.requestPermission, permissionParam.requestCode, false);
+            reset();
             return;
         }
         //check request end
@@ -132,9 +132,15 @@ public class PermissionHelper {
             requestPermissionImpl();
         } else {
             //request end
-            mCheckingIndex = 0;
             mCallback.onRequestPermissionResult(permissionParam.requestPermission, permissionParam.requestCode, true);
+            reset();
         }
+    }
+
+    private void reset(){
+        mCheckingIndex = 0;
+        mParams = null;
+        mCallback = null;
     }
 
     /**
@@ -145,9 +151,11 @@ public class PermissionHelper {
      * @param grantResults the grant result
      */
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        final PermissionParam permissionParam = mParams[mCheckingIndex];
-        if (permissionParam.requestCode == requestCode) {
-            checkNext(permissionParam, grantResults[0] == PackageManager.PERMISSION_GRANTED);
+        if(mParams != null) {
+            final PermissionParam permissionParam = mParams[mCheckingIndex];
+            if (permissionParam.requestCode == requestCode) {
+                checkNext(permissionParam, grantResults[0] == PackageManager.PERMISSION_GRANTED);
+            }
         }
     }
 
