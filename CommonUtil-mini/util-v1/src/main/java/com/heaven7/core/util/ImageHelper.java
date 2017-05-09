@@ -14,6 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
 
+import static android.support.v7.widget.StaggeredGridLayoutManager.TAG;
+
 /**
  * get image from pick or camera.
  *
@@ -47,7 +49,9 @@ public class ImageHelper {
         File file = new File(mDir, System.currentTimeMillis() + ".jpg");
         File parent = file.getParentFile();
         if(!parent.exists()){
-            parent.mkdirs();
+            if(!parent.mkdirs()){
+                Logger.w(TAG,"getImageFile","mkdirs failed. file = " + parent.getAbsolutePath());
+            }
         }
         return file;
     }
