@@ -43,7 +43,7 @@ publish {
     userOrg = 'lightsun'
     groupId = 'com.heaven7.core.adapter'
     artifactId = 'adapter'
-    publishVersion = '2.0.0'
+    publishVersion = '2.0.1'
     desc = 'some helpful classes of adapter'
     website = 'https://github.com/LightSun/android-common-util-light'
 }

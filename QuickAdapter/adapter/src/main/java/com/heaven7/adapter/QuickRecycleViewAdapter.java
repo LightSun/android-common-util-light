@@ -353,7 +353,7 @@ public abstract class QuickRecycleViewAdapter<T extends ISelectable>
     protected void onBindDataImpl(RecyclerView.ViewHolder holder, int position, T item) {
         final ViewHolder vh = (ViewHolder) holder;
         onBindData(vh.getContext(), position, item, vh.getLayoutId(),
-                vh.getViewHelper());
+                (ViewHelper)vh.getViewHelper());
     }
 
     @Override
